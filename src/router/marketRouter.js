@@ -1,10 +1,13 @@
 import {Suspense, lazy} from "react";
 import {Navigate} from "react-router-dom";
-import ReadPage from "../pages/markets/ReadPage";
 
 const Loading = <div>Loading....</div>
 const MarketList = lazy(() => import("../pages/markets/ListPage"))
+const MarketRead = lazy(() => import("../pages/markets/ReadPage"))
+const MarketAdd = lazy(() => import("../pages/markets/AddPage"))
+
 const marketRouter = () => {
+
     return [
         {
             path: "list",
@@ -16,7 +19,11 @@ const marketRouter = () => {
         },
         {
             path: "read/:mno",
-            element: <Suspense fallback={Loading}><ReadPage/></Suspense>
+            element: <Suspense fallback={Loading}><MarketRead/></Suspense>
+        },
+        {
+            path: "add",
+            element: <Suspense fallback={Loading}><MarketAdd/></Suspense>
         }
     ]
 }
