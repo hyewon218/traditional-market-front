@@ -1,5 +1,6 @@
 import {Suspense, lazy} from "react";
 import {Navigate} from "react-router-dom";
+import ReadPage from "../pages/markets/ReadPage";
 
 const Loading = <div>Loading....</div>
 const MarketList = lazy(() => import("../pages/markets/ListPage"))
@@ -12,6 +13,10 @@ const marketRouter = () => {
         {
             path: "",
             element: <Navigate replace to="list"/>
+        },
+        {
+            path: "read/:mno",
+            element: <Suspense fallback={Loading}><ReadPage/></Suspense>
         }
     ]
 }
