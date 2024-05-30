@@ -1,14 +1,11 @@
 import React from 'react';
+import {RouterProvider} from "react-router-dom";
+import root from "./router/root" ;
 
-
-const App = ()=>{
-  return (
-      <div>
-          <h1 className="text-3xl font-bold underline">
-              Traditional Market
-          </h1>
-      </div>
-  );
+function App() {
+    return (
+        < RouterProvider router={root}/>
+    );
 }
 
 export default App;
