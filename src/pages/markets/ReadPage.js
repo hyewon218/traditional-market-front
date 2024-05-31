@@ -5,6 +5,7 @@ import {
     useSearchParams
 } from "react-router-dom";
 import {useCallback} from "react";
+import ReadComponent from "../../components/markets/ReadComponent";
 
 const ReadPage = () => {
 
@@ -12,23 +13,21 @@ const ReadPage = () => {
     const navigate = useNavigate()
     const [queryParams] = useSearchParams()
     const page = queryParams.get("page") ? parseInt(queryParams.get("page")) : 1
-    const size = queryParams.get("size") ? parseInt(queryParams.get("size")) : 10
-
+    const size = queryParams.get("size") ? parseInt(queryParams.get("size"))
+        : 10
     const queryStr = createSearchParams({page, size}).toString()
 
-    const moveToModify = useCallback((mno) => {
-        navigate({
-            pathname: `/markets/modify/${mno}`,
-            search: queryStr
-        })
-    }, [mno, page, size])
+    const moveToList = useCallback(() => {
+        navigate({pathname: '/markets/list', search: queryStr})
+    }, [page, size])
 
     return (
-        <div className="text-3xl font-extrabold">
-            Market Read Page Component {mno}
+        <div className="font-extrabold w-full bg-white mt-6">
 
-            <div>
-                <button onClick={() => moveToModify(33)}>Test Modify</button>
+            <div className="text-2xl">
+                Market Read Page Component {mno}
+
+                <ReadComponent mno={mno}></ReadComponent>
             </div>
         </div>
     );
