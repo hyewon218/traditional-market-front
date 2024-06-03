@@ -1,4 +1,6 @@
 import axios from "axios"
+axios.defaults.withCredentials = true; // withCredentials 전역 설정
+
 import {API_SERVER_HOST} from "./marketApi"
 
 const host = `${API_SERVER_HOST}/api/members`
