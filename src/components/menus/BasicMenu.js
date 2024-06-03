@@ -17,7 +17,7 @@ const BasicMenu = () => {
                         <Link to={'/markets/'}>Market</Link>
                     </li>
 
-                    {loginState.email ?  //로그인한 사용자만 출력되는 메뉴
+                    {loginState.memberId ?  //로그인한 사용자만 출력되는 메뉴
                         <>
                             <li className="pr-6 text-2x1">
                                 <Link to={'/about'}>About</Link>
@@ -31,7 +31,7 @@ const BasicMenu = () => {
 
             <div
                 className="w-1/5 flex justify-end bg-orange-300 p-4 font-medium">
-                {!loginState.email ?
+                {!loginState.memberId ?
                     <div className="text-white text-sm m-1 rounded">
                         <Link to={'/member/login'}>Login</Link>
                     </div>
