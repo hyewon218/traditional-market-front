@@ -19,6 +19,7 @@ const loginSlice = createSlice({
         logout: (state, action) => {
             console.log("logout....")
 
+            return {...initState}
         }
     }
 })
