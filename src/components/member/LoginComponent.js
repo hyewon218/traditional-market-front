@@ -1,7 +1,5 @@
 import {useState} from "react"
-import {useDispatch} from "react-redux";
-import {loginPostAsync} from "../../slices/loginSlice";
-import {useNavigate} from "react-router-dom";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const initState = {
     memberId: '',
@@ -12,9 +10,7 @@ const LoginComponent = () => {
 
     const [loginParam, setLoginParam] = useState({...initState})
 
-    const dispatch = useDispatch()
-
-    const navigate = useNavigate()
+    const {doLogin, moveToPath} = useCustomLogin()
 
     const handleChange = (e) => {
         loginParam[e.target.name] = e.target.value
@@ -22,20 +18,18 @@ const LoginComponent = () => {
         setLoginParam({...loginParam})
     }
 
-    const handleClickLogin = (e) => {
+    const handleClickLogin = () => {
         // dispatch(login(loginParam)) // 동기화된 호출
         // 비동기 호출
-        dispatch(loginPostAsync(loginParam))
-        .unwrap()
+        doLogin(loginParam) // loginSlice 의 비동기 호출
         .then(data => {
-            console.log("after unwrap...")
             console.log(data)
 
-            if(data.error) {
+            if (data.error) {
                 alert("이메일과 패스워드를 다시 확인하세요")
-            }else{
+            } else {
                 alert("로그인 성공")
-                navigate({pathname:`/`}, {replace:true}) // 뒤로가기 했을 때 로그인 화면을 볼 수 없도록
+                moveToPath('/')
             }
         })
     }
@@ -51,7 +45,8 @@ const LoginComponent = () => {
             <div className="flex justify-center">
                 <div
                     className="relative mb-4 flex w-full flex-wrap items-stretch">
-                    <div className="w-full p-3 text-left font-bold">MemberId</div>
+                    <div className="w-full p-3 text-left font-bold">MemberId
+                    </div>
                     <input
                         className="w-full p-3 rounded-r border border-solid border-neutral-500 shadow-md"
                         name="memberId"
