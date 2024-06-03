@@ -1,7 +1,8 @@
 import {Suspense, lazy} from "react";
 
 import {createBrowserRouter} from "react-router-dom" ;
-import MarketRouter from "./marketRouter";
+import marketRouter from "./marketRouter";
+import memberRouter from "./memberRouter";
 
 const Loading = <div>Loading....</div>
 const Main = lazy(() => import("../pages/MainPage"))
@@ -20,7 +21,11 @@ const root = createBrowserRouter([
     {
         path: "markets",
         element: <Suspense fallback={Loading}><MarketIndex/></Suspense>,
-        children: MarketRouter()
+        children: marketRouter()
+    },
+    {
+        path: "member",
+        children: memberRouter()
     }
 ])
 export default root;
