@@ -10,7 +10,7 @@ const useCustomLogin = () => {
 
     const loginState = useSelector(state => state.loginSlice) //-------로그인 상태
 
-    const isLogin = loginState.email ? true : false //----------로그인 여부
+    const isLogin = loginState.memberId ? true : false //----------로그인 여부
 
     const doLogin = async (loginParam) => { //----------로그인 함수
 

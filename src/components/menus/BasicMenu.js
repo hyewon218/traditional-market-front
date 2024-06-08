@@ -22,6 +22,9 @@ const BasicMenu = () => {
                             <li className="pr-6 text-2x1">
                                 <Link to={'/about'}>About</Link>
                             </li>
+                            <li className="pr-6 text-2x1">
+                                <Link to={'/chatroom'}>1 : 1 채팅 상담</Link>
+                            </li>
                         </>
                         :
                         <></>
