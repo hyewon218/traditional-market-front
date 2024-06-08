@@ -3,6 +3,7 @@ import {Suspense, lazy} from "react";
 import {createBrowserRouter} from "react-router-dom" ;
 import marketRouter from "./marketRouter";
 import memberRouter from "./memberRouter";
+import chatroomRouter from "./chatroomRouter";
 
 const Loading = <div>Loading....</div>
 const Main = lazy(() => import("../pages/MainPage"))
@@ -26,6 +27,10 @@ const root = createBrowserRouter([
     {
         path: "member",
         children: memberRouter()
+    },
+    {
+        path: "chatroom",
+        children: chatroomRouter()
     }
 ])
 export default root;

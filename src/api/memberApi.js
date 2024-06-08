@@ -1,5 +1,6 @@
 import axios from "axios"
-axios.defaults.withCredentials = true; // withCredentials 전역 설정
+
+axios.defaults.withCredentials = true; // withCredentials 전역 설정 (쿠키 공유를 허락)
 
 import {API_SERVER_HOST} from "./marketApi"
 

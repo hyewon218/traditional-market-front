@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 const ModifyPage = ({mno}) => {
     const navigate = useNavigate()
     const moveToRead = () => {
-        navigate({pathname: '/markets/read/${mno}'})
+        navigate({pathname: `/markets/read/${mno}`})
     }
 
     const moveToList = () => {
