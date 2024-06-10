@@ -7,10 +7,6 @@ import * as StompJs from "@stomp/stompjs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button} from "react-bootstrap";
 
-const initState = {
-    chatList: []
-}
-
 const DetailComponent = ({rno}) => {
     console.log("rno???" + rno)
     const {loginState} = useCustomLogin()
@@ -18,18 +14,18 @@ const DetailComponent = ({rno}) => {
     let [client, changeClient] = useState(null);
     const [chat, setChat] = useState(""); // 입력된 chat 을 받을 변수
 
-    const [chatListDto, setChatListDto] = useState(initState); // 채팅 기록
+    const [chatList, setChatList] = useState([]); // 채팅 기록
 
     useEffect(() => {
         getChatDetails(rno).then(data => {
-            setChatListDto(data)
+            setChatList(data)
             console.log(data)
         })
     }, [rno])
 
-    const msgBox = chatListDto.chatList.map((chat, idx) => {
+    const msgBox = chatList.map((chat, idx) => {
         console.log(
-            "로그인 사용자 ID===========" + memberId + "/sender====== " + chat.sender)
+            "로그인 사용자 ID = " + memberId + "/sender =" + chat.sender)
 
         if (Number(chat.sender) === memberId) {
             return (
@@ -53,10 +49,8 @@ const DetailComponent = ({rno}) => {
                     </div>
                     <div className={styles.chatBody}>
                         <div className={styles.chatContent}>
-                            <div className={styles.writerLeft}>
-                                <p className={styles.writerLeft}>{chat.message}</p>
-                                <p className={styles.chatTime}>{chat.dateTime}</p>
-                            </div>
+                            <p className={styles.writerLeft}>{chat.message}</p>
+                            <p className={styles.chatTime}>{chat.dateTime}</p>
                         </div>
                     </div>
                 </div>
@@ -82,10 +76,7 @@ const DetailComponent = ({rno}) => {
 
             // 구독
             stompClient.onConnect = function () {
-                stompClient.subscribe("/sub/chat/" + rno, function (response) {
-                    console.log(response);
-                    console.log(JSON.parse(response.body));
-                });
+                stompClient.subscribe("/sub/chat/" + rno, callback);
             };
             stompClient.activate(); // 클라이언트 활성화
             changeClient(stompClient); // 클라이언트 갱신
@@ -102,15 +93,14 @@ const DetailComponent = ({rno}) => {
         client.deactivate();
     };
 
-    /*    const callback = function (message) {
-            if (message.body) {
-                let msg = JSON.parse(message.body);
-                console.log("callback"+msg)
-                setChatListDto((chats) => [...chats, msg]);
-            }
-        };
-        // 채팅방 번호가 담긴 주소로 구독요청. 구독과 동시에 실행할 콜백함수를 인자로 넘긴다.
-        */
+    const callback = function (message) {
+        if (message.body) {
+            let msg = JSON.parse(message.body);
+            console.log("callback" + msg)
+            setChatList((chats) => [...chats, msg]);
+        }
+    };
+    // 채팅방 번호가 담긴 주소로 구독요청. 구독과 동시에 실행할 콜백함수를 인자로 넘긴다.
 
 // 채팅 배열에 새로 받은 메시지를 추가
     const sendChat = () => {
@@ -122,6 +112,7 @@ const DetailComponent = ({rno}) => {
             body: JSON.stringify({
                 sender: memberId,
                 message: chat,
+                timestamp: new Date().toISOString()
             }),
         });
         setChat("");
@@ -145,11 +136,11 @@ const DetailComponent = ({rno}) => {
     };
 
     // Enter 키로 메시지 전송 핸들러
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
             sendChat();
         }
-    };
+    }
 
     return (
         <>
@@ -169,11 +160,12 @@ const DetailComponent = ({rno}) => {
                                 value={chat}
                                 placeholder="메시지 보내기"
                                 onChange={onChangeChat}
+                                onKeyDown={handleKeyDown}
                             />
                             <Button
                                 type="button"
                                 value="전송"
-                                onClick={handleKeyPress}
+                                onClick={sendChat}
                             />
                         </div>
                     </form>
