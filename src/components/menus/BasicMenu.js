@@ -1,9 +1,9 @@
 import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const BasicMenu = () => {
 
-    const loginState = useSelector(state => state.loginSlice)
+    const {loginState} = useCustomLogin()
 
     return (
         <nav id='navbar' className=" flex bg-blue-300">
@@ -24,6 +24,9 @@ const BasicMenu = () => {
                             </li>
                             <li className="pr-6 text-2x1">
                                 <Link to={'/chatroom'}>1 : 1 채팅 상담</Link>
+                            </li>
+                            <li className="pr-6 text-2x1">
+                                <Link to={'/notification'}>알람 목록</Link>
                             </li>
                         </>
                         :
