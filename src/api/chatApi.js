@@ -43,11 +43,6 @@ export const getChatDetails = async (rno) => {
     try {
         const res = await axios.get(
             `${host}/chat/${rno}`,
-            {
-                headers: {
-                    Authorization: `${accessToken}`,
-                },
-            },
         );
         return res.data;
     } catch (error) {
