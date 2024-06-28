@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.19",
+    "@mui/material": "^5.15.19",
+    "@mui/styled-engine": "^5.15.14",
     "@reduxjs/toolkit": "^2.2.5",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -10,16 +16,26 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.3",
+    "chroma-js": "^2.4.2",
     "event-source-polyfill": "^1.0.31",
     "js-cookie": "^3.0.5",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.2",
+    "react-chartjs-2": "^5.2.0",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
+    "react-github-btn": "^1.4.0",
     "react-redux": "^9.1.2",
+    "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
+    "react-table": "^7.8.0",
     "redux": "^5.0.1",
+    "routes": "^2.1.0",
+    "stylis": "^4.3.2",
+    "stylis-plugin-rtl": "^2.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -48,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "@types/stylis": "^4.2.6",
     "tailwindcss": "^3.4.3"
   }
 }
