@@ -52,8 +52,9 @@ import brandWhite from './assets/images/logo-ct.png';
 import brandDark from './assets/images/logo-ct-dark.png';
 
 // routes
-import ModifyMarket from './layouts/modifymarket';
+
 import MarketDetail from './layouts/marketdetail';
+import ModifyMarket from './layouts/modifymarket';
 import ShopDetail from './layouts/shopdetail';
 import ShopAGRIDetail from './layouts/shopcategorydetail/argi';
 import ShopMARINEDetail from './layouts/shopcategorydetail/marine';
@@ -65,7 +66,11 @@ import ShopRESTAURANTDetail from './layouts/shopcategorydetail/restaurant';
 import ShopSIDEDISHDetail from './layouts/shopcategorydetail/sidedish';
 import ShopSTUFFDetail from './layouts/shopcategorydetail/stuff';
 import ShopETCDetail from './layouts/shopcategorydetail/ect';
+import PostShop from './layouts/postshop';
+import ModifyShop from './layouts/modifyshop';
+import PostItem from './layouts/postitem';
 import ItemDetail from './layouts/itemdetail';
+import ModifyItem from './layouts/modifyitem';
 import ChatDetail from './layouts/chatdetail';
 import Cart from './layouts/cart';
 import root from "./router/root"
@@ -211,6 +216,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/market" />} />
                 <Route path="/market-detail" element=<MarketDetail /> />
                 <Route path="/modify-market" element=<ModifyMarket /> />
+                <Route path="/post-shop" element=<PostShop /> />
                 <Route path="/shop-detail" element=<ShopDetail /> />
                 <Route path="/shop-AGRI-detail" element=<ShopAGRIDetail /> />
                 <Route path="/shop-MARINE-detail" element=<ShopMARINEDetail /> />
@@ -222,7 +228,10 @@ export default function App() {
                 <Route path="/shop-SIDEDISH-detail" element=<ShopSIDEDISHDetail /> />
                 <Route path="/shop-STUFF-detail" element=<ShopSTUFFDetail /> />
                 <Route path="/shop-ETC-detail" element=<ShopETCDetail /> />
+                <Route path="/modify-shop" element=<ModifyShop /> />
+                <Route path="/post-item" element=<PostItem /> />
                 <Route path="/item-detail" element=<ItemDetail /> />
+                <Route path="/modify-item" element=<ModifyItem /> />
                 <Route path="/chat-detail" element=<ChatDetail /> />
                 <Route path="/cart" element=<Cart /> />
             </Routes>
