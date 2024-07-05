@@ -33,26 +33,20 @@ import MDPagination from '../../components/MD/MDPagination';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import axios from 'axios';
 import {useNavigate} from "react-router";
-import {TransitionProps} from "@mui/material/transitions";
-import Slide from "@mui/material/Slide";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
-
-export const API_SERVER_HOST = `http://localhost:8080`
-const prefix = `${API_SERVER_HOST}/api/items`
-
-const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & {
-        children: React.ReactElement<any, any>,
-    },
-    ref: React.Ref<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
+import {
+    deleteItem,
+    getItemComments,
+    postItemComment,
+    postItemLike
+} from "../../api/itemApi";
+import FetchingModal from "../../components/common/FetchingModal";
+import ResultModal from "../../components/common/ResultModal";
 
 function ShopDetail() {
+    const [isAdmin, setIsAdmin] = useState(false);
     const {state} = useLocation();
     const item = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -63,13 +57,32 @@ function ShopDetail() {
     const [totalPage, setTotalPage] = useState(0);
     const [comment, setComment] = useState('');
 
-    const navigate = useNavigate();
+    const [fetching, setFetching] = useState(false)
+    const [result, setResult] = useState(null)
 
+    const navigate = useNavigate();
 
     //장바구니 기능
     const {addCart} = useCustomCart()
     //로그인 정보
     const {loginState} = useCustomLogin()
+
+    const handleModifyItem = (item) => {
+        console.log('handleModify');
+        navigate('/modify-item', {state: item});
+    };
+
+    const handleDeleteItem = (ino) => {
+        console.log('handleDelete');
+        setFetching(true)
+        deleteItem(ino).then(data => {
+            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
+            setResult(data)
+        }).catch(error => {
+            console.error("상점 삭제에 실패했습니다.", error);
+            setResult({success: false, message: "상점 삭제에 실패했습니다."});
+        });
+    };
 
     const changePage = (pageNum) => {
         console.log('change pages');
@@ -79,86 +92,57 @@ function ShopDetail() {
         handleGetComments(pageNum);
     };
 
-    const handleLikePost = () => {
-        axios({
-            url: `${prefix}/` + item.itemNo + `/likes`,
-            method: 'POST'
-        })
-        .then((res) => {
+    // 상품 댓글
+    const handleWriteComment = () => {
+        console.log('handleWriteComment');
+        const data = {itemNo: item.itemNo, comment: comment}
+        postItemComment(data).then(data => {
+            console.log('상품 댓글 작성 성공!!!');
+            console.log(data);
+            //setComment(''); // 댓글 입력란 초기화
+            handleGetComments();
+        }).catch(error => {
+            console.error("상품 댓글 작성에 실패했습니다.", error);
+        });
+    };
+
+    const handleGetComments = (pageNum) => {
+        console.log('handleGetComments');
+        const pageParam = {page: pageNum, size: 2};
+        getItemComments(item.itemNo, pageParam).then(data => {
+            console.log('상품 댓글 조회 성공!!!');
+            setComments(data.content);
+            setTotalPage(data.totalPages);
+        }).catch(error => {
+            console.error("상점 댓글 조회에 실패했습니다.", error);
+        });
+    };
+
+    // 상품 좋아요
+    const handlePostLike = () => {
+        postItemLike(item.itemNo).then(data => {
             console.log('좋아요 성공!!!');
             handleLikeCounts();
-        })
-        .catch((error) => {
-            console.log(error);
+        }).catch(error => {
+            console.error("상품 좋아요에 실패했습니다.", error);
         });
     };
 
     const handleLikeCounts = () => {
-        axios({
-            url: `${prefix}/` + item.itemNo + `/likes`,
-            method: 'GET'
-        })
-        .then((res) => {
-            console.log('좋아요 갯수 조회 성공!!!');
-            console.log(res);
-            setLikes(res.data);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        setLikes(item.likes);
     };
 
-    // 상품 댓글 조회
-    const handleGetComments = (pageNum) => {
-        console.log('handleGetComments');
-        axios({
-            url: `${prefix}/` + item.itemNo
-                + `/comments?size=3&sort=no&page=` + pageNum,
-            method: 'GET'
-        })
-        .then((res) => {
-            console.log('상품 댓글 조회 성공!!!');
-            console.log(res);
-            setComments(res.data.content);
-            setTotalPage(res.data.totalPages);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    };
-
-    const handleWriteComment = () => {
-        console.log('handleWriteComment');
-        axios({
-            url: `${prefix}/comments`,
-            method: 'POST',
-            data: {
-                itemNo: item.itemNo,
-                comment: comment,
-            },
-        })
-        .then((res) => {
-            console.log('댓글 작성 성공!!!');
-            //setComment(''); // 댓글 입력란 초기화
-            handleGetComments();
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    };
-
-
-
+    // 장바구니에 추가
     const handleClickAddCart = () => {
         let count = 1
-
-        addCart({memberId: loginState.memberId, itemNo: item.itemNo, count: count})
-
+        addCart(
+            {memberId: loginState.memberId, itemNo: item.itemNo, count: count})
         window.confirm("장바구니에 추가되었습니다.")
     }
 
+    // 주문하기
     const handleGoOrder = () => {
-        navigate('/shop-AGRI-detail', {state: item});
+        navigate('/', {state: item});
     };
 
     const buttonStyle = {
@@ -170,13 +154,32 @@ function ShopDetail() {
         width: '330px',
     };
 
+    const closeModal = () => { //ResultModal 종료
+        setResult(null)
+        navigate('/post-detail')
+    }
+
     useEffect(() => {
+        const isAdmin = loginState.role === 'ADMIN';
+        setIsAdmin(isAdmin); // setIsAdmin 을 사용하여 상태를 업데이트
+
         handleGetComments();
         handleLikeCounts();
-    }, '');
+    }, []);
 
     return (
         <DashboardLayout>
+            {fetching ? <FetchingModal/> : <></>}
+
+            {result ?
+                <ResultModal
+                    title={'상점 삭제 결과'}
+                    content={`삭제 완료`}
+                    callbackFn={closeModal}
+                />
+                : <></>
+            }
+
             <Grid container spacing={2}>
                 <Grid item xs={7}>
                     <MDBox pt={3} pb={3}>
@@ -209,11 +212,27 @@ function ShopDetail() {
                                     variant="body2">{item.itemDetail}</MDTypography>
                                 <MDTypography
                                     variant="body2">{likes} LIKES</MDTypography>
-                                <MDButton onClick={handleLikePost}
+                                <MDButton onClick={handlePostLike}
                                           variant="gradient"
                                           color="info">
                                     좋아요 👍🏻
                                 </MDButton>
+                                {isAdmin && ( // 관리자일 때 버튼 생성
+                                    <>
+                                        <MDButton
+                                            variant="gradient"
+                                            color="warning"
+                                            onClick={() => handleModifyItem(
+                                                item)}>상품 수정
+                                        </MDButton>
+                                        <MDButton
+                                            variant="gradient"
+                                            color="warning"
+                                            onClick={() => handleDeleteItem(
+                                                item.itemNo)}>상품 삭제
+                                        </MDButton>
+                                    </>
+                                )}
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -258,6 +277,7 @@ function ShopDetail() {
                                         {[...Array(totalPage).keys()].map(
                                             (i) => (
                                                 <MDPagination item
+                                                              key={i}
                                                               onClick={() => changePage(
                                                                   i)}>
                                                     {i + 1}
@@ -305,7 +325,6 @@ function ShopDetail() {
                     </MDBox>
                 </Grid>
             </Grid>
-
         </DashboardLayout>
     );
 }
