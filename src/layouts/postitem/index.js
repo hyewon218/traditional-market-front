@@ -38,6 +38,13 @@ const categories = {
     판매완료: 'SOLD_OUT'
 };
 
+const itemCategories = {
+    과일: '과일',
+    채소: '채소',
+    육류: '육류',
+    생선: '생선'
+};
+
 const initState = {
     shopNo: 0,
     itemName: '',
@@ -45,6 +52,7 @@ const initState = {
     itemDetail: '',
     stockNumber: 0,
     itemSellStatus: '판매중',
+    itemCategory: '과일',
     imageFiles: []
 }
 
@@ -74,8 +82,8 @@ function PostItem() {
         event.preventDefault(); // 폼 전송 이벤트 방지
 
         // 유효성 검사
-        if (!item.itemName || !item.price || !item.itemDetail || !item.stockNumber
-            || !item.itemSellStatus || !item.imageFiles
+        if (!item.itemName || !item.price || !item.itemDetail
+            || !item.stockNumber || !item.itemSellStatus || !item.itemCategory
         ) {
             alert('모든 필드를 입력하고 파일을 선택해주세요.');
             return;
@@ -97,6 +105,7 @@ function PostItem() {
         formData.append('price', item.price);
         formData.append('itemDetail', item.itemDetail);
         formData.append('stockNumber', item.stockNumber);
+        formData.append('itemCategory', itemCategories[item.itemCategory]);
         formData.append('itemSellStatus', categories[item.itemSellStatus]);
         for (let i = 0; i < item.imageFiles.length; i++) {
             formData.append("imageFiles", item.imageFiles[i]);
@@ -114,8 +123,7 @@ function PostItem() {
     };
     const closeModal = () => { //ResultModal 종료
         setResult(null)
-        navigate('/market') //모달 창이 닫히면 이동
-        //moveToList({page: 1})
+        navigate('/shop-detail', {state: shop}) //모달 창이 닫히면 이동
     }
 
     return (
@@ -169,7 +177,29 @@ function PostItem() {
                             <MDBox mb={2}>
                                 <FormControl fullWidth>
                                     <InputLabel
-                                        id="category-label">상품 판매 상태</InputLabel>
+                                        id="category-label">상품 카테고리</InputLabel>
+                                    <Select
+                                        labelId="category-label"
+                                        name="itemCategory"
+                                        value={item.itemCategory}
+                                        onChange={handleChangeItem}
+                                        sx={{minHeight: 56}}
+                                    >
+                                        {Object.keys(itemCategories).map(
+                                            (category) => (
+                                                <MenuItem key={category}
+                                                          value={category}>
+                                                    {category}
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel
+                                        id="category-label">상품 판매
+                                        상태</InputLabel>
                                     <Select
                                         labelId="category-label"
                                         name="itemSellStatus"
