@@ -41,6 +41,13 @@ const itemSellStatusOptions = {
     판매완료: 'SOLD_OUT'
 };
 
+const itemCategories = {
+    과일: '과일',
+    채소: '채소',
+    육류: '육류',
+    생선: '생선'
+};
+
 const getCategoryKeyByValue = (value) => {
     return Object.keys(itemSellStatusOptions).find(
         key => itemSellStatusOptions[key] === value);
@@ -58,6 +65,7 @@ function ModifyShop() {
     const [item, setItem] = useState({
         ...initItem,
         itemSellStatus: getCategoryKeyByValue(initItem.itemSellStatus) || '', // key 값 얻기
+        imageFiles: initItem.imageFiles || [],
     });
 
     const [initialImages, setInitialImages] = useState(
@@ -69,12 +77,7 @@ function ModifyShop() {
 
     const handleChangeItem = (e) => {
         const {name, value} = e.target;
-        const mappedValue = itemSellStatusOptions[value] || value; // Mapping display name to value
-        if (name === 'itemSellStatus') {
-            setItem((prevItem) => ({ ...prevItem, [name]: mappedValue }));
-        } else {
-            setItem((prevItem) => ({...prevItem, [name]: value}));
-        }
+        setItem((prevItem) => ({...prevItem, [name]: value}));
     }
 
     const handleFileChange = (e) => {
@@ -118,7 +121,7 @@ function ModifyShop() {
         // 유효성 검사
         if (!item.itemName || !item.price || !item.itemDetail
             || !item.stockNumber
-            || !item.itemSellStatus || !item.imageFiles
+            || !item.itemSellStatus
         ) {
             alert('모든 필드를 입력하고 파일을 선택해주세요.');
             return;
@@ -139,7 +142,9 @@ function ModifyShop() {
         formData.append('price', item.price);
         formData.append('itemDetail', item.itemDetail);
         formData.append('stockNumber', item.stockNumber);
-        formData.append('itemSellStatus', item.itemSellStatus);
+        formData.append('itemCategory', itemCategories[item.itemCategory]);
+        formData.append('itemSellStatus',
+            itemSellStatusOptions[item.itemSellStatus]);
         // 새로 추가된 이미지 추가
         for (let i = 0; i < item.imageFiles.length; i++) {
             formData.append("imageFiles", item.imageFiles[i]);
@@ -236,6 +241,27 @@ function ModifyShop() {
                             <MDBox mb={2}>
                                 <FormControl fullWidth>
                                     <InputLabel
+                                        id="category-label">상품 카테고리</InputLabel>
+                                    <Select
+                                        labelId="category-label"
+                                        name="itemCategory"
+                                        value={item.itemCategory}
+                                        onChange={handleChangeItem}
+                                        sx={{minHeight: 56}}
+                                    >
+                                        {Object.keys(itemCategories).map(
+                                            (category) => (
+                                                <MenuItem key={category}
+                                                          value={category}>
+                                                    {category}
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel
                                         id="category-label">상품 판매
                                         상태</InputLabel>
                                     <Select
@@ -243,12 +269,13 @@ function ModifyShop() {
                                         name="itemSellStatus"
                                         value={item.itemSellStatus}
                                         onChange={handleChangeItem}
-                                        sx={{ minHeight: 56 }}
+                                        sx={{minHeight: 56}}
                                     >
-                                        {Object.keys(itemSellStatusOptions).map((key) => (
-                                            <MenuItem key={key} value={key}>
-                                                {key}
-                                            </MenuItem>
+                                        {Object.keys(itemSellStatusOptions).map(
+                                            (key) => (
+                                                <MenuItem key={key} value={key}>
+                                                    {key}
+                                                </MenuItem>
                                             ))}
                                     </Select>
                                 </FormControl>

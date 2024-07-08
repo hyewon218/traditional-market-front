@@ -167,7 +167,7 @@ function ShopDetail() {
 
     const closeModal = () => { //ResultModal 종료
         setResult(null)
-        navigate('/market-detail')
+        navigate('/market')
     }
 
     useEffect(() => {

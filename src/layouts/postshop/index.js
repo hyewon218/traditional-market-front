@@ -126,8 +126,7 @@ function PostShop() {
     };
     const closeModal = () => { //ResultModal 종료
         setResult(null)
-        navigate('/market-detail') //모달 창이 닫히면 이동
-        //moveToList({page: 1})
+        navigate('/market-detail' ,{state: market}) //모달 창이 닫히면 이동
     }
 
     return (
