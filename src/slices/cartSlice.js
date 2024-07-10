@@ -22,7 +22,7 @@ const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(
             getCartItemsAsync.fulfilled, (state, action) => {
-                console.log("getCartItemsAsync fulfilled")
+                //console.log("getCartItemsAsync fulfilled")
 
                 //return action.payload
                 return Array.isArray(action.payload) ? action.payload : state;

@@ -10,18 +10,17 @@ const useCustomLogin = () => {
 
     const loginState = useSelector(state => state.loginSlice) //-------로그인 상태
 
-    const isLogin = loginState.memberId ? true : false //----------로그인 여부
+    //console.log("현재 로그인 상태: ", loginState)
+
+    const isLogin = !!loginState.memberId //----------로그인 여부
 
     const doLogin = async (loginParam) => { //----------로그인 함수
-
         const action = await dispatch(loginPostAsync(loginParam))
-
+        //console.log("doLogin 액션 페이로드: ", action.payload)
         return action.payload
-
     }
 
     const doLogout = () => { //---------------로그아웃 함수
-
         dispatch(logout())
     }
 

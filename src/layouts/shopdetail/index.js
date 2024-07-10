@@ -177,7 +177,7 @@ function ShopDetail() {
         handleGetComments();
         handleLikeCounts();
         handleGetItems();
-    }, []); // 종속성 배열에 loginState 추가
+    }, []);
 
     return (
         <DashboardLayout>

@@ -45,7 +45,7 @@ import {
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 
-function ShopDetail() {
+function ItemDetail() {
     const [isAdmin, setIsAdmin] = useState(false);
     const {state} = useLocation();
     const item = state; // 전달된 shop 데이터를 사용
@@ -79,7 +79,7 @@ function ShopDetail() {
             setFetching(false) //데이터 가져온 후 화면에서 사라지도록
             setResult(data)
         }).catch(error => {
-            console.error("상점 삭제에 실패했습니다.", error);
+            console.error("상품 삭제에 실패했습니다.", error);
             setResult({success: false, message: "상점 삭제에 실패했습니다."});
         });
     };
@@ -329,4 +329,4 @@ function ShopDetail() {
     );
 }
 
-export default ShopDetail;
+export default ItemDetail;
