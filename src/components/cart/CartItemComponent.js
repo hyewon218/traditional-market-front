@@ -1,5 +1,6 @@
+/*
 import * as React from "react";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import Grid from "@mui/material/Grid";
 import MDTypography from "../MD/MDTypography";
 import MDBox from "../MD/MDBox";
@@ -13,15 +14,18 @@ const CartItemComponent = ({
     initialCount,
     imageUrl,
     changeCart,
-    memberId
+    memberId,
 }) => {
     const [count, setCount] = useState(initialCount);
 
+
     const handleClickQty = (amount) => {
         const newCount = count + amount;
-        if (newCount < 1) return; // Prevent count from going below 1
+        if (newCount < 1) {
+            return;
+        } // 수량이 1보다 작아지지 않도록 방지
         setCount(newCount); // 로컬 상태 업데이트
-        changeCart({ memberId, cartItemNo, itemNo, count: newCount })
+        changeCart({memberId, cartItemNo, itemNo, count: newCount})
     }
 
     const handleDeleteCartItem = (cino) => {
@@ -29,7 +33,7 @@ const CartItemComponent = ({
         deleteCartItem(cino).then(data => {
             window.confirm("장바구니 상품이 삭제되었습니다.")
         }).catch(error => {
-            console.error("카트상품 삭제에 실패했습니다.", error);
+            console.error("장바구니 상품 삭제에 실패했습니다.", error);
         });
     }
 
@@ -66,7 +70,7 @@ const CartItemComponent = ({
                         <MDTypography fontWeight="bold"
                                       sx={{fontSize: '3rem'}}
                                       variant="body2">
-                            {count * price}원
+                            {count*price}원
                         </MDTypography>
                         <Grid container sx={{mt: 3}}>
                             <Grid item xs={2}>
@@ -106,3 +110,4 @@ const CartItemComponent = ({
 }
 
 export default CartItemComponent;
+*/
