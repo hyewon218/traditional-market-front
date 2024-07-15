@@ -14,7 +14,6 @@ export const patchChangeCart = async (cartItem) => {
         itemNo: cartItem.itemNo,
         count: cartItem.count
     }
-
     const res = await axios.patch(`${host}/cartitems/${cartItem.cartItemNo}`,
         data)
     console.log("카트 아이템 수정 : " + res.data)
@@ -26,7 +25,6 @@ export const addCart = async (cartItem) => {
         itemNo: cartItem.itemNo,
         count: cartItem.count
     }
-
     const res = await axios.post(`${host}/carts`, data)
     console.log("아이템 카트에 추가 : " + res.data)
     return res.data
@@ -36,3 +34,9 @@ export const deleteCartItem = async (cino) => {
     const res = await axios.delete(`${host}/cartitems/${cino}`)
     return res.data
 }
+
+export const postCartOrder = async (cartOrderDtoList) => { // 장바구니 상품 주문
+    const res = await axios.post(`${host}/carts/order`, cartOrderDtoList);
+    console.log("주문 : " + res.data);
+    return res.data;
+};

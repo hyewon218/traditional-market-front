@@ -9,10 +9,12 @@ import Card from "@mui/material/Card";
 
 import MDBox from "../MD/MDBox";
 import MDTypography from "../MD/MDTypography";
-import {deleteCartItem} from "../../api/cartApi";
+import {deleteCartItem, postCartOrder} from "../../api/cartApi";
+import MDButton from "../MD/MDButton";
+import {useNavigate} from "react-router";
 
 const CartComponent = () => {
-
+    const navigate = useNavigate();
     const {isLogin, loginState} = useCustomLogin()
     const {refreshCart, cartItems, changeCart} = useCustomCart()
     const [counts, setCounts] = useState({}); // 각 장바구니 항목의 수량을 관리하기 위해
@@ -41,15 +43,37 @@ const CartComponent = () => {
         changeCart({memberId, cartItemNo, itemNo, count: newCount})
     }
 
-    const handleDeleteCartItem = (cino) => {
+    const handleDeleteCartItem = (cartItemNo) => {
         console.log('handleDeleteCartItem');
-        deleteCartItem(cino).then(data => {
+        deleteCartItem(cartItemNo).then(data => {
             window.confirm("장바구니 상품이 삭제되었습니다.")
             refreshCart(); // Refresh the cart after deletion
         }).catch(error => {
             console.error("장바구니 상품 삭제에 실패했습니다.", error);
         });
     }
+
+    const handleClickOrder = () => {
+        const cartOrderDtoList = cartItems.map(cartItem => ({
+            cartItemNo: cartItem.cartItemNo
+        }));
+        postCartOrder(cartOrderDtoList).then(data => {
+            console.log('상품 주문 성공!!!');
+            console.log(data);
+            navigate('/order');
+        }).catch(error => {
+            console.error("상품 주문에 실패했습니다.", error);
+        });
+    };
+
+    const buttonStyle = {
+        backgroundColor: '#50bcdf',
+        color: '#ffffff',
+        fontSize: '2rem',
+        fontFamily: 'JalnanGothic',
+        padding: '20px 40px',
+        width: '660px',
+    };
 
     useEffect(() => {
         if (isLogin) {
@@ -147,7 +171,7 @@ const CartComponent = () => {
                                                                                     item
                                                                                     xs={7}>
                                                                                     <div
-                                                                                        className=" m-1 p-1 ">
+                                                                                        className="m-1 p-1">
                                                                                         <img
                                                                                             src={`${cartItem.imageUrl}`}/>
                                                                                     </div>
@@ -229,16 +253,30 @@ const CartComponent = () => {
                                                     </ul>
                                                 </div>
                                             </Grid>
-                                            <Grid item xs={5} sx={{ paddingRight: '26px' }}>
+                                            <Grid item xs={5}
+                                                  sx={{paddingRight: '26px'}}>
                                                 <div
-                                                    className="w-full border-2 rounded-2">
+                                                    className="w-full border-2 rounded-2"
+                                                    style={{marginBottom: '20px'}}>
                                                     <MDTypography
                                                         fontWeight="bold"
-                                                        sx={{fontSize: '2rem', paddingTop: '9px', paddingLeft: '13px'}}
+                                                        sx={{
+                                                            fontSize: '2rem',
+                                                            paddingTop: '9px',
+                                                            paddingLeft: '13px'
+                                                        }}
                                                         variant="body2">
                                                         총 가격 : {total}
                                                     </MDTypography>
                                                 </div>
+                                                <MDButton
+                                                    onClick={handleClickOrder}
+                                                    variant="gradient"
+                                                    size="large"
+                                                    sx={buttonStyle}
+
+                                                >주문하기
+                                                </MDButton>
                                             </Grid>
                                         </Grid>
                                     </MDBox>

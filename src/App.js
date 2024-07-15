@@ -73,6 +73,7 @@ import ItemDetail from './layouts/itemdetail';
 import ModifyItem from './layouts/modifyitem';
 import ChatDetail from './layouts/chatdetail';
 import Cart from './layouts/cart';
+import Order from './layouts/order';
 import root from "./router/root"
 import {RouterProvider} from "react-router";
 
@@ -178,7 +179,7 @@ export default function App() {
                         <Sidenav
                             color={sidenavColor}
                             brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                            brandName="전통시장 👨🏻‍🌾"
+                            brandName="우리동네 전통시장 👨🏻‍🌾"
                             routes={routes}
                             onMouseEnter={handleOnMouseEnter}
                             onMouseLeave={handleOnMouseLeave}
@@ -201,7 +202,7 @@ export default function App() {
                     <Sidenav
                         color={sidenavColor}
                         brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                        brandName="전통시장 👨🏻‍🌾"
+                        brandName="우리동네 전통시장 👨🏻‍🌾"
                         routes={routes}
                         onMouseEnter={handleOnMouseEnter}
                         onMouseLeave={handleOnMouseLeave}
@@ -234,6 +235,7 @@ export default function App() {
                 <Route path="/modify-item" element=<ModifyItem /> />
                 <Route path="/chat-detail" element=<ChatDetail /> />
                 <Route path="/cart" element=<Cart /> />
+                <Route path="/order" element=<Order /> />
             </Routes>
         </ThemeProvider>
     );
