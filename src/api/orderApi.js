@@ -2,8 +2,7 @@ import axios from "axios"
 
 export const API_SERVER_HOST = `http://localhost:8080`
 const prefix = `${API_SERVER_HOST}/api/orders`
-const orderItemPrefix = `${API_SERVER_HOST}/api`
-
+const orderItemPrefix = `${API_SERVER_HOST}/api/orderitems`
 
 export const postOrder = async (orderItem) => { // 단품 주문
     const data = {
@@ -25,7 +24,7 @@ export const getOrderList = async (ono, pageParam) => {
 }
 
 export const getOrderItemList = async () => { // 가장 최근 주문의 상품 목록
-    const res = await axios.get(`${orderItemPrefix}/orderitems`)
+    const res = await axios.get(`${orderItemPrefix}`)
     return res.data
 }
 
@@ -33,3 +32,4 @@ export const cancelOrder = async (ono) => {
     const res = await axios.delete(`${prefix}/${ono}`)
     return res.data
 }
+
