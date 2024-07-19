@@ -1,10 +1,8 @@
 import axios from "axios"
+import {API_SERVER_HOST} from "./marketApi"
+const prefixApi = `${API_SERVER_HOST}/api/members`
 
 axios.defaults.withCredentials = true; // withCredentials 전역 설정 (쿠키 공유를 허락)
-
-import {API_SERVER_HOST} from "./marketApi"
-
-const host = `${API_SERVER_HOST}/api/members`
 
 export const loginPost = async (loginParam) => {
 
@@ -15,8 +13,14 @@ export const loginPost = async (loginParam) => {
         memberPw: loginParam.memberPw
     }
 
-    const res = await axios.post(`${host}/login`, JSON.stringify(data), header)
+    const res = await axios.post(`${prefixApi}/login`, JSON.stringify(data), header)
 
+    console.log(JSON.stringify(data))
     return res.data
 
+}
+
+export const getMemberList = async () => {
+    const res = await axios.get(`${prefixApi}`)
+    return res.data
 }
