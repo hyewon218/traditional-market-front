@@ -67,7 +67,7 @@ const OrderComponent = () => {
         postPay().then(data => {
             console.log('결제 요청!!!');
             console.log(data);
-            window.location.href = "https://online-pay.kakao.com/mockup/v1/48c5405a240fb97bc163bfd7b3c04b83cc4680297a7374aab0b14b34ddedf5f0/info";
+            window.location.href = data.next_redirect_pc_url;
         }).catch(error => {
             console.error("결제 요청에 실패했습니다.", error);
         });
