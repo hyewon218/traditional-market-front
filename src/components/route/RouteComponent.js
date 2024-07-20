@@ -12,7 +12,7 @@ import Cart from '../../layouts/cart';
 import MemberList from '../../layouts/memberList';
 
 const RoutesComponent = () => {
-    const {loginState} = useCustomLogin();
+    const {loginState, isLogin} = useCustomLogin();
 
     const routes = [
         {
@@ -22,12 +22,18 @@ const RoutesComponent = () => {
             route: '/market',
             component: <Market/>,
         },
-        {
+        !isLogin ? {
             type: 'collapse',
             name: '로그인',
             key: 'sign-in',
             route: '/authentication/sign-in',
-            component: <SignIn/>,
+            component: <SignIn />,
+        } : {
+            type: 'collapse',
+            name: '로그아웃',
+            key: 'logout',
+            route: '/authentication/logout',
+            component: <SignIn />,
         },
         {
             type: 'collapse',
