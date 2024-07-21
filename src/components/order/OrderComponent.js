@@ -9,20 +9,17 @@ import Card from "@mui/material/Card";
 import MDBox from "../MD/MDBox";
 import MDTypography from "../MD/MDTypography";
 import MDButton from "../MD/MDButton";
-import {
-    getDeliveryList, putDeliveryPrimary
-} from "../../api/deliveryApi";
+import {getPrimaryDelivery} from "../../api/deliveryApi";
 import {getOrderItemList} from "../../api/orderApi";
-import DeliveryModal from "../delivery/DeliveryModal";
 import {postPay} from "../../api/payApi";
+import DeliveryListModal from "../delivery/DeliveryListModal";
 
 const OrderComponent = () => {
 
     const {isLogin} = useCustomLogin()
     const [orderItems, setOrderItems] = useState([]);
-    const [deliveries, setDeliveries] = useState([]);
+    const [primaryDelivery, setPrimaryDelivery] = useState([]);
     const [result, setResult] = useState(null)
-    const [selectedDeliveryNo, setSelectedDeliveryNo] = useState(null); // State to track selected delivery address
 
     const total = useMemo(() => {
         let total = 0
@@ -44,12 +41,12 @@ const OrderComponent = () => {
         });
     };
 
-    const handleGetDeliveries = () => {
-        console.log('handleGetDeliveries');
-        getDeliveryList().then(data => {
-            setDeliveries(data);
+    const handleGetPrimaryDelivery = () => {
+        console.log('handleGetPrimaryDelivery');
+        getPrimaryDelivery().then(data => {
+            setPrimaryDelivery(data);
         }).catch(error => {
-            console.error("배송지 목록 조회에 실패했습니다.", error);
+            console.error("기본 배송지 조회에 실패했습니다.", error);
         });
     };
 
@@ -58,9 +55,9 @@ const OrderComponent = () => {
         setResult(true);
     };
 
-    const postDeliveryModal = () => { // DeliveryModal 종료 -> 모달창 내 배송지 추가 버튼
+    const deliveryListModal = () => { // 배송지 목록 조회
         setResult(false)
-        handleGetDeliveries(); // 모달 창 닫히고 조회
+        handleGetPrimaryDelivery(); // 모달 창 닫히고 조회
     }
 
     const handleClickPay = () => { // 결제하기
@@ -73,18 +70,6 @@ const OrderComponent = () => {
         });
     }
 
-    const handlePrimaryDelivery = (deliveryNo) => { // 기본 배송지 설정 버튼
-        console.log('handlePrimaryDelivery');
-        putDeliveryPrimary(deliveryNo).then(data => {
-            console.log('기본 배송지로 수정!!');
-            console.log(data);
-            setSelectedDeliveryNo(deliveryNo); // Set the selected delivery address
-            handleGetDeliveries();
-        }).catch(error => {
-            console.error("기본 배송지 수정에 실패했습니다.", error);
-        });
-    };
-
     const buttonStyle = {
         backgroundColor: '#50bcdf',
         color: '#ffffff',
@@ -96,14 +81,14 @@ const OrderComponent = () => {
 
     useEffect(() => {
         handleGetOrderItems();
-        handleGetDeliveries();
+        handleGetPrimaryDelivery();
     }, []);
 
     return (
         <DashboardLayout>
             {result ?
-                <DeliveryModal
-                    callbackFn={postDeliveryModal}
+                <DeliveryListModal
+                    callbackFn={deliveryListModal}
                 />
                 : <></>
             }
@@ -143,108 +128,88 @@ const OrderComponent = () => {
                                     <MDBox pb={3}>
                                         <Card>
                                             <MDBox pt={2}>
-                                                <MDButton
-                                                    onClick={handleDeliveryModal}
-                                                    variant="gradient"
-                                                    color="light">
-                                                    배송지 추가
-                                                </MDButton>
                                                 <div>
-                                                    <ul>
-                                                        {Array.isArray(
-                                                                deliveries)
-                                                            && deliveries.map(
-                                                                delivery =>
-                                                                    <li key={delivery.deliveryNo}
-                                                                        style={{marginBottom: '16px'}}>
-                                                                        <MDBox
-                                                                            pt={2}
-                                                                            px={2}>
-                                                                            <Grid
-                                                                                container
-                                                                                spacing={2}>
-                                                                                <Grid
-                                                                                    container
-                                                                                    spacing={2}>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={6}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDTypography
-                                                                                            fontWeight="bold"
-                                                                                            sx={{fontSize: '1.5rem'}}
-                                                                                            variant="body2">
-                                                                                            {delivery.title}
-                                                                                        </MDTypography>
-                                                                                    </Grid>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={3}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDButton
-                                                                                            onClick={() => handlePrimaryDelivery(delivery.deliveryNo)}
-                                                                                            variant="gradient"
-                                                                                            color={{
-                                                                                                    color: selectedDeliveryNo
-                                                                                                    === delivery.deliveryNo
-                                                                                                        ? "primary"
-                                                                                                        : "secondary"
-                                                                                                }}>
-                                                                                            기본 배송지 설정
-                                                                                        </MDButton>
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                                <Grid
-                                                                                    container>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={5}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDTypography
-                                                                                            fontWeight="bold"
-                                                                                            variant="body2">
-                                                                                            {delivery.phone}
-                                                                                        </MDTypography>
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                                <Grid
-                                                                                    container>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={3}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDTypography
-                                                                                            fontWeight="bold"
-                                                                                            variant="body2">
-                                                                                            {delivery.roadAddr}
-                                                                                        </MDTypography>
-                                                                                    </Grid>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={1.5}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDTypography
-                                                                                            fontWeight="bold"
-                                                                                            variant="body2">
-                                                                                            {delivery.detailAddr}
-                                                                                        </MDTypography>
-                                                                                    </Grid>
-                                                                                    <Grid
-                                                                                        item
-                                                                                        xs={1}
-                                                                                        sx={{mt: 1}}>
-                                                                                        <MDTypography
-                                                                                            fontWeight="bold"
-                                                                                            variant="body2">
-                                                                                            ({delivery.postCode})
-                                                                                        </MDTypography>
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                            </Grid>
-                                                                        </MDBox>
-                                                                    </li>
-                                                            )}
-                                                    </ul>
+                                                    <MDBox
+                                                        pt={2}
+                                                        px={2}>
+                                                        <Grid
+                                                            container
+                                                            sx={{ml:1, mb:2}}
+                                                            spacing={2}>
+                                                            <Grid
+                                                                container
+                                                                spacing={2}>
+                                                                <Grid
+                                                                    item
+                                                                    xs={10}
+                                                                   >
+                                                                    <MDTypography
+                                                                        fontWeight="bold"
+                                                                        sx={{fontSize: '1.5rem'}}
+                                                                        variant="body2">
+                                                                        {primaryDelivery.title}
+                                                                    </MDTypography>
+                                                                </Grid>
+                                                                <Grid
+                                                                    item
+                                                                    xs={2}
+                                                                    sx={{mt: 1}}>
+                                                                    <MDButton
+                                                                        onClick={handleDeliveryModal}
+                                                                        variant="gradient"
+                                                                        color="light">
+                                                                        {primaryDelivery ? '변경' : '배송지 추가'}
+                                                                    </MDButton>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid
+                                                                container>
+                                                                <Grid
+                                                                    item
+                                                                    xs={5}
+                                                                    sx={{mt: 1}}>
+                                                                    <MDTypography
+                                                                        fontWeight="bold"
+                                                                        variant="body2">
+                                                                        {primaryDelivery.phone}
+                                                                    </MDTypography>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid
+                                                                container>
+                                                                <Grid
+                                                                    item
+                                                                    xs={3}
+                                                                    sx={{mt: 1}}>
+                                                                    <MDTypography
+                                                                        fontWeight="bold"
+                                                                        variant="body2">
+                                                                        {primaryDelivery.roadAddr}
+                                                                    </MDTypography>
+                                                                </Grid>
+                                                                <Grid
+                                                                    item
+                                                                    xs={1.5}
+                                                                    sx={{mt: 1}}>
+                                                                    <MDTypography
+                                                                        fontWeight="bold"
+                                                                        variant="body2">
+                                                                        {primaryDelivery.detailAddr}
+                                                                    </MDTypography>
+                                                                </Grid>
+                                                                <Grid
+                                                                    item
+                                                                    xs={1}
+                                                                    sx={{mt: 1}}>
+                                                                    <MDTypography
+                                                                        fontWeight="bold"
+                                                                        variant="body2">
+                                                                        ({primaryDelivery.postCode})
+                                                                    </MDTypography>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </MDBox>
                                                 </div>
                                             </MDBox>
                                         </Card>
