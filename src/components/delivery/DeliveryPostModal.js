@@ -1,5 +1,6 @@
 /*배송지 추가 모달창*/
 import * as React from "react";
+import ReactDOM from 'react-dom';
 import DaumPostcode from 'react-daum-postcode';
 
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
@@ -23,7 +24,7 @@ const initState = {
     extraAddr: '',
 }
 
-const DeliveryModal = ({callbackFn}) => {
+const DeliveryPostModal = ({callbackFn}) => {
 
     const [deliveries, setDeliveries] = useState({...initState})
     const [zonecode, setZonecode] = useState('');
@@ -112,10 +113,10 @@ const DeliveryModal = ({callbackFn}) => {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <DashboardLayout>
             <div
-                className={`fixed top-0 left-0 z-[1055] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
+                className={`fixed top-0 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
                 <MDBox pt={6} pb={3}
                        style={{
                            width: '80%',
@@ -233,8 +234,9 @@ const DeliveryModal = ({callbackFn}) => {
                     </Card>
                 </MDBox>
             </div>
-        </DashboardLayout>
+        </DashboardLayout>,
+    document.body // 포탈을 사용할 target 엘리먼트로 body를 지정
     );
 }
 
-export default DeliveryModal;
+export default DeliveryPostModal;
