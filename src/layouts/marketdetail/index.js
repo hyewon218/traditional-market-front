@@ -26,7 +26,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
-import MDInput from '../../components/MD/MDInput';
 import MDButton from '../../components/MD/MDButton';
 import MDPagination from '../../components/MD/MDPagination';
 
@@ -36,15 +35,11 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
-import {
-    deleteMarket,
-    getMarketComments,
-    postMarketComment,
-    postMarketLike,
-} from "../../api/marketApi";
+import {deleteMarket, postMarketLike,} from "../../api/marketApi";
 import {getShopList} from "../../api/shopApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
+import MapComponent from "../../components/map/MapComponent";
 
 function MarketDetail() {
     const {loginState} = useCustomLogin()
@@ -52,13 +47,9 @@ function MarketDetail() {
     const {state} = useLocation();
     const market = state; // 전달된 market 데이터를 사용
     console.log(state);
-    const [page, setPage] = useState(0);
     const [shopPage, setShopPage] = useState(0);
 
     const [likes, setLikes] = useState(0);
-    const [comments, setComments] = useState([]);
-    const [commentTotalPage, setCommentTotalPage] = useState(0);
-    const [comment, setComment] = useState('');
     const [shops, setShops] = useState([]);
     const [shopTotalPage, setShopTotalPage] = useState(0);
 
@@ -89,14 +80,6 @@ function MarketDetail() {
         navigate('/post-shop', {state: market})
     };
 
-    const changeCommentPage = (pageNum) => {
-        console.log('change pages');
-        console.log(pageNum);
-        console.log(page);
-        setPage(pageNum);
-        handleGetComments(pageNum);
-    };
-
     const changeShopPage = (pageNum) => {
         console.log('change pages');
         console.log(pageNum);
@@ -109,31 +92,6 @@ function MarketDetail() {
         console.log('handleDetail');
         console.log("shop!!!!!!!!!!!" + shop);
         navigate('/shop-detail', {state: shop});
-    };
-
-    // 시장 댓글
-    const handleWriteComment = () => {
-        console.log('handleWriteComment');
-        const data = {marketNo: market.marketNo, comment: comment}
-        postMarketComment(data).then(data => {
-            console.log('시장 댓글 작성 성공!!!');
-            console.log(data);
-            //setComment(''); // 댓글 입력란 초기화
-            handleGetComments();
-        }).catch(error => {
-            console.error("시장 댓글 작성에 실패했습니다.", error);
-        });
-    };
-
-    const handleGetComments = (pageNum) => {
-        const pageParam = {page: pageNum, size: 2};
-        console.log('handleGetComments');
-        getMarketComments(market.marketNo, pageParam).then(data => {
-            setComments(data.content);
-            setCommentTotalPage(data.totalPages);
-        }).catch(error => {
-            console.error("시장 댓글 조회에 실패했습니다.", error);
-        });
     };
 
     // 시장 좋아요
@@ -212,7 +170,6 @@ function MarketDetail() {
         const isAdmin = loginState.role === 'ADMIN';
         setIsAdmin(isAdmin); // setIsAdmin 을 사용하여 상태를 업데이트
 
-        handleGetComments();
         handleLikeCounts();
         handleGetShops();
     }, []);
@@ -230,7 +187,7 @@ function MarketDetail() {
                 : <></>
             }
             <Grid container spacing={2}>
-                <Grid item xs={7}>
+                <Grid item xs={6}>
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox pt={4} pb={3} px={3}>
@@ -292,66 +249,12 @@ function MarketDetail() {
                     </MDBox>
                 </Grid>
 
-                {/*댓글*/}
-                <Grid item xs={5}>
+                {/*지도*/}
+                <Grid item xs={6}>
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
-                                <MDBox pt={2} pb={2} px={3}>
-                                    {comments.map((comment) => (
-                                        <MDBox pt={2} pb={2}>
-                                            <Card>
-                                                <MDBox pt={2} pb={2} px={3}>
-                                                    <Grid container>
-                                                        <Grid item xs={6}>
-                                                            <MDTypography
-                                                                fontWeight="bold"
-                                                                variant="body2">
-                                                                {comment.comment}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <MDTypography
-                                                                variant="body2"
-                                                                textAlign="right">
-                                                                {comment.username}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <MDTypography
-                                                        variant="body2">{comment.body}</MDTypography>
-                                                </MDBox>
-                                            </Card>
-                                        </MDBox>
-                                    ))}
-                                    <MDPagination>
-                                        <MDPagination item>
-                                            <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
-                                        </MDPagination>
-                                        {[...Array(
-                                            commentTotalPage).keys()].map(
-                                            (i) => (
-                                                <MDPagination item
-                                                              key={i}
-                                                              onClick={() => changeCommentPage(
-                                                                  i)}>{i + 1}
-                                                </MDPagination>
-                                            ))}
-                                        <MDPagination item>
-                                            <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
-                                        </MDPagination>
-                                    </MDPagination>
-
-                                    <MDInput label="댓글"
-                                             onChange={(v) => setComment(
-                                                 v.target.value)} fullWidth/>
-                                </MDBox>
-                                <MDBox pt={2} pb={2} px={3} right>
-                                    <MDButton onClick={handleWriteComment}
-                                              variant="gradient" color="info">
-                                        댓글
-                                    </MDButton>
-                                </MDBox>
+                                <MapComponent marketAddr={market.marketAddr} marketName={market.marketName} />
                             </MDBox>
                         </Card>
                     </MDBox>
