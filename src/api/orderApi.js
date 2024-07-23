@@ -5,12 +5,22 @@ const prefix = `${API_SERVER_HOST}/api/orders`
 const orderItemPrefix = `${API_SERVER_HOST}/api/orderitems`
 
 export const postOrder = async (orderItem) => { // 단품 주문
+    const header = {headers: {"Content-Type": "application/json"}}
     const data = {
         itemNo: orderItem.itemNo,
         count: orderItem.count
     }
-    const res = await axios.post(`${prefix}`, data)
+    const res = await axios.post(`${prefix}`, data, header)
     console.log("주문 : " + res.data)
+    return res.data
+}
+
+export const putSelectedDelivery = async (selectedDelivery) => {
+    const header = {headers: {"Content-Type": "application/json"}}
+    const data = {
+        deliveryAddr: selectedDelivery
+    }
+    const res = await axios.put(`${prefix}/delivery`, data, header)
     return res.data
 }
 
@@ -32,4 +42,5 @@ export const cancelOrder = async (ono) => {
     const res = await axios.delete(`${prefix}/${ono}`)
     return res.data
 }
+
 

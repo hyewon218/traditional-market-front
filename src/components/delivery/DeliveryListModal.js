@@ -9,15 +9,22 @@ import Card from "@mui/material/Card";
 import MDBox from "../MD/MDBox";
 import MDTypography from "../MD/MDTypography";
 import MDButton from "../MD/MDButton";
-import {getDeliveryList, putDeliveryPrimary} from "../../api/deliveryApi";
+import {
+    deleteDelivery,
+    getDeliveryList,
+    getPrimaryDelivery,
+    putDeliveryPrimary
+} from "../../api/deliveryApi";
 import DeliveryPostModal from "../delivery/DeliveryPostModal";
+import DeliveryPutModal from "./DeliveryPutModal";
 
-const DeliveryListModal = ({ callbackFn }) => {
+const DeliveryListModal = ({callbackFn}) => {
 
     const {isLogin} = useCustomLogin()
     const [deliveries, setDeliveries] = useState([]);
-    const [result, setResult] = useState(null)
-    const [selectedDeliveryNo, setSelectedDeliveryNo] = useState(null); // State to track selected delivery address
+    const [result, setResult] = useState(null) // 배송지 추가 모달창 관련
+    const [putResult, setPutResult] = useState(null) // 배송지 수정 모달창 관련
+    const [primaryDeliveryNo, setPrimaryDeliveryNo] = useState(null);
 
     const handleGetDeliveries = () => {
         console.log('handleGetDeliveries');
@@ -28,44 +35,86 @@ const DeliveryListModal = ({ callbackFn }) => {
         });
     };
 
-    const handleDeliveryPostModal = () => { // 주문 페이지 내 배송지 추가 버튼
+    /*배송지 추가*/
+    const handleDeliveryPostModal = () => { // 배송지 목록 모달 내 배송지 추가 버튼
         console.log('handleDeliveryModal');
         setResult(true); // Show the DeliveryPostModal
     };
 
-    const postDeliveryModal = () => { // DeliveryModal 종료 -> 모달창 내 배송지 추가 버튼
+    const postDeliveryModal = () => { // DeliveryPostModal 종료
         setResult(false)
         handleGetDeliveries(); // 모달 창 닫히고 조회
     }
 
-    const handlePrimaryDelivery = (deliveryNo) => { // 기본 배송지 설정 버튼
-        console.log('handlePrimaryDelivery');
+    /*배송지 선택*/
+    const handleSelectDelivery = (selectedDelivery) => { // 배송지 선택 버튼
+        console.log('handleSelectDelivery');
+        // Set the selected delivery address
+        if (callbackFn) {
+            callbackFn(selectedDelivery);
+        }
+    };
+
+    /*배송지 수정*/
+    const handleDeliveryPutModal = (delivery) => { // 배송지 목록 모달 내 배송지 수정 버튼
+        console.log('handleDeliveryPutModal');
+        //setPutResult(true); // Show the DeliveryPutModal
+        setPutResult(delivery); // Pass the selected delivery info to the modal
+    };
+
+    const putDeliveryModal = () => { // DeliveryPutModal 종료
+        setPutResult(false)
+        handleGetDeliveries(); // 모달 창 닫히고 조회
+    }
+
+    /*배송지 삭제*/
+    const handleDeleteDelivery = (deliveryNo) => { // 배송지 삭제
+        console.log('handleDeleteDelivery');
+        const userConfirmed = window.confirm("배송지를 삭제하시겠습니까?");
+        if (userConfirmed) {
+        deleteDelivery(deliveryNo).then(data => {
+            console.log('배송지 삭제!!');
+            console.log(data);
+            handleGetDeliveries();
+        }).catch(error => {
+            console.error("배송지 삭제에 실패했습니다.", error);
+        });
+        } else {
+            console.log('Deletion canceled by user.');
+        }
+    };
+
+    /*기본 배송지 선택*/
+    const handlePrimaryDelivery = (deliveryNo) => { // 기본 배송지 선택 버튼
+        console.log('handleSelectDelivery');
         putDeliveryPrimary(deliveryNo).then(data => {
             console.log('기본 배송지로 수정!!');
             console.log(data);
-            setSelectedDeliveryNo(deliveryNo); // Set the selected delivery address
+            setPrimaryDeliveryNo(deliveryNo); // Set the selected delivery address
+            handleGetPrimaryDelivery();
         }).catch(error => {
             console.error("기본 배송지 수정에 실패했습니다.", error);
         });
     };
 
+    const handleGetPrimaryDelivery = () => { // 기본 배송지 조회
+        console.log('handleGetPrimaryDelivery');
+        getPrimaryDelivery().then(data => {
+            setPrimaryDeliveryNo(data.deliveryNo);
+        }).catch(error => {
+            console.error("기본 배송지 조회에 실패했습니다.", error);
+        });
+    };
+
     const closeModal = () => {
-        if(callbackFn) {
+        if (callbackFn) {
             callbackFn()
         }
     }
 
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '2rem',
-        fontFamily: 'JalnanGothic',
-        padding: '20px 40px',
-        width: '660px',
-    };
-
     useEffect(() => {
         handleGetDeliveries();
+        handleGetPrimaryDelivery();
     }, []);
 
     return (
@@ -73,6 +122,13 @@ const DeliveryListModal = ({ callbackFn }) => {
             {result ?
                 <DeliveryPostModal
                     callbackFn={postDeliveryModal}
+                />
+                : <></>
+            }
+            {putResult ?
+                <DeliveryPutModal
+                    delivery={putResult}
+                    callbackFn={putDeliveryModal}
                 />
                 : <></>
             }
@@ -116,17 +172,35 @@ const DeliveryListModal = ({ callbackFn }) => {
                                             배송지 목록
                                         </MDTypography>
                                     </div>
-                                    <div>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center'
+                                    }}>
                                         <MDButton
                                             onClick={handleDeliveryPostModal}
                                             variant="gradient"
+                                            sx={{
+                                                backgroundColor: '#50bcdf',
+                                                color: '#ffffff',
+                                                fontSize: '2rem',
+                                                fontFamily: 'JalnanGothic',
+                                                padding: '20px',
+                                                width: '100%',
+                                                maxWidth: '500px',
+                                            }}
                                             color={"light"}>
                                             + 배송지 추가
                                         </MDButton>
                                     </div>
                                     <Grid container spacing={4}>
                                         <Grid item xs={12}>
-                                            <MDBox pb={3}>
+                                            <MDBox
+                                                pb={3}
+                                                style={{
+                                                    maxHeight: '700px', // Adjust the height as needed
+                                                    overflowY: 'auto'  // Enable vertical scrolling
+                                                }}
+                                            >
 
                                                 <div>
                                                     <ul>
@@ -150,14 +224,18 @@ const DeliveryListModal = ({ callbackFn }) => {
                                                                                         fontWeight="bold"
                                                                                         sx={{fontSize: '1.5rem'}}
                                                                                         variant="body2">
-                                                                                        {delivery.title}
-                                                                                        {selectedDeliveryNo
+                                                                                        {delivery.receiver
+                                                                                            + ' '
+                                                                                            + '('
+                                                                                            + delivery.title
+                                                                                            + ')'}
+                                                                                        {primaryDeliveryNo
                                                                                             === delivery.deliveryNo
                                                                                             && (
                                                                                                 <span
                                                                                                     style={{
                                                                                                         fontSize: '1rem',
-                                                                                                        color: "hotpink"
+                                                                                                        color: "deeppink"
                                                                                                     }}>
                                                                                         기본 배송지
                                                                                     </span>
@@ -170,10 +248,10 @@ const DeliveryListModal = ({ callbackFn }) => {
                                                                                     xs={3}
                                                                                     sx={{mt: 1}}>
                                                                                     <MDButton
-                                                                                        onClick={() => handlePrimaryDelivery(
-                                                                                            delivery.deliveryNo)}
+                                                                                        onClick={() => handleSelectDelivery(
+                                                                                            delivery)}
                                                                                         variant="gradient"
-                                                                                        color={"light"}>
+                                                                                        color="success">
                                                                                         선택
                                                                                     </MDButton>
                                                                                 </Grid>
@@ -195,33 +273,59 @@ const DeliveryListModal = ({ callbackFn }) => {
                                                                                 container>
                                                                                 <Grid
                                                                                     item
-                                                                                    xs={5.5}
+                                                                                    xs={12}
                                                                                     sx={{mt: 1}}>
                                                                                     <MDTypography
                                                                                         fontWeight="bold"
                                                                                         variant="body2">
-                                                                                        {delivery.roadAddr}
+                                                                                        {delivery.roadAddr
+                                                                                            + ' '
+                                                                                            + delivery.detailAddr
+                                                                                            + ' '
+                                                                                            + '('
+                                                                                            + delivery.postCode
+                                                                                            + ')'}
                                                                                     </MDTypography>
                                                                                 </Grid>
+                                                                            </Grid>
+                                                                            <Grid
+                                                                                container
+                                                                            >
                                                                                 <Grid
                                                                                     item
-                                                                                    xs={2.5}
+                                                                                    xs={2}
                                                                                     sx={{mt: 1}}>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        variant="body2">
-                                                                                        {delivery.detailAddr}
-                                                                                    </MDTypography>
+                                                                                    <MDButton
+                                                                                        onClick={() => handleDeliveryPutModal(delivery)}
+                                                                                        variant="gradient"
+                                                                                        color="light">
+                                                                                        수정
+                                                                                    </MDButton>
                                                                                 </Grid>
                                                                                 <Grid
                                                                                     item
                                                                                     xs={2}
                                                                                     sx={{mt: 1}}>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        variant="body2">
-                                                                                        ({delivery.postCode})
-                                                                                    </MDTypography>
+                                                                                    <MDButton
+                                                                                        onClick={() => handleDeleteDelivery(
+                                                                                            delivery.deliveryNo)}
+                                                                                        variant="gradient"
+                                                                                        color="light">
+                                                                                        삭제
+                                                                                    </MDButton>
+                                                                                </Grid>
+                                                                                <Grid
+                                                                                    item
+                                                                                    xs={4}
+                                                                                    sx={{mt: 1}}>
+                                                                                    <MDButton
+                                                                                        onClick={() => handlePrimaryDelivery(
+                                                                                            delivery.deliveryNo)}
+                                                                                        variant="gradient"
+                                                                                        color="warning">
+                                                                                        기본배송지
+                                                                                        설정
+                                                                                    </MDButton>
                                                                                 </Grid>
                                                                             </Grid>
                                                                         </MDBox>

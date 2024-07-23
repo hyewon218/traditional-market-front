@@ -10,7 +10,7 @@ import MDBox from "../MD/MDBox";
 import MDTypography from "../MD/MDTypography";
 import MDButton from "../MD/MDButton";
 import {getPrimaryDelivery} from "../../api/deliveryApi";
-import {getOrderItemList} from "../../api/orderApi";
+import {getOrderItemList, putSelectedDelivery} from "../../api/orderApi";
 import {postPay} from "../../api/payApi";
 import DeliveryListModal from "../delivery/DeliveryListModal";
 
@@ -20,6 +20,7 @@ const OrderComponent = () => {
     const [orderItems, setOrderItems] = useState([]);
     const [primaryDelivery, setPrimaryDelivery] = useState([]);
     const [result, setResult] = useState(null)
+    const [selectedDelivery, setSelectedDelivery] = useState(null);
 
     const total = useMemo(() => {
         let total = 0
@@ -50,23 +51,39 @@ const OrderComponent = () => {
         });
     };
 
+    /*모달창*/
     const handleDeliveryModal = () => { // 주문 페이지 내 배송지 추가 버튼
         console.log('handleDeliveryModal');
         setResult(true);
     };
 
-    const deliveryListModal = () => { // 배송지 목록 조회
-        setResult(false)
-        handleGetPrimaryDelivery(); // 모달 창 닫히고 조회
+    const deliveryListModal = (selectedDelivery) => {
+        setResult(false) // 모달창 닫기
+        if (selectedDelivery) {
+            setSelectedDelivery(selectedDelivery);
+        } else {
+            handleGetPrimaryDelivery(); // 모달 창 닫히고 기본 배송지 조회
+        }
     }
 
-    const handleClickPay = () => { // 결제하기
+    const handleClickPay = (DeliveryAddr) => { // 결제하기
         postPay().then(data => {
             console.log('결제 요청!!!');
+            // 결제 요청 성공 시 선택된 배송지를 서버에 저장
+            handleSaveDelivery(DeliveryAddr);
             console.log(data);
             window.location.href = data.next_redirect_pc_url;
         }).catch(error => {
             console.error("결제 요청에 실패했습니다.", error);
+        });
+    }
+
+    const handleSaveDelivery = (DeliveryAddr) => {
+        putSelectedDelivery(DeliveryAddr).then(data => {
+            console.log('선택된 배송지 저장!!!');
+            console.log(data);
+        }).catch(error => {
+            console.error("배송지 저장에 실패했습니다.", error);
         });
     }
 
@@ -78,6 +95,43 @@ const OrderComponent = () => {
         padding: '20px 40px',
         width: '660px',
     };
+
+    const getDeliveryAddressTitle = () => {
+        const receiver = selectedDelivery?.receiver || primaryDelivery.receiver || '';
+        const title = selectedDelivery?.title || primaryDelivery.title || '';
+        const formattedTitle = title ? ` (${title})` : ""
+        const addressTitle = `${receiver}${formattedTitle}`
+        return addressTitle || null ;
+    };
+
+    const deliveryAddressTitle = getDeliveryAddressTitle();
+    const deliveryAddressTitleMessage = deliveryAddressTitle ? deliveryAddressTitle : '배송지를 등록해주세요';
+
+/*    const getDeliveryAddress = () => {
+        const address = selectedDelivery
+            ? `${selectedDelivery.roadAddr || ''} ${selectedDelivery.detailAddr || ''} (${selectedDelivery.postCode || ''})`
+            : primaryDelivery
+                ? `${primaryDelivery.roadAddr || ''} ${primaryDelivery.detailAddr || ''} (${primaryDelivery.postCode || ''})`
+                : null;
+        return address && address.trim() === '()' ? null : address;
+    }*/
+
+    const getDeliveryAddress = () => {
+        const roadAddr = selectedDelivery?.roadAddr || primaryDelivery?.roadAddr || '';
+        const detailAddr = selectedDelivery?.detailAddr || primaryDelivery?.detailAddr || '';
+        const postCode = selectedDelivery?.postCode || primaryDelivery?.postCode || '';
+
+        // Construct the address string with conditional parentheses for the post code
+        const formattedAddress = `${roadAddr} ${detailAddr}${postCode ? ` (${postCode})` : ''}`.trim();
+
+        return formattedAddress || null;
+    };
+
+    const deliveryAddress = getDeliveryAddress();
+
+    const buttonText = primaryDelivery
+        ? '변경'
+        : '배송지 추가';
 
     useEffect(() => {
         handleGetOrderItems();
@@ -134,7 +188,7 @@ const OrderComponent = () => {
                                                         px={2}>
                                                         <Grid
                                                             container
-                                                            sx={{ml:1, mb:2}}
+                                                            sx={{ml: 1, mb: 2}}
                                                             spacing={2}>
                                                             <Grid
                                                                 container
@@ -142,12 +196,12 @@ const OrderComponent = () => {
                                                                 <Grid
                                                                     item
                                                                     xs={10}
-                                                                   >
+                                                                >
                                                                     <MDTypography
                                                                         fontWeight="bold"
                                                                         sx={{fontSize: '1.5rem'}}
                                                                         variant="body2">
-                                                                        {primaryDelivery.title}
+                                                                        {deliveryAddressTitleMessage}
                                                                     </MDTypography>
                                                                 </Grid>
                                                                 <Grid
@@ -158,7 +212,7 @@ const OrderComponent = () => {
                                                                         onClick={handleDeliveryModal}
                                                                         variant="gradient"
                                                                         color="light">
-                                                                        {primaryDelivery ? '변경' : '배송지 추가'}
+                                                                        {buttonText}
                                                                     </MDButton>
                                                                 </Grid>
                                                             </Grid>
@@ -171,7 +225,8 @@ const OrderComponent = () => {
                                                                     <MDTypography
                                                                         fontWeight="bold"
                                                                         variant="body2">
-                                                                        {primaryDelivery.phone}
+                                                                        {selectedDelivery?.phone
+                                                                            || primaryDelivery.phone}
                                                                     </MDTypography>
                                                                 </Grid>
                                                             </Grid>
@@ -179,32 +234,12 @@ const OrderComponent = () => {
                                                                 container>
                                                                 <Grid
                                                                     item
-                                                                    xs={3}
+                                                                    xs={12}
                                                                     sx={{mt: 1}}>
                                                                     <MDTypography
                                                                         fontWeight="bold"
                                                                         variant="body2">
-                                                                        {primaryDelivery.roadAddr}
-                                                                    </MDTypography>
-                                                                </Grid>
-                                                                <Grid
-                                                                    item
-                                                                    xs={1.5}
-                                                                    sx={{mt: 1}}>
-                                                                    <MDTypography
-                                                                        fontWeight="bold"
-                                                                        variant="body2">
-                                                                        {primaryDelivery.detailAddr}
-                                                                    </MDTypography>
-                                                                </Grid>
-                                                                <Grid
-                                                                    item
-                                                                    xs={1}
-                                                                    sx={{mt: 1}}>
-                                                                    <MDTypography
-                                                                        fontWeight="bold"
-                                                                        variant="body2">
-                                                                        ({primaryDelivery.postCode})
+                                                                        {deliveryAddress}
                                                                     </MDTypography>
                                                                 </Grid>
                                                             </Grid>
@@ -216,12 +251,19 @@ const OrderComponent = () => {
                                     </MDBox>
                                 </Grid>
                                 <Grid item xs={5} sx={{paddingRight: '26px'}}>
-                                    <MDButton onClick={handleClickPay}
-                                              variant="gradient"
-                                              size="large"
-                                              sx={buttonStyle}
-                                    >{total}원 결제하기
-                                    </MDButton>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <MDButton onClick={() => handleClickPay(
+                                            getDeliveryAddress)}
+                                                  variant="gradient"
+                                                  size="large"
+                                                  sx={buttonStyle}
+                                                  disabled={!getDeliveryAddress}
+                                        >{total}원 결제하기
+                                        </MDButton>
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Grid>
