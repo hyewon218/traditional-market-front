@@ -30,6 +30,19 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import {useNavigate} from "react-router-dom";
+import {FormControl, InputLabel, Select} from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+
+const categories = {
+    서울: '서울',
+    인천: '인천',
+    경기도: '경기도',
+    강원도: '강원도',
+    충청도: '충청도',
+    경상도: '경상도',
+    전라도: '전라도',
+    제주도: '제주도',
+};
 
 const initState = {
     marketName: '',
@@ -61,7 +74,7 @@ function PostMarket() {
         event.preventDefault(); // 폼 전송 이벤트 방지
 
         // 유효성 검사
-        if (!market.marketName || !market.marketAddr || !market.marketDetail
+        if (!market.marketName || !market.marketAddr || !market.category
             ) {
             alert('모든 필드를 입력하고 파일을 선택해주세요.');
             return;
@@ -80,6 +93,7 @@ function PostMarket() {
         const formData = new FormData();
         formData.append('marketName', market.marketName);
         formData.append('marketAddr', market.marketAddr);
+        formData.append('category', categories[market.category]); // 상점 카테고리 코드
         formData.append('marketDetail', market.marketDetail);
         for (let i = 0; i < market.imageFiles.length; i++) {
             formData.append("imageFiles", market.imageFiles[i]);
@@ -130,6 +144,27 @@ function PostMarket() {
                                     label="시장 주소"
                                     onChange={handleChangeMarket}
                                     fullWidth/>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel
+                                        id="category-label">카테고리</InputLabel>
+                                    <Select
+                                        labelId="category-label"
+                                        name="category"
+                                        value={market.category}
+                                        onChange={handleChangeMarket}
+                                        sx={{minHeight: 56}}
+                                    >
+                                        {Object.keys(categories).map(
+                                            (category) => (
+                                                <MenuItem key={category}
+                                                          value={category}>
+                                                    {category}
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+                                </FormControl>
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
