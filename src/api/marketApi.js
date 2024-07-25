@@ -23,6 +23,24 @@ export const getList = async (pageParam) => {
     return res.data
 }
 
+export const getListSearch = async (pageParam, searchQuery) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefix}/search`, {
+        params:
+            {page: page, size: size, keyword: searchQuery} // Include the search query parameter
+    })
+    return res.data
+}
+
+export const getListCategory = async (pageParam, category) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefix}/category`, {
+        params:
+            {category: category, page: page, size: size}
+    })
+    return res.data
+}
+
 export const putMarket = async (formData) => {
     const header = {headers: {"Content-Type": "multipart/form-data"}}
     const mno = formData.get('marketNo'); // Get the marketNo from FormData
@@ -43,9 +61,9 @@ export const postMarketComment = async (data) => {
 
 export const getMarketComments = async (mno, pageParam) => {
     const {page, size} = pageParam
-    const res = await axios.get(`${prefix}/${mno}/comments`,{
+    const res = await axios.get(`${prefix}/${mno}/comments`, {
         params:
-        {page: page, size: size}
+            {page: page, size: size}
     })
     return res.data
 }
