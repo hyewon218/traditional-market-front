@@ -35,18 +35,34 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
-import {deleteMarket, postMarketLike,} from "../../api/marketApi";
-import {getShopList} from "../../api/shopApi";
+import {
+    deleteMarket,
+    postMarketLike,
+} from "../../api/marketApi";
+import {getShopList, getListCategory} from "../../api/shopApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
+
+const categoryMapping = {
+    "농산물 🌾": 'AGRI',
+    "수산물 🐟": 'MARINE',
+    "축산물 🐂": 'LIVESTOCK',
+    "청과물 🍓": 'FRUITS',
+    "가공식품 🍱": 'PROCESSED',
+    "떡•방앗간 🍡": 'RICE',
+    "음식점 🧑🏻‍🍳": 'RESTAURANT',
+    "반찬 🥗": 'SIDEDISH',
+    "잡화•의류 👗": 'STUFF',
+    "기타•마트 🧺": 'ETC',
+};
 
 function MarketDetail() {
     const {loginState} = useCustomLogin()
     const [isAdmin, setIsAdmin] = useState(false);
     const {state} = useLocation();
     const market = state; // 전달된 market 데이터를 사용
-    console.log(state);
+
     const [shopPage, setShopPage] = useState(0);
 
     const [likes, setLikes] = useState(0);
@@ -55,6 +71,11 @@ function MarketDetail() {
 
     const [fetching, setFetching] = useState(false)
     const [result, setResult] = useState(null)
+
+    const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
+    const [filteredShops, setFilteredShops] = useState([]); // 시장 카테고리 조회
+    const [categoryTotalPage, setCategoryTotalPage] = useState(0); // 검색 시장 조회 페이지
+    const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
 
     const navigate = useNavigate();
 
@@ -117,62 +138,53 @@ function MarketDetail() {
             console.log(data);
             setShops(data.content);
             setShopTotalPage(data.totalPages);
+            setSelectedCategory('');
+            setIsCategoryFiltered(false); // Reset filter
         }).catch(error => {
             console.error("상점 조회에 실패했습니다.", error);
         });
     };
 
-    const handleGetAGRIShop = () => {
-        navigate('/shop-AGRI-detail', {state: market});
-    };
-    const handleGetMARINEShop = () => {
-        navigate('/shop-MARINE-detail', {state: market});
-    };
-    const handleGetLIVESTOCKShop = () => {
-        navigate('/shop-LIVESTOCK-detail', {state: market});
-    };
-    const handleGetFRUITSShop = () => {
-        navigate('/shop-FRUITS-detail', {state: market});
-    };
-    const handleGetPROCESSEDShop = () => {
-        navigate('/shop-PROCESSED-detail', {state: market});
-    };
-    const handleGetRICEShop = () => {
-        navigate('/shop-RICE-detail', {state: market});
-    };
-    const handleGetRESTAURANTShop = () => {
-        navigate('/shop-RESTAURANT-detail', {state: market});
-    };
-    const handleGetSIDEDISHShop = () => {
-        navigate('/shop-SIDEDISH-detail', {state: market});
-    };
-    const handleGetSTUFFShop = () => {
-        navigate('/shop-STUFF-detail', {state: market});
-    };
-    const handleGetETCShop = () => {
-        navigate('/shop-ETC-detail', {state: market});
+    /*카테고리 조회*/
+    const handleCategorySelect = (category) => {
+        const mappedCategory = categoryMapping[category] || '';
+        setSelectedCategory(mappedCategory);
+        console.log("mappedCategory!???!?"+mappedCategory)
+        //setPage(0);
+        setIsCategoryFiltered(true); // Set filter active
     };
 
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '1.28rem',
-        fontFamily: 'JalnanGothic'
+    const handleGetCategoryShops = (pageNum) => { // 시장 내 상점 카테고리 조회
+        console.log('handleGetCategoryShops');
+        //console.log('Selected Category:', selectedCategory); // Debugging line
+        const pageParam = {page: pageNum, size: 8};
+        getListCategory(pageParam, selectedCategory).then(data => {
+            setFilteredShops(data.content);
+            setCategoryTotalPage(data.totalPages);
+        }).catch(error => {
+            console.error("시장 카테고리 조회에 실패했습니다.", error);
+        });
     };
 
     const closeModal = () => { //ResultModal 종료
         setResult(null)
         navigate('/market')
-        //moveToList({page: 1}) //모달 창이 닫히면 이동
     }
 
     useEffect(() => {
         const isAdmin = loginState.role === 'ADMIN';
-        setIsAdmin(isAdmin); // setIsAdmin 을 사용하여 상태를 업데이트
-
+        setIsAdmin(isAdmin);
         handleLikeCounts();
-        handleGetShops();
+        handleGetShops(); // Initially fetch all shops
     }, []);
+
+    useEffect(() => {
+        if (isCategoryFiltered && selectedCategory) {
+            handleGetCategoryShops(0);
+        } else {
+            handleGetShops(shopPage); // Fetch shops without category filter if not active
+        }
+    }, [selectedCategory, isCategoryFiltered]);
 
     return (
         <DashboardLayout>
@@ -263,111 +275,26 @@ function MarketDetail() {
 
             {/*카테고리*/}
             <Grid container spacing={1} justifyContent="center">
-                <Grid item xs={1.0}>
-                    <MDButton onClick={handleGetAGRIShop}
-                              variant="gradient"
-                              size="large"
-                              sx={buttonStyle}
-                    >농산물 🌾
-                    </MDButton>
-
-                </Grid>
-                <Grid item xs={1.0}>
-                    <MDBox>
-                        <MDButton onClick={handleGetMARINEShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >수산물 🐟
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.0}>
-                    <MDBox>
-                        <MDButton onClick={handleGetLIVESTOCKShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >축산물 🐂
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.0}>
-                    <MDBox>
-                        <MDButton onClick={handleGetFRUITSShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >청과물 🍓
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.2}>
-                    <MDBox>
-                        <MDButton onClick={handleGetPROCESSEDShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >가공식품 🍱
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.3}>
-                    <MDBox>
-                        <MDButton onClick={handleGetRICEShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >떡•방앗간 🍡
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.0}>
-                    <MDBox>
-                        <MDButton onClick={handleGetRESTAURANTShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >음식점 🧑🏻‍🍳
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={0.9}>
-                    <MDBox>
-                        <MDButton onClick={handleGetSIDEDISHShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >반찬 🥗
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.2}>
-                    <MDBox>
-                        <MDButton onClick={handleGetSTUFFShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >잡화•의류 👗
-                        </MDButton>
-                    </MDBox>
-                </Grid>
-                <Grid item xs={1.2}>
-                    <MDBox>
-                        <MDButton onClick={handleGetETCShop}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >기타•마트 🧺
-                        </MDButton>
-                    </MDBox>
-                </Grid>
+                {Object.keys(categoryMapping).map((displayCategory, index) => (
+                    <Grid item xs={index < 4 ? 1.0 : index === 4 ? 1.2 : index === 5 ? 1.3 : index === 6 ? 1.0 : index === 7 ? 0.9 :1.2} key={displayCategory}>
+                        <MDBox>
+                            <MDButton
+                                onClick={() => handleCategorySelect(displayCategory)}
+                                variant="gradient"
+                                size="large"
+                                sx={{ backgroundColor: '#50bcdf', color: '#ffffff', fontSize: '1.28rem', fontFamily: 'JalnanGothic' }}
+                            >
+                                {displayCategory}
+                            </MDButton>
+                        </MDBox>
+                    </Grid>
+                ))}
             </Grid>
 
             {/* 시장 내 상점 목록 */}
             <Grid container pt={3} pb={3}>
-                {shops.map((shop) => (
-                    <MDBox pt={2} pb={2} px={3}>
+                {(isCategoryFiltered ? filteredShops : shops).map((shop) => (
+                    <MDBox pt={2} pb={2} px={3} key={shop.shopNo}>
                         <Card>
                             <MDBox pt={2} pb={2} px={3}>
                                 <Grid container>
@@ -389,17 +316,12 @@ function MarketDetail() {
                                 <Grid container>
                                     <Grid item xs={10}></Grid>
                                     <Grid item xs={1}>
-                                        <Button onClick={() => handleDetail(
-                                            shop)}>Detail</Button>
+                                        <Button onClick={() => handleDetail(shop)}>Detail</Button>
                                     </Grid>
                                 </Grid>
-                                <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
+                                <div className="w-full justify-center flex flex-col m-auto items-center">
                                     {shop.imageList.map((imgUrl, i) =>
-                                        <img
-                                            alt="product" key={i}
-                                            width={300}
-                                            src={`${imgUrl.imageUrl}`}/>
+                                        <img alt="product" key={i} width={300} src={`${imgUrl.imageUrl}`} />
                                     )}
                                 </div>
                             </MDBox>
@@ -410,16 +332,16 @@ function MarketDetail() {
 
             <MDPagination>
                 <MDPagination item>
-                    <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
+                    <KeyboardArrowLeftIcon />
                 </MDPagination>
-                {[...Array(shopTotalPage).keys()].map((i) => (
+                {[...Array(isCategoryFiltered ? categoryTotalPage : shopTotalPage).keys()].map((i) => (
                     <MDPagination item key={i}
-                                  onClick={() => changeShopPage(i)}>
+                                  onClick={() => isCategoryFiltered ? handleGetCategoryShops(i) : changeShopPage(i)}>
                         {i + 1}
                     </MDPagination>
                 ))}
                 <MDPagination item>
-                    <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                    <KeyboardArrowRightIcon />
                 </MDPagination>
             </MDPagination>
         </DashboardLayout>
