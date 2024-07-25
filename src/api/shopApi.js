@@ -15,11 +15,20 @@ export const getShopOne = async (sno) => {
     return res.data
 }
 
-export const getShopList = async (sno, pageParam) => {
+export const getShopList = async (mno, pageParam) => {
     const {page, size} = pageParam
-    const res = await axios.get(`${prefixApi}/${sno}/shops`, {
+    const res = await axios.get(`${prefixApi}/${mno}/shops`, {
         params:
             {page: page, size: size}
+    })
+    return res.data
+}
+
+export const getListCategory = async (pageParam, category) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefix}/category`, {
+        params:
+            {category: category, page: page, size: size}
     })
     return res.data
 }
