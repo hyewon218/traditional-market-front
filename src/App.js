@@ -57,16 +57,6 @@ import brandDark from './assets/images/logo-ct-dark.png';
 import MarketDetail from './layouts/marketdetail';
 import ModifyMarket from './layouts/modifymarket';
 import ShopDetail from './layouts/shopdetail';
-import ShopAGRIDetail from './layouts/shopcategorydetail/argi';
-import ShopMARINEDetail from './layouts/shopcategorydetail/marine';
-import ShopLIVESTOCKDetail from './layouts/shopcategorydetail/livestock';
-import ShopFRUITSDetail from './layouts/shopcategorydetail/fruits';
-import ShopPROCESSEDDetail from './layouts/shopcategorydetail/processed';
-import ShopRICEDetail from './layouts/shopcategorydetail/rice';
-import ShopRESTAURANTDetail from './layouts/shopcategorydetail/restaurant';
-import ShopSIDEDISHDetail from './layouts/shopcategorydetail/sidedish';
-import ShopSTUFFDetail from './layouts/shopcategorydetail/stuff';
-import ShopETCDetail from './layouts/shopcategorydetail/ect';
 import PostShop from './layouts/postshop';
 import ModifyShop from './layouts/modifyshop';
 import PostItem from './layouts/postitem';
@@ -222,16 +212,6 @@ export default function App() {
                 <Route path="/modify-market" element=<ModifyMarket /> />
                 <Route path="/post-shop" element=<PostShop /> />
                 <Route path="/shop-detail" element=<ShopDetail /> />
-                <Route path="/shop-AGRI-detail" element=<ShopAGRIDetail /> />
-                <Route path="/shop-MARINE-detail" element=<ShopMARINEDetail /> />
-                <Route path="/shop-LIVESTOCK-detail" element=<ShopLIVESTOCKDetail /> />
-                <Route path="/shop-FRUITS-detail" element=<ShopFRUITSDetail /> />
-                <Route path="/shop-PROCESSED-detail" element=<ShopPROCESSEDDetail /> />
-                <Route path="/shop-RICE-detail" element=<ShopRICEDetail /> />
-                <Route path="/shop-RESTAURANT-detail" element=<ShopRESTAURANTDetail /> />
-                <Route path="/shop-SIDEDISH-detail" element=<ShopSIDEDISHDetail /> />
-                <Route path="/shop-STUFF-detail" element=<ShopSTUFFDetail /> />
-                <Route path="/shop-ETC-detail" element=<ShopETCDetail /> />
                 <Route path="/modify-shop" element=<ModifyShop /> />
                 <Route path="/post-item" element=<PostItem /> />
                 <Route path="/item-detail" element=<ItemDetail /> />
