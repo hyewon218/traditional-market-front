@@ -117,7 +117,7 @@ function Market() {
     return (
         <DashboardLayout>
             {/* 시장 검색 */}
-            <MDBox pt={10} pb={5} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <MDBox pt={5} pb={5} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Card sx={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <MDInput
                         label="시장을 검색해 보세요!"

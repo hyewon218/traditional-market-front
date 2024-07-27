@@ -137,7 +137,10 @@ function ItemDetail() {
         let count = 1
         addCart(
             {memberId: loginState.memberId, itemNo: item.itemNo, count: count})
-        window.confirm("장바구니에 추가되었습니다.")
+        const userConfirmed = window.confirm("장바구니에 추가되었습니다. 장바구니로 이동하시겠습니까?")
+        if (userConfirmed) {
+            navigate('/cart') // 장바구니로 이동
+        }
     }
 
     // 주문하기
@@ -306,27 +309,36 @@ function ItemDetail() {
 
             <Grid container spacing={2} justifyContent="right">
                 <Grid item xs={2.45}>
-                    <MDButton onClick={handleClickAddCart}
-                              variant="gradient"
-                              size="large"
-                              sx={buttonStyle}
-                    >장바구니
-                    </MDButton>
-
-                </Grid>
-                <Grid item xs={2.45}>
-                    <MDBox>
-                        <MDButton onClick={handleGoOrder}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}>
+                        <MDButton onClick={handleClickAddCart}
                                   variant="gradient"
                                   size="large"
                                   sx={buttonStyle}
-                        >구매하기
+                        >장바구니
                         </MDButton>
+                    </div>
+                </Grid>
+                <Grid item xs={2.45}>
+                    <MDBox>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center'
+                        }}>
+                            <MDButton onClick={handleGoOrder}
+                                      variant="gradient"
+                                      size="large"
+                                      sx={buttonStyle}
+                            >구매하기
+                            </MDButton>
+                        </div>
                     </MDBox>
                 </Grid>
             </Grid>
         </DashboardLayout>
-    );
+);
 }
 
 export default ItemDetail;

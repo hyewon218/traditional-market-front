@@ -149,7 +149,7 @@ function MarketDetail() {
     const handleCategorySelect = (category) => {
         const mappedCategory = categoryMapping[category] || '';
         setSelectedCategory(mappedCategory);
-        console.log("mappedCategory!???!?"+mappedCategory)
+        console.log("mappedCategory!???!?" + mappedCategory)
         //setPage(0);
         setIsCategoryFiltered(true); // Set filter active
     };
@@ -166,10 +166,24 @@ function MarketDetail() {
         });
     };
 
+    // 시장 내 상점 목록
+    const handleGetTopFiveItemPage = () => {
+        navigate('/top-five-item', {state: market});
+    };
+
     const closeModal = () => { //ResultModal 종료
         setResult(null)
         navigate('/market')
     }
+
+    const buttonStyle = {
+        backgroundColor: '#50bcdf',
+        color: '#ffffff',
+        fontSize: '1rem',
+        fontFamily: 'JalnanGothic',
+        padding: '10px 40px',
+        width: '300px',
+    };
 
     useEffect(() => {
         const isAdmin = loginState.role === 'ADMIN';
@@ -230,32 +244,61 @@ function MarketDetail() {
                                     variant="body2">{market.marketDetail}</MDTypography>
                                 <MDTypography
                                     variant="body2">{likes} LIKES</MDTypography>
-                                <MDButton onClick={handlePostLike}
-                                          variant="gradient"
-                                          color="info">좋아요 👍🏻
-                                </MDButton>
-                                {isAdmin && ( // 관리자일 때 버튼 생성
-                                    <>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleModifyMarket(
-                                                market)}>시장 수정
+                                <Grid container>
+                                    <Grid item xs={1.6}>
+                                        <MDButton onClick={handlePostLike}
+                                                  variant="gradient"
+                                                  sx={{fontFamily: 'JalnanGothic'}}
+                                                  color="info">좋아요 👍🏻
                                         </MDButton>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleDeleteMarket(
-                                                market.marketNo)}>시장 삭제
-                                        </MDButton>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="success"
-                                            onClick={() => handleAddShop(
-                                                market)}>상점 추가
-                                        </MDButton>
-                                    </>
-                                )}
+                                    </Grid>
+
+
+                                    {isAdmin && ( // 관리자일 때 버튼 생성
+                                        <>
+                                        <Grid item xs={1.6}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="light"
+                                                sx={{fontFamily: 'JalnanGothic'}}
+                                                onClick={() => handleModifyMarket(
+                                                    market)}>시장 수정
+                                            </MDButton>
+                                        </Grid>
+                                        <Grid item xs={1.6}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="light"
+                                                sx={{fontFamily: 'JalnanGothic'}}
+                                                onClick={() => handleDeleteMarket(
+                                                    market.marketNo)}>시장 삭제
+                                            </MDButton>
+                                        </Grid>
+                                        <Grid item xs={2.7}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="success"
+                                                sx={{fontFamily: 'JalnanGothic'}}
+                                                onClick={() => handleAddShop(
+                                                    market)}>상점 추가
+                                            </MDButton>
+                                        </Grid>
+                                        </>
+                                        )}
+                                    <Grid item xs={4.5}>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <MDButton onClick={handleGetTopFiveItemPage}
+                                                      variant="gradient"
+                                                      sx={buttonStyle}
+                                                      color="warning">🔥상품별 가격 순위
+                                                확인
+                                            </MDButton>
+                                        </div>
+                                    </Grid>
+                                </Grid>
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -266,7 +309,8 @@ function MarketDetail() {
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
-                                <MapComponent marketAddr={market.marketAddr} marketName={market.marketName} />
+                                <MapComponent marketAddr={market.marketAddr}
+                                              marketName={market.marketName}/>
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -276,13 +320,22 @@ function MarketDetail() {
             {/*카테고리*/}
             <Grid container spacing={1} justifyContent="center">
                 {Object.keys(categoryMapping).map((displayCategory, index) => (
-                    <Grid item xs={index < 4 ? 1.0 : index === 4 ? 1.2 : index === 5 ? 1.3 : index === 6 ? 1.0 : index === 7 ? 0.9 :1.2} key={displayCategory}>
+                    <Grid item
+                          xs={index < 4 ? 1.0 : index === 4 ? 1.2 : index === 5
+                              ? 1.3 : index === 6 ? 1.0 : index === 7 ? 0.9
+                                  : 1.2} key={displayCategory}>
                         <MDBox>
                             <MDButton
-                                onClick={() => handleCategorySelect(displayCategory)}
+                                onClick={() => handleCategorySelect(
+                                    displayCategory)}
                                 variant="gradient"
                                 size="large"
-                                sx={{ backgroundColor: '#50bcdf', color: '#ffffff', fontSize: '1.28rem', fontFamily: 'JalnanGothic' }}
+                                sx={{
+                                    backgroundColor: '#50bcdf',
+                                    color: '#ffffff',
+                                    fontSize: '1.28rem',
+                                    fontFamily: 'JalnanGothic'
+                                }}
                             >
                                 {displayCategory}
                             </MDButton>
@@ -316,12 +369,15 @@ function MarketDetail() {
                                 <Grid container>
                                     <Grid item xs={10}></Grid>
                                     <Grid item xs={1}>
-                                        <Button onClick={() => handleDetail(shop)}>Detail</Button>
+                                        <Button onClick={() => handleDetail(
+                                            shop)}>Detail</Button>
                                     </Grid>
                                 </Grid>
-                                <div className="w-full justify-center flex flex-col m-auto items-center">
+                                <div
+                                    className="w-full justify-center flex flex-col m-auto items-center">
                                     {shop.imageList.map((imgUrl, i) =>
-                                        <img alt="product" key={i} width={300} src={`${imgUrl.imageUrl}`} />
+                                        <img alt="product" key={i} width={300}
+                                             src={`${imgUrl.imageUrl}`}/>
                                     )}
                                 </div>
                             </MDBox>
@@ -332,16 +388,19 @@ function MarketDetail() {
 
             <MDPagination>
                 <MDPagination item>
-                    <KeyboardArrowLeftIcon />
+                    <KeyboardArrowLeftIcon/>
                 </MDPagination>
-                {[...Array(isCategoryFiltered ? categoryTotalPage : shopTotalPage).keys()].map((i) => (
+                {[...Array(isCategoryFiltered ? categoryTotalPage
+                    : shopTotalPage).keys()].map((i) => (
                     <MDPagination item key={i}
-                                  onClick={() => isCategoryFiltered ? handleGetCategoryShops(i) : changeShopPage(i)}>
+                                  onClick={() => isCategoryFiltered
+                                      ? handleGetCategoryShops(i)
+                                      : changeShopPage(i)}>
                         {i + 1}
                     </MDPagination>
                 ))}
                 <MDPagination item>
-                    <KeyboardArrowRightIcon />
+                    <KeyboardArrowRightIcon/>
                 </MDPagination>
             </MDPagination>
         </DashboardLayout>
