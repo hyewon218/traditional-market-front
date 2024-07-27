@@ -24,6 +24,22 @@ export const getItemList = async (sno, pageParam) => {
     return res.data
 }
 
+export const getListCategory = async (mno, category) => {
+    const res = await axios.get(`${prefixApi}/${mno}/items/category`, {
+        params:
+            {category: category}
+    })
+    return res.data
+}
+
+export const getListTopFiveItem = async (mno, itemName) => {
+    const res = await axios.get(`${prefixApi}/${mno}/items/rank`, {
+        params:
+            {itemName: itemName}
+    })
+    return res.data
+}
+
 export const putItem = async (ino, formData) => {
     const header = {headers: {"Content-Type": "multipart/form-data"}}
     const res = await axios.put(`${prefix}/${ino}`, formData, header)
