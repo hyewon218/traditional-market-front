@@ -53,7 +53,6 @@ import brandWhite from './assets/images/logo-ct.png';
 import brandDark from './assets/images/logo-ct-dark.png';
 
 // routes
-
 import MarketDetail from './layouts/marketdetail';
 import ModifyMarket from './layouts/modifymarket';
 import ShopDetail from './layouts/shopdetail';
@@ -65,6 +64,8 @@ import ModifyItem from './layouts/modifyitem';
 import ChatDetail from './layouts/chatdetail';
 import Cart from './layouts/cart';
 import Order from './layouts/order';
+import OrderComplete from './layouts/ordercomplete';
+import TopFiveItem from './layouts/topfiveitem';
 import root from "./router/root"
 import {RouterProvider} from "react-router";
 
@@ -219,6 +220,8 @@ export default function App() {
                 <Route path="/chat-detail" element=<ChatDetail /> />
                 <Route path="/cart" element=<Cart /> />
                 <Route path="/order" element=<Order /> />
+                <Route path="/order-complete" element=<OrderComplete /> />
+                <Route path="/top-five-item" element=<TopFiveItem /> />
             </Routes>
         </ThemeProvider>
     );

@@ -15,7 +15,7 @@ export const postOrder = async (orderItem) => { // 단품 주문
     return res.data
 }
 
-export const putSelectedDelivery = async (selectedDelivery) => {
+export const putSelectedDelivery = async (selectedDelivery) => { // 주문 시 배송지 저장
     const header = {headers: {"Content-Type": "application/json"}}
     const data = {
         deliveryAddr: selectedDelivery
@@ -24,7 +24,12 @@ export const putSelectedDelivery = async (selectedDelivery) => {
     return res.data
 }
 
-export const getOrderList = async (ono, pageParam) => {
+export const getOrder = async (ono) => {
+    const res = await axios.get(`${prefix}`)
+    return res.data
+}
+
+export const getOrderList = async (ono, pageParam) => { // 전체 주문 목록
     const {page, size} = pageParam
     const res = await axios.get(`${prefix}`, {
         params:
@@ -33,7 +38,7 @@ export const getOrderList = async (ono, pageParam) => {
     return res.data
 }
 
-export const getOrderItemList = async () => { // 가장 최근 주문의 상품 목록
+export const getOrderItemList = async () => { // 가장 최근 주문의 상품 목록(주문페이지)
     const res = await axios.get(`${orderItemPrefix}`)
     return res.data
 }
