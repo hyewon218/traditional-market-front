@@ -126,8 +126,7 @@ function ModifyShop() {
         console.log('shopNo : ' + shop.shopNo);
 
         // 유효성 검사
-        if (!shop.shopName || !shop.tel || !shop.sellerName || !shop.postCode
-            || !shop.streetAddr || !shop.detailAddr || !shop.category) {
+        if (!shop.shopName || !shop.tel || !shop.sellerName || !shop.shopAddr || !shop.category) {
             alert('모든 필드를 입력하고 파일을 선택해주세요.');
             return;
         }
@@ -146,9 +145,7 @@ function ModifyShop() {
         formData.append('shopName', shop.shopName);
         formData.append('tel', shop.tel); //상점 전화번호
         formData.append('sellerName', shop.sellerName); //상점 사장님 이름
-        formData.append('postCode', shop.postCode); //상점 우편번호
-        formData.append('streetAddr', shop.streetAddr); //상점 도로명주소
-        formData.append('detailAddr', shop.detailAddr); //상점 상세주소
+        formData.append('postCode', shop.shopAddr); //상점 주소
         formData.append('category', categories[shop.category]); // 상점 카테고리 코드 value
 
         // 새로 추가된 이미지 추가
@@ -236,29 +233,9 @@ function ModifyShop() {
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
-                                    name="postCode"
-                                    label="상점 우편번호"
-                                    defaultValue={shop.postCode}
-                                    multiline
-                                    onChange={handleChangeShop}
-                                    fullWidth
-                                />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <MDInput
-                                    name="streetAddr"
-                                    label="상점 도로명주소"
-                                    defaultValue={shop.streetAddr}
-                                    multiline
-                                    onChange={handleChangeShop}
-                                    fullWidth
-                                />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <MDInput
-                                    name="detailAddr"
-                                    label="상점 상세주소"
-                                    defaultValue={shop.detailAddr}
+                                    name="shopAddr"
+                                    label="상점 주소"
+                                    defaultValue={shop.shopAddr}
                                     multiline
                                     onChange={handleChangeShop}
                                     fullWidth
