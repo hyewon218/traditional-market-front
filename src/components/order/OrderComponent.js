@@ -12,6 +12,8 @@ import {getPrimaryDelivery} from "../../api/deliveryApi";
 import {getOrderItemList, putSelectedDelivery} from "../../api/orderApi";
 import {postPay} from "../../api/payApi";
 import DeliveryListModal from "../delivery/DeliveryListModal";
+import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material";
+import Typography from "@mui/material/Typography";
 
 const OrderComponent = () => {
 
@@ -19,6 +21,7 @@ const OrderComponent = () => {
     const [primaryDelivery, setPrimaryDelivery] = useState([]);
     const [result, setResult] = useState(null)
     const [selectedDelivery, setSelectedDelivery] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('KakaoPay'); // Default payment method
 
     const total = useMemo(() => {
         let total = 0
@@ -108,12 +111,16 @@ const OrderComponent = () => {
         ? deliveryAddressTitle : '배송지를 등록해주세요';
 
     const getDeliveryAddress = () => {
-        const roadAddr = selectedDelivery?.roadAddr || primaryDelivery?.roadAddr || '';
-        const detailAddr = selectedDelivery?.detailAddr || primaryDelivery?.detailAddr || '';
-        const postCode = selectedDelivery?.postCode || primaryDelivery?.postCode || '';
+        const roadAddr = selectedDelivery?.roadAddr || primaryDelivery?.roadAddr
+            || '';
+        const detailAddr = selectedDelivery?.detailAddr
+            || primaryDelivery?.detailAddr || '';
+        const postCode = selectedDelivery?.postCode || primaryDelivery?.postCode
+            || '';
 
         // Construct the address string with conditional parentheses for the post code
-        const formattedAddress = `${roadAddr} ${detailAddr}${postCode ? ` (${postCode})` : ''}`.trim();
+        const formattedAddress = `${roadAddr} ${detailAddr}${postCode
+            ? ` (${postCode})` : ''}`.trim();
         console.log(formattedAddress)
 
         return formattedAddress || null;
@@ -360,6 +367,77 @@ const OrderComponent = () => {
                                                     )}
                                             </ul>
                                         </div>
+                                    </MDBox>
+                                </Card>
+                            </MDBox>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <MDTypography
+                        fontWeight="bold"
+                        variant="body2"
+                        fontSize="25px"
+                    >
+                        결제수단
+                    </MDTypography>
+                    <Grid container spacing={4}>
+                        <Grid item xs={7}>
+                            <MDBox pb={3}>
+                                <Card>
+                                    <MDBox pt={2} px={2} pb={2}>
+                                        <FormControl component="fieldset">
+
+                                            <RadioGroup
+                                                aria-label="payment method"
+                                                name="paymentMethod"
+                                                value={paymentMethod}
+                                                onChange={(e) => setPaymentMethod(
+                                                    e.target.value)}
+                                                style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column'
+                                                }}
+                                            >
+                                                <FormControlLabel
+                                                    value="KakaoPay"
+                                                    control={<Radio/>}
+                                                    label={
+                                                        <Typography style={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            fontWeight: 'bold',
+                                                            fontSize: '0.875rem'
+                                                        }}>
+                                                            카카오페이
+                                                        </Typography>
+                                                    }
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',  // Align items vertically centered
+                                                    }}
+                                                />
+                                                <FormControlLabel
+                                                    value="Other"
+                                                    control={
+                                                        <Radio/>}
+                                                    label={
+                                                        <Typography style={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            fontWeight: 'bold',
+                                                            fontSize: '0.875rem'
+                                                        }}>
+                                                            기타 결제수단
+                                                        </Typography>
+                                                    }
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center'  // Align items vertically centered
+                                                    }}
+                                                />
+                                            </RadioGroup>
+                                        </FormControl>
                                     </MDBox>
                                 </Card>
                             </MDBox>
