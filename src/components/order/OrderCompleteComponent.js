@@ -31,6 +31,7 @@ import Grid from "@mui/material/Grid";
 const initState = {
     orderNo: '',
     orderStatus: '',
+    orderStatusDisplayName: '',
     orderDate: '',
     deliveryAddr: '',
     total: '',
@@ -78,7 +79,7 @@ function OrderCompleteComponent() {
                             <MDBox mb={2}>
                                 <MDTypography fontWeight="bold"
                                               variant="body2">
-                                    결제 상태 : {order.orderStatus}
+                                    결제 상태 : {order.orderStatusDisplayName}
                                 </MDTypography>
                             </MDBox>
                             <MDBox mb={2}>
