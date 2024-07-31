@@ -44,9 +44,10 @@ import {
 } from "../../api/itemApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
+import {postOrder} from "../../api/orderApi";
 
 function ItemDetail() {
-    const [isAdmin, setIsAdmin] = useState(false);
+    const {isAdmin} = useCustomLogin()
     const {state} = useLocation();
     const item = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -64,8 +65,6 @@ function ItemDetail() {
 
     //장바구니 기능
     const {addCart} = useCustomCart()
-    //로그인 정보
-    const {loginState} = useCustomLogin()
 
     const handleModifyItem = (item) => {
         console.log('handleModify');
@@ -136,7 +135,7 @@ function ItemDetail() {
     const handleClickAddCart = () => {
         let count = 1
         addCart(
-            {memberId: loginState.memberId, itemNo: item.itemNo, count: count})
+            {itemNo: item.itemNo, count: count})
         const userConfirmed = window.confirm("장바구니에 추가되었습니다. 장바구니로 이동하시겠습니까?")
         if (userConfirmed) {
             navigate('/cart') // 장바구니로 이동
@@ -144,8 +143,14 @@ function ItemDetail() {
     }
 
     // 주문하기
-    const handleGoOrder = () => {
-        navigate('/', {state: item});
+    const handleClickOrder = () => {
+        postOrder(item).then(data => {
+            console.log('상품 주문 성공!!!');
+            console.log(data);
+            navigate('/order');
+        }).catch(error => {
+            console.error("상품 주문에 실패했습니다.", error);
+        });
     };
 
     const buttonStyle = {
@@ -163,8 +168,7 @@ function ItemDetail() {
     }
 
     useEffect(() => {
-        const isAdmin = loginState.role === 'ADMIN';
-        setIsAdmin(isAdmin); // setIsAdmin 을 사용하여 상태를 업데이트
+        console.log("isAdmin : " + isAdmin)
 
         handleGetComments();
         handleLikeCounts();
@@ -215,28 +219,40 @@ function ItemDetail() {
                                     variant="body2">{item.itemDetail}</MDTypography>
                                 <MDTypography
                                     variant="body2">{likes} LIKES</MDTypography>
-                                <MDButton onClick={handlePostLike}
-                                          variant="gradient"
-                                          color="info">
-                                    좋아요 👍🏻
-                                </MDButton>
-                                {isAdmin && ( // 관리자일 때 버튼 생성
-                                    <>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleModifyItem(
-                                                item)}>상품 수정
+                                <Grid container>
+                                    <Grid item xs={1.4}>
+                                        <MDButton onClick={handlePostLike}
+                                                  variant="gradient"
+                                                  sx={{fontFamily: 'JalnanGothic'}}
+                                                  color="info">
+                                            좋아요 👍🏻
                                         </MDButton>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleDeleteItem(
-                                                item.itemNo)}>상품 삭제
-                                        </MDButton>
-                                    </>
-                                )}
+                                    </Grid>
+                                    {isAdmin && ( // 관리자일 때 버튼 생성
+                                        <>
+                                        <Grid item xs={1.4}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="light"
+                                                sx={{fontFamily: 'JalnanGothic'}}
+                                                onClick={() => handleModifyItem(
+                                                    item)}>상품 수정
+                                            </MDButton>
+                                        </Grid>
+                                        <Grid item xs={1.3}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="light"
+                                                sx={{fontFamily: 'JalnanGothic'}}
+                                                onClick={() => handleDeleteItem(
+                                                    item.itemNo)}>상품 삭제
+                                            </MDButton>
+                                        </Grid>
+                                        </>
+                                    )}
+                                </Grid>
                             </MDBox>
+
                         </Card>
                     </MDBox>
                 </Grid>
@@ -327,7 +343,7 @@ function ItemDetail() {
                             display: 'flex',
                             justifyContent: 'center'
                         }}>
-                            <MDButton onClick={handleGoOrder}
+                            <MDButton onClick={handleClickOrder}
                                       variant="gradient"
                                       size="large"
                                       sx={buttonStyle}
