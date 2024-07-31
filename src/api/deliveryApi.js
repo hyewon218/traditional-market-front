@@ -9,8 +9,12 @@ export const postDelivery = async (deliveryData) => { // 배송지 추가
     return res.data
 }
 
-export const getDeliveryList = async () => { // 배송지 목록 조회
-    const res = await axios.get(`${prefix}`)
+export const getDeliveryList = async (pageParam) => { // 배송지 목록 조회
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefix}`, {
+        params:
+            {page: page, size: size}
+    })
     return res.data
 }
 
