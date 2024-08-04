@@ -36,7 +36,8 @@ import Button from "@mui/material/Button";
 import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
-    deleteMarket,
+    cancelMarketLike,
+    deleteMarket, getMarketLike,
     postMarketLike,
 } from "../../api/marketApi";
 import {getShopList, getListCategory} from "../../api/shopApi";
@@ -58,14 +59,14 @@ const categoryMapping = {
 };
 
 function MarketDetail() {
-    const {loginState} = useCustomLogin()
-    const [isAdmin, setIsAdmin] = useState(false);
+    const {isAdmin} = useCustomLogin()
     const {state} = useLocation();
     const market = state; // 전달된 market 데이터를 사용
 
     const [shopPage, setShopPage] = useState(0);
 
-    const [likes, setLikes] = useState(0);
+    const [likes, setLikes] = useState(market.likes);
+    const [liked, setLiked] = useState(market.isLiked); // Assuming you get this from the API
     const [shops, setShops] = useState([]);
     const [shopTotalPage, setShopTotalPage] = useState(0);
 
@@ -116,17 +117,47 @@ function MarketDetail() {
     };
 
     // 시장 좋아요
-    const handlePostLike = () => {
+/*    const handlePostLike = () => {
         postMarketLike(market.marketNo).then(data => {
             console.log('좋아요 성공!!!');
             handleLikeCounts();
         }).catch(error => {
             console.error("시장 좋아요에 실패했습니다.", error);
         });
+    };*/
+
+    // 시장 좋아요 및 좋아요 취소
+    const handlePostOrCancelLike = () => {
+        if (liked) {
+            cancelMarketLike(market.marketNo).then(data => {
+                console.log('좋아요 취소 성공!!!');
+                setLiked(false);
+                setLikes(prev => prev - 1); // Update likes count
+            }).catch(error => {
+                console.error("좋아요 취소에 실패했습니다.", error);
+            });
+        } else {
+            postMarketLike(market.marketNo).then(data => {
+                console.log('좋아요 성공!!!');
+                setLiked(true);
+                setLikes(prev => prev + 1); // Update likes count
+            }).catch(error => {
+                console.error("시장 좋아요에 실패했습니다.", error);
+            });
+        }
     };
 
     const handleLikeCounts = () => {
         setLikes(market.likes);
+    };
+
+    const handleCheckLike = () => {
+        getMarketLike(market.marketNo).then(data => {
+            console.log('좋아요 상태 확인 성공!!!');
+            setLiked(data); // 좋아요 true, false 확인
+        }).catch(error => {
+            console.error("좋아요 상태 확인에 실패했습니다.", error);
+        });
     };
 
     // 시장 내 상점 목록
@@ -186,13 +217,14 @@ function MarketDetail() {
     };
 
     useEffect(() => {
-        const isAdmin = loginState.role === 'ADMIN';
-        setIsAdmin(isAdmin);
         handleLikeCounts();
         handleGetShops(); // Initially fetch all shops
+        handleCheckLike();
     }, []);
 
     useEffect(() => {
+        console.log("isAdmin : " + isAdmin)
+
         if (isCategoryFiltered && selectedCategory) {
             handleGetCategoryShops(0);
         } else {
@@ -246,7 +278,7 @@ function MarketDetail() {
                                     variant="body2">{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.6}>
-                                        <MDButton onClick={handlePostLike}
+                                        <MDButton onClick={handlePostOrCancelLike}
                                                   variant="gradient"
                                                   sx={{fontFamily: 'JalnanGothic'}}
                                                   color="info">좋아요 👍🏻
@@ -256,44 +288,45 @@ function MarketDetail() {
 
                                     {isAdmin && ( // 관리자일 때 버튼 생성
                                         <>
-                                        <Grid item xs={1.6}>
-                                            <MDButton
-                                                variant="gradient"
-                                                color="light"
-                                                sx={{fontFamily: 'JalnanGothic'}}
-                                                onClick={() => handleModifyMarket(
-                                                    market)}>시장 수정
-                                            </MDButton>
-                                        </Grid>
-                                        <Grid item xs={1.6}>
-                                            <MDButton
-                                                variant="gradient"
-                                                color="light"
-                                                sx={{fontFamily: 'JalnanGothic'}}
-                                                onClick={() => handleDeleteMarket(
-                                                    market.marketNo)}>시장 삭제
-                                            </MDButton>
-                                        </Grid>
-                                        <Grid item xs={2.7}>
-                                            <MDButton
-                                                variant="gradient"
-                                                color="success"
-                                                sx={{fontFamily: 'JalnanGothic'}}
-                                                onClick={() => handleAddShop(
-                                                    market)}>상점 추가
-                                            </MDButton>
-                                        </Grid>
+                                            <Grid item xs={1.6}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleModifyMarket(
+                                                        market)}>시장 수정
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.6}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleDeleteMarket(
+                                                        market.marketNo)}>시장 삭제
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={2.7}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="success"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleAddShop(
+                                                        market)}>상점 추가
+                                                </MDButton>
+                                            </Grid>
                                         </>
-                                        )}
+                                    )}
                                     <Grid item xs={4.5}>
                                         <div style={{
                                             display: 'flex',
                                             justifyContent: 'center'
                                         }}>
-                                            <MDButton onClick={handleGetTopFiveItemPage}
-                                                      variant="gradient"
-                                                      sx={buttonStyle}
-                                                      color="warning">🔥상품별 가격 순위
+                                            <MDButton
+                                                onClick={handleGetTopFiveItemPage}
+                                                variant="gradient"
+                                                sx={buttonStyle}
+                                                color="warning">🔥상품별 가격 순위
                                                 확인
                                             </MDButton>
                                         </div>
