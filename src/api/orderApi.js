@@ -8,7 +8,7 @@ export const postOrder = async (orderItem) => { // 단품 주문
     const header = {headers: {"Content-Type": "application/json"}}
     const data = {
         itemNo: orderItem.itemNo,
-        count: orderItem.count
+        count: 1
     }
     const res = await axios.post(`${prefix}`, data, header)
     console.log("주문 : " + res.data)
@@ -29,7 +29,7 @@ export const getOrder = async (ono) => {
     return res.data
 }
 
-export const getOrderList = async (ono, pageParam) => { // 전체 주문 목록
+export const getOrderList = async (ono, pageParam) => { // 내정보 전체 주문 목록
     const {page, size} = pageParam
     const res = await axios.get(`${prefix}`, {
         params:
