@@ -47,8 +47,7 @@ import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 
 function ShopDetail() {
-    const {loginState} = useCustomLogin()
-    const [isAdmin, setIsAdmin] = useState(false);
+    const {isAdmin} = useCustomLogin()
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -171,8 +170,7 @@ function ShopDetail() {
     }
 
     useEffect(() => {
-        const isAdmin = loginState.role === 'ADMIN';
-        setIsAdmin(isAdmin); // setIsAdmin 을 사용하여 상태를 업데이트
+        console.log("isAdmin : " + isAdmin)
 
         handleGetComments();
         handleLikeCounts();
@@ -223,33 +221,48 @@ function ShopDetail() {
                                     variant="body2">{shop.streetAddr}</MDTypography>
                                 <MDTypography
                                     variant="body2">{likes} LIKES</MDTypography>
-                                <MDButton onClick={handlePostLike}
-                                          variant="gradient"
-                                          color="info">
-                                    좋아요 👍🏻
-                                </MDButton>
-                                {isAdmin && ( // 관리자일 때 버튼 생성
-                                    <>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleModifyShop(
-                                                shop)}>상점 수정
+
+                                <Grid container>
+                                    <Grid item xs={1.4}>
+                                        <MDButton onClick={handlePostLike}
+                                                  variant="gradient"
+                                                  sx={{fontFamily: 'JalnanGothic'}}
+                                                  color="info">
+                                            좋아요 👍🏻
                                         </MDButton>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="warning"
-                                            onClick={() => handleDeleteShop(
-                                                shop.shopNo)}>상점 삭제
-                                        </MDButton>
-                                        <MDButton
-                                            variant="gradient"
-                                            color="success"
-                                            onClick={() => handleAddItem(
-                                                shop)}>상품 추가
-                                        </MDButton>
-                                    </>
-                                )}
+                                    </Grid>
+                                    {isAdmin && ( // 관리자일 때 버튼 생성
+                                        <>
+                                            <Grid item xs={1.4}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleModifyShop(
+                                                        shop)}>상점 수정
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.4}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleDeleteShop(
+                                                        shop.shopNo)}>상점 삭제
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.4}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="success"
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleAddItem(
+                                                        shop)}>상품 추가
+                                                </MDButton>
+                                            </Grid>
+                                        </>
+                                    )}
+                                </Grid>
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -368,7 +381,8 @@ function ShopDetail() {
                     <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
                 </MDPagination>
                 {[...Array(itemTotalPage).keys()].map((i) => (
-                    <MDPagination item key={i} onClick={() => changeItemsPage(i)}>
+                    <MDPagination item key={i}
+                                  onClick={() => changeItemsPage(i)}>
                         {i + 1}
                     </MDPagination>
                 ))}

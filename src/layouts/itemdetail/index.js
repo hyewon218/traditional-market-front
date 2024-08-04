@@ -207,7 +207,7 @@ function ItemDetail() {
                                     </Grid>
                                 </Grid>
                                 <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
+                                    className="w-full flex overflow-x-auto whitespace-nowrap">
                                     {item.imageList.map((imgUrl, i) =>
                                         <img
                                             alt="product" key={i}

@@ -9,6 +9,8 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge from "@mui/material/Badge";
 
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
@@ -21,8 +23,14 @@ import Button from '@mui/material/Button';
 import { getList, getListCategory, getListSearch } from "../../api/marketApi";
 import MDButton from "../../components/MD/MDButton";
 import MDInput from "../../components/MD/MDInput";
+import useCustomCart from "../../hooks/useCustomCart";
+import useCustomLogin from "../../hooks/useCustomLogin";
+
 
 function Market() {
+    const {isAuthorization} = useCustomLogin()
+    const {cartItems, refreshCart} = useCustomCart(); // Use the custom cart hook
+
     const [page, setPage] = useState(0);
     const [markets, setMarkets] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
@@ -39,45 +47,53 @@ function Market() {
 
     const navigate = useNavigate();
 
-    const handleDetail = (market) => {
-        console.log('handleDetail');
-        navigate('/market-detail', { state: market });
-    };
-
-    const changePage = (pageNum) => {
-        setPage(pageNum);
-        if (isSearchActive) {
-            handleGetSearchMarkets(pageNum);
-        } else if (selectedCategory) {
-            handleGetCategoryMarkets(pageNum);
-        } else {
-            handleGetMarkets(pageNum);
+    useEffect(() => {
+        if (isAuthorization) {
+            refreshCart();
         }
-    };
+    }, []);
 
-    const handleGetMarkets = (pageNum = 0) => {
+    useEffect(() => {
+        if (isSearchActive) return;
+
+        if (selectedCategory) {
+            fetchCategoryMarkets(0);
+        } else {
+            fetchMarkets();
+        }
+    }, [selectedCategory, isSearchActive]);
+
+    const fetchMarkets = (pageNum = 0) => {
         const pageParam = { page: pageNum, size: 8 };
         getList(pageParam).then(data => {
             setMarkets(data.content);
             setTotalPage(data.totalPages);
-            setFilteredMarkets([]);
-            setCategoryMarkets([]);
-            setIsSearchActive(false);
-            setSelectedCategory('');
-        }).catch(error => {
-            console.error("시장 목록 조회에 실패했습니다.", error);
-        });
+            resetFilters();
+        }).catch(error => console.error("시장 목록 조회에 실패했습니다.", error));
     };
 
-    const handleGetSearchMarkets = (pageNum) => {
+    const fetchSearchMarkets = (pageNum) => {
         const pageParam = { page: pageNum, size: 8 };
         getListSearch(pageParam, search).then(data => {
             setFilteredMarkets(data.content);
             setSearchTotalPage(data.totalPages);
             setIsSearchActive(true);
-        }).catch(error => {
-            console.error("시장 검색 조회에 실패했습니다.", error);
-        });
+        }).catch(error => console.error("시장 검색 조회에 실패했습니다.", error));
+    };
+
+    const fetchCategoryMarkets = (pageNum = 0) => {
+        const pageParam = { page: pageNum, size: 8 };
+        getListCategory(pageParam, selectedCategory).then(data => {
+            setCategoryMarkets(data.content);
+            setCategoryTotalPage(data.totalPages);
+        }).catch(error => console.error("시장 카테고리 조회에 실패했습니다.", error));
+    };
+
+    const resetFilters = () => {
+        setFilteredMarkets([]);
+        setCategoryMarkets([]);
+        setIsSearchActive(false);
+        setSelectedCategory('');
     };
 
     const handleSearch = (event) => {
@@ -86,7 +102,12 @@ function Market() {
 
     const handleSearchSubmit = () => {
         setPage(0);
-        handleGetSearchMarkets(0);
+        fetchSearchMarkets(0);
+    };
+
+    const handleDetail = (market) => {
+        console.log('handleDetail');
+        navigate('/market-detail', { state: market });
     };
 
     const handleCategorySelect = (category) => {
@@ -95,24 +116,23 @@ function Market() {
         setPage(0);
     };
 
-    const handleGetCategoryMarkets = (pageNum = 0) => {
-        const pageParam = { page: pageNum, size: 8 };
-        getListCategory(pageParam, selectedCategory).then(data => {
-            setCategoryMarkets(data.content);
-            setCategoryTotalPage(data.totalPages);
-        }).catch(error => {
-            console.error("시장 카테고리 조회에 실패했습니다.", error);
-        });
+    const handleCartIcon = () => {
+        navigate('/cart');
     };
 
-    useEffect(() => {
-        if (isSearchActive) return;
-        if (selectedCategory) {
-            handleGetCategoryMarkets(0);
+    const changePage = (pageNum) => {
+        setPage(pageNum);
+        if (isSearchActive) {
+            fetchSearchMarkets(pageNum);
+        } else if (selectedCategory) {
+            fetchCategoryMarkets(pageNum);
         } else {
-            handleGetMarkets();
+            fetchMarkets(pageNum);
         }
-    }, [selectedCategory, isSearchActive]);
+    };
+
+    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory ? categoryMarkets : markets);
+    const currentTotalPage = isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage);
 
     return (
         <DashboardLayout>
@@ -123,6 +143,11 @@ function Market() {
                         label="시장을 검색해 보세요!"
                         value={search}
                         onChange={handleSearch}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                handleSearchSubmit();
+                            }
+                        }}
                         sx={{
                             width: '93%',
                             height: '60px',
@@ -136,6 +161,12 @@ function Market() {
                         <SearchIcon />
                     </IconButton>
                 </Card>
+                {/* 장바구니 아이콘 + 장바구니에 담긴 상품 갯수*/}
+                <IconButton onClick={handleCartIcon} sx={{ position: 'absolute', right: '65px' }}>
+                    <Badge badgeContent={cartItems.length} color="primary">
+                        <ShoppingCartIcon />
+                    </Badge>
+                </IconButton>
             </MDBox>
 
             {/* 카테고리 */}
@@ -158,7 +189,7 @@ function Market() {
 
             {/* 시장 목록 조회 */}
             <Grid container pt={3} pb={3}>
-                {(isSearchActive ? filteredMarkets : (selectedCategory ? categoryMarkets : markets)).map((market) => (
+                {renderMarkets.map((market) => (
                     <MDBox pt={2} pb={2} px={3} key={market.id}>
                         <Card>
                             <MDBox pt={2} pb={2} px={3}>
@@ -193,7 +224,7 @@ function Market() {
             </Grid>
 
             {/* Pagination */}
-            {(isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage)) > 0 && (
+            {currentTotalPage > 0 && (
                 <MDPagination>
                     <MDPagination item onClick={() => changePage(page - 1)} disabled={page === 0}>
                         <KeyboardArrowLeftIcon />

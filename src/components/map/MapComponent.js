@@ -291,7 +291,7 @@ const MapComponent = ({marketAddr, marketName}) => {
                         variant="body2">
                         <p id="weather-image-container" style={{
                             width: '60px',
-                            height: '60px',
+                            height: '35px',
                             marginLeft: 'auto'
                         }}></p>
                     </MDTypography>
