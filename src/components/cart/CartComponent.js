@@ -15,7 +15,7 @@ import {useNavigate} from "react-router";
 
 const CartComponent = () => {
     const navigate = useNavigate();
-    const {isLogin, loginState} = useCustomLogin()
+    const {isAuthorization, userId} = useCustomLogin()
     const {refreshCart, cartItems, changeCart} = useCustomCart()
     const [counts, setCounts] = useState({}); // 각 장바구니 항목의 수량을 관리하기 위해
 
@@ -30,7 +30,7 @@ const CartComponent = () => {
         return total
     }, [cartItems, counts]);
 
-    const handleClickQty = (cartItemNo, amount, memberId, itemNo) => {
+    const handleClickQty = (cartItemNo, amount, itemNo) => {
         const newCount = (counts[cartItemNo] || 0) + amount;
         if (newCount < 1) {
             return;
@@ -40,17 +40,21 @@ const CartComponent = () => {
             ...prevCounts,
             [cartItemNo]: newCount
         }));
-        changeCart({memberId, cartItemNo, itemNo, count: newCount})
+        changeCart({cartItemNo, itemNo, count: newCount})
     }
 
     const handleDeleteCartItem = (cartItemNo) => {
         console.log('handleDeleteCartItem');
-        deleteCartItem(cartItemNo).then(data => {
-            window.confirm("장바구니 상품이 삭제되었습니다.")
-            refreshCart(); // Refresh the cart after deletion
-        }).catch(error => {
-            console.error("장바구니 상품 삭제에 실패했습니다.", error);
-        });
+        const userConfirmed = window.confirm("장바구니 상품을 삭제하시겠습니까?");
+        if (userConfirmed) {
+            deleteCartItem(cartItemNo).then(data => {
+                refreshCart(); // Refresh the cart after deletion
+            }).catch(error => {
+                console.error("장바구니 상품 삭제에 실패했습니다.", error);
+            });
+        } else {
+            console.log('Deletion canceled by user.');
+        }
     }
 
     const handleClickOrder = () => {
@@ -76,7 +80,7 @@ const CartComponent = () => {
     };
 
     useEffect(() => {
-        if (isLogin) {
+        if (isAuthorization) {
             refreshCart();
         }
     }, []);
@@ -91,41 +95,39 @@ const CartComponent = () => {
 
     return (
         <DashboardLayout>
-
-            {isLogin ? (
-                <>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <MDBox pt={3} pb={3}>
-                                <Card>
-                                    <MDBox pt={2} pb={3} px={3}>
-                                        <Grid container>
-                                            <Grid item xs={10}>
-                                                <MDTypography
-                                                    fontWeight="bold"
-                                                    variant="body2">
-                                                    {loginState.memberId}님의
-                                                    장바구니
-                                                </MDTypography>
-                                            </Grid>
-                                            <Grid item xs={2}>
-                                                <MDTypography
-                                                    variant="body2"
-                                                    textAlign="right">
-                                                    <div
-                                                        className="bg-orange-600 text-center text-white font-bold rounded-full m-1">
-                                                        {cartItems.length}
-                                                    </div>
-                                                </MDTypography>
-                                            </Grid>
-                                        </Grid>
-                                    </MDBox>
-                                </Card>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <MDBox pt={3} pb={3}>
+                        <Card>
+                            <MDBox pt={2} pb={3} px={3}>
+                                <Grid container>
+                                    <Grid item xs={10}>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2">
+                                            {userId}님의 장바구니
+                                        </MDTypography>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <MDTypography
+                                            variant="body2"
+                                            textAlign="right">
+                                            <div
+                                                className="bg-orange-600 text-center text-white font-bold rounded-full m-1">
+                                                {cartItems.length}
+                                            </div>
+                                        </MDTypography>
+                                    </Grid>
+                                </Grid>
                             </MDBox>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        </Card>
+                    </MDBox>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    {cartItems.length > 0 && (
+                        <>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={2}>
@@ -172,8 +174,15 @@ const CartComponent = () => {
                                                                                     xs={7}>
                                                                                     <div
                                                                                         className="m-1 p-1">
-                                                                                        <img
-                                                                                            src={`${cartItem.imageUrl}`}/>
+                                                                                        {cartItem.imageList.map(
+                                                                                            (cartItem,
+                                                                                                i) =>
+                                                                                                <img
+                                                                                                    alt="product"
+                                                                                                    key={i}
+                                                                                                    /* className="p-4 w-1/2"*/
+                                                                                                    src={`${cartItem.imageUrl}`}/>
+                                                                                        )}
                                                                                     </div>
                                                                                 </Grid>
                                                                                 <Grid
@@ -208,7 +217,6 @@ const CartComponent = () => {
                                                                                                     onClick={() => handleClickQty(
                                                                                                         cartItem.cartItemNo,
                                                                                                         -1,
-                                                                                                        loginState.memberId,
                                                                                                         cartItem.itemNo)}
                                                                                                 >
                                                                                                     -
@@ -237,7 +245,6 @@ const CartComponent = () => {
                                                                                                     onClick={() => handleClickQty(
                                                                                                         cartItem.cartItemNo,
                                                                                                         +1,
-                                                                                                        loginState.memberId,
                                                                                                         cartItem.itemNo)}
                                                                                                 >
                                                                                                     +
@@ -256,7 +263,7 @@ const CartComponent = () => {
                                             <Grid item xs={5}
                                                   sx={{paddingRight: '26px'}}>
                                                 <div
-                                                    className="w-full border-2 rounded-2"
+                                                    className="w-full"
                                                     style={{marginBottom: '20px'}}>
                                                     <MDTypography
                                                         fontWeight="bold"
@@ -269,23 +276,28 @@ const CartComponent = () => {
                                                         총 가격 : {total}
                                                     </MDTypography>
                                                 </div>
-                                                <MDButton
-                                                    onClick={handleClickOrder}
-                                                    variant="gradient"
-                                                    size="large"
-                                                    sx={buttonStyle}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    <MDButton
+                                                        onClick={handleClickOrder}
+                                                        variant="gradient"
+                                                        size="large"
+                                                        sx={buttonStyle}
+                                                    >주문하기
+                                                    </MDButton>
+                                                </div>
 
-                                                >주문하기
-                                                </MDButton>
                                             </Grid>
                                         </Grid>
                                     </MDBox>
                                 </Card>
                             </MDBox>
-                        </Grid>
-                    </Grid>
-                </>
-            ) : null}
+                        </>
+                    )}
+                </Grid>
+            </Grid>
         </DashboardLayout>
     );
 }

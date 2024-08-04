@@ -32,7 +32,6 @@ import MDButton from '../../../components/MD/MDButton';
 import DashboardLayout
     from '../../../examples/LayoutContainers/DashboardLayout';
 import useCustomLogin from "../../../hooks/useCustomLogin";
-import {getCookie} from "../../../util/cookieUtil";
 
 const initState = {
     memberId: '',
@@ -42,7 +41,12 @@ const initState = {
 function SignIn() {
     const [loginParam, setLoginParam] = useState({...initState})
 
-    const {doLogin, doLogout, moveToPath} = useCustomLogin()
+    const {
+        doLogin,
+        doLogout,
+        moveToPath,
+        isAuthorization
+    } = useCustomLogin()
 
     const handleClickLogout = () => {
         doLogout().then(() => {
@@ -71,9 +75,7 @@ function SignIn() {
         })
     }
 
-    const isAuthorized = getCookie('Authorization');
-
-    if (!isAuthorized) {
+    if (!isAuthorization) {
         return (
             <DashboardLayout>
                 <MDBox mt={30} mb={3}>
