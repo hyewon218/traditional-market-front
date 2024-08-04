@@ -3,17 +3,17 @@ import useCustomLogin from "../../hooks/useCustomLogin";
 
 import Market from '../../layouts/market';
 import PostMarket from '../../layouts/postmarket';
-import MyPosts from '../../layouts/myposts';
+//import MyPosts from '../../layouts/myposts';
 import SignIn from '../../layouts/authentication/sign-in';
 import SignUp from '../../layouts/authentication/sign-up';
 import Chat from '../../layouts/chat';
 import Alarm from '../../layouts/alarm';
 import Cart from '../../layouts/cart';
-import Notice from '../../layouts/notice';
+//import Notice from '../../layouts/notice';
 import MemberList from '../../layouts/memberList';
 
 const RoutesComponent = () => {
-    const {loginState, isAuthorization} = useCustomLogin();
+    const {isAuthorization, isAdmin} = useCustomLogin();
 
     const publicRoutes = [
         {
@@ -23,13 +23,13 @@ const RoutesComponent = () => {
             route: '/market',
             component: <Market/>,
         },
-        {
+/*        {
             type: 'collapse',
             name: '공지사항',
             key: 'notice',
             route: '/notice',
             component: <Notice/>,
-        },
+        },*/
     ];
 
     const authRoutes = !isAuthorization
@@ -58,13 +58,13 @@ const RoutesComponent = () => {
                 route: '/authentication/logout',
                 component: <SignIn/>,
             },
-            {
+/*            {
                 type: 'collapse',
                 name: '내정보',
                 key: 'myposts',
                 route: '/my-post',
                 component: <MyPosts/>,
-            },
+            },*/
             {
                 type: 'collapse',
                 name: '장바구니',
@@ -88,7 +88,7 @@ const RoutesComponent = () => {
             },
         ];
 
-    const adminRoutes = loginState.role === 'ADMIN' ? [
+    const adminRoutes = isAdmin ? [ // 관리자 전용 메뉴 추가
         {
             type: 'collapse',
             name: '시장 추가',
