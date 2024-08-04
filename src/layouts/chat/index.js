@@ -7,6 +7,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import MDTypography from "../../components/MD/MDTypography";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const initState = {
     no: '',
@@ -16,6 +17,7 @@ const initState = {
 function Chat() {
     const [chatRoom, setChatRoom] = useState(initState); // 채팅방 기록
     const navigate = useNavigate()
+    const {moveToLoginReturn, isAuthorization} = useCustomLogin() // 로그인이 필요한 페이지
 
     const handleDetail = (chatRoom) => {
         console.log('handleDetail');
@@ -27,9 +29,13 @@ function Chat() {
         getChatRooms().then(data => {
             console.log(data)
             setChatRoom(data)
-            console.log(data.chatRoomList)
+            //console.log(data.chatRoomList)
         })
     }, [])
+
+    if(!isAuthorization){
+        return moveToLoginReturn()
+    }
 
     return (
         <DashboardLayout>

@@ -1,6 +1,8 @@
 import {useDispatch, useSelector} from "react-redux"
 import {Navigate, useNavigate} from "react-router-dom"
 import {loginPostAsync, logoutPostAsync} from "../slices/loginSlice"
+import {getCookie} from "../util/cookieUtil";
+import {jwtDecode} from "jwt-decode";
 
 const useCustomLogin = () => {
 
@@ -14,9 +16,25 @@ const useCustomLogin = () => {
 
     const isLogin = loginState.memberId !== "" //----------로그인 여부
 
+    const isAuthorization = getCookie('Authorization')
+
+    let isAdmin = false;
+    let userId = null;
+
+    if (isAuthorization) {
+        try {
+            /*JWT 를 디코딩하고 해당 페이로드를 검사*/
+            const decodedToken = jwtDecode(isAuthorization);
+            isAdmin = decodedToken.role === 'ROLE_ADMIN';
+            userId = decodedToken.sub || decodedToken.id;
+        } catch (error) {
+            console.error("Invalid token:", error);
+        }
+    }
+
     const doLogin = async (loginParam) => { //----------로그인 함수
         const action = await dispatch(loginPostAsync(loginParam))
-        //console.log("doLogin 액션 페이로드: ", action.payload)
+        console.log("doLogin 액션 페이로드: ", action.payload)
         return action.payload
     }
 
@@ -29,11 +47,11 @@ const useCustomLogin = () => {
     }
 
     const moveToLogin = () => { //----------------------로그인 페이지로 이동
-        navigate({pathname: '/member/login'}, {replace: true})
+        navigate({pathname: '/authentication/sign-in'}, {replace: true})
     }
 
     const moveToLoginReturn = () => { //----------------------로그인 페이지로 이동 컴포넌트
-        return <Navigate replace to="/member/login"/>
+        return <Navigate replace to="/authentication/sign-in"/>
     }
 
     return {
@@ -44,6 +62,9 @@ const useCustomLogin = () => {
         moveToPath,
         moveToLogin,
         moveToLoginReturn,
+        isAuthorization,
+        isAdmin,
+        userId
     }
 
 }
