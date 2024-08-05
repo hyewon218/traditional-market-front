@@ -46,6 +46,7 @@ import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
 
 const categoryMapping = {
+    "전체 👨🏻‍🌾": 'ALL',
     "농산물 🌾": 'AGRI',
     "수산물 🐟": 'MARINE',
     "축산물 🐂": 'LIVESTOCK',
@@ -59,14 +60,14 @@ const categoryMapping = {
 };
 
 function MarketDetail() {
-    const {isAdmin} = useCustomLogin()
+    const {isAdmin, isAuthorization} = useCustomLogin()
     const {state} = useLocation();
     const market = state; // 전달된 market 데이터를 사용
 
     const [shopPage, setShopPage] = useState(0);
 
     const [likes, setLikes] = useState(market.likes);
-    const [liked, setLiked] = useState(market.isLiked); // Assuming you get this from the API
+    const [liked, setLiked] = useState(false); // 좋아요 여부 확인
     const [shops, setShops] = useState([]);
     const [shopTotalPage, setShopTotalPage] = useState(0);
 
@@ -116,18 +117,13 @@ function MarketDetail() {
         navigate('/shop-detail', {state: shop});
     };
 
-    // 시장 좋아요
-/*    const handlePostLike = () => {
-        postMarketLike(market.marketNo).then(data => {
-            console.log('좋아요 성공!!!');
-            handleLikeCounts();
-        }).catch(error => {
-            console.error("시장 좋아요에 실패했습니다.", error);
-        });
-    };*/
-
     // 시장 좋아요 및 좋아요 취소
     const handlePostOrCancelLike = () => {
+        if (!isAuthorization) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
         if (liked) {
             cancelMarketLike(market.marketNo).then(data => {
                 console.log('좋아요 취소 성공!!!');
@@ -178,11 +174,14 @@ function MarketDetail() {
 
     /*카테고리 조회*/
     const handleCategorySelect = (category) => {
-        const mappedCategory = categoryMapping[category] || '';
-        setSelectedCategory(mappedCategory);
-        console.log("mappedCategory!???!?" + mappedCategory)
-        //setPage(0);
-        setIsCategoryFiltered(true); // Set filter active
+        if (category === "전체 👨🏻‍🌾") {
+            handleGetShops(0);
+        } else {
+            const mappedCategory = categoryMapping[category] || '';
+            setSelectedCategory(mappedCategory);
+            console.log("mappedCategory!???!?" + mappedCategory);
+            setIsCategoryFiltered(true); // Set filter active
+        }
     };
 
     const handleGetCategoryShops = (pageNum) => { // 시장 내 상점 카테고리 조회
@@ -223,14 +222,15 @@ function MarketDetail() {
     }, []);
 
     useEffect(() => {
-        console.log("isAdmin : " + isAdmin)
-
         if (isCategoryFiltered && selectedCategory) {
             handleGetCategoryShops(0);
         } else {
             handleGetShops(shopPage); // Fetch shops without category filter if not active
         }
     }, [selectedCategory, isCategoryFiltered]);
+
+    // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
+    const shouldShowPagination = !isCategoryFiltered || filteredShops.length > 0;
 
     return (
         <DashboardLayout>
@@ -278,10 +278,11 @@ function MarketDetail() {
                                     variant="body2">{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.6}>
-                                        <MDButton onClick={handlePostOrCancelLike}
-                                                  variant="gradient"
-                                                  sx={{fontFamily: 'JalnanGothic'}}
-                                                  color="info">좋아요 👍🏻
+                                        <MDButton
+                                            onClick={handlePostOrCancelLike}
+                                            variant="gradient"
+                                            sx={{fontFamily: 'JalnanGothic'}}
+                                            color="info">좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
 
@@ -354,9 +355,13 @@ function MarketDetail() {
             <Grid container spacing={1} justifyContent="center">
                 {Object.keys(categoryMapping).map((displayCategory, index) => (
                     <Grid item
-                          xs={index < 4 ? 1.0 : index === 4 ? 1.2 : index === 5
-                              ? 1.3 : index === 6 ? 1.0 : index === 7 ? 0.9
-                                  : 1.2} key={displayCategory}>
+                          xs={index === 0 ? 0.9 : index === 1 ? 1.0
+                              : index === 2 ? 1.0 : index === 3 ? 1.0
+                                  : index === 4 ? 1.0 : index === 5 ? 1.1
+                                      : index === 6 ? 1.2 : index === 7 ? 0.9
+                                          : index === 8 ? 0.9 : index === 9
+                                              ? 1.2 : 1.2}
+                          key={displayCategory}>
                         <MDBox>
                             <MDButton
                                 onClick={() => handleCategorySelect(
@@ -379,63 +384,77 @@ function MarketDetail() {
 
             {/* 시장 내 상점 목록 */}
             <Grid container pt={3} pb={3}>
-                {(isCategoryFiltered ? filteredShops : shops).map((shop) => (
-                    <MDBox pt={2} pb={2} px={3} key={shop.shopNo}>
-                        <Card>
-                            <MDBox pt={2} pb={2} px={3}>
-                                <Grid container>
-                                    <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
-                                            {shop.shopName}
-                                        </MDTypography>
+                {(isCategoryFiltered && filteredShops.length === 0) ? (
+                    <Grid item xs={12}>
+                        <MDTypography variant="body2" textAlign="center" sx={{fontSize: '1.28rem', pt:2}}>
+                            선택한 카테고리 내 상점이 존재하지 않습니다.
+                        </MDTypography>
+                    </Grid>
+                ) : (
+                    (isCategoryFiltered ? filteredShops : shops).map((shop) => (
+                        <MDBox pt={2} pb={2} px={3} key={shop.shopNo}>
+                            <Card>
+                                <MDBox pt={2} pb={2} px={3}>
+                                    <Grid container>
+                                        <Grid item xs={6}>
+                                            <MDTypography fontWeight="bold"
+                                                          variant="body2">
+                                                {shop.shopName}
+                                            </MDTypography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <MDTypography variant="body2"
+                                                          textAlign="right">
+                                                {shop.tel}
+                                            </MDTypography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <MDTypography variant="body2"
-                                                      textAlign="right">
-                                            {shop.tel}
-                                        </MDTypography>
+                                    <MDTypography variant="body2">
+                                        {shop.sellerName}
+                                    </MDTypography>
+                                    <Grid container>
+                                        <Grid item xs={10}></Grid>
+                                        <Grid item xs={1}>
+                                            <Button onClick={() => handleDetail(
+                                                shop)}>
+                                                Detail
+                                            </Button>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                                <MDTypography
-                                    variant="body2">{shop.sellerName}</MDTypography>
-                                <Grid container>
-                                    <Grid item xs={10}></Grid>
-                                    <Grid item xs={1}>
-                                        <Button onClick={() => handleDetail(
-                                            shop)}>Detail</Button>
-                                    </Grid>
-                                </Grid>
-                                <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
-                                    {shop.imageList.map((imgUrl, i) =>
-                                        <img alt="product" key={i} width={300}
-                                             src={`${imgUrl.imageUrl}`}/>
-                                    )}
-                                </div>
-                            </MDBox>
-                        </Card>
-                    </MDBox>
-                ))}
+                                    <div
+                                        className="w-full justify-center flex flex-col m-auto items-center">
+                                        {shop.imageList.map((imgUrl, i) => (
+                                            <img alt="product" key={i}
+                                                 width={300}
+                                                 src={`${imgUrl.imageUrl}`}/>
+                                        ))}
+                                    </div>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    ))
+                )}
             </Grid>
 
-            <MDPagination>
-                <MDPagination item>
-                    <KeyboardArrowLeftIcon/>
-                </MDPagination>
-                {[...Array(isCategoryFiltered ? categoryTotalPage
-                    : shopTotalPage).keys()].map((i) => (
-                    <MDPagination item key={i}
-                                  onClick={() => isCategoryFiltered
-                                      ? handleGetCategoryShops(i)
-                                      : changeShopPage(i)}>
-                        {i + 1}
+            {shouldShowPagination && (
+                <MDPagination>
+                    <MDPagination item>
+                        <KeyboardArrowLeftIcon/>
                     </MDPagination>
-                ))}
-                <MDPagination item>
-                    <KeyboardArrowRightIcon/>
+                    {[...Array(isCategoryFiltered ? categoryTotalPage
+                        : shopTotalPage).keys()].map((i) => (
+                        <MDPagination item key={i}
+                                      onClick={() => isCategoryFiltered
+                                          ? handleGetCategoryShops(i)
+                                          : changeShopPage(i)}>
+                            {i + 1}
+                        </MDPagination>
+                    ))}
+                    <MDPagination item>
+                        <KeyboardArrowRightIcon/>
+                    </MDPagination>
                 </MDPagination>
-            </MDPagination>
+            )}
         </DashboardLayout>
     );
 }
