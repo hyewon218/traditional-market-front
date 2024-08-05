@@ -117,6 +117,15 @@ function MarketDetail() {
         navigate('/shop-detail', {state: shop});
     };
 
+    const handleCheckLike = () => {
+        getMarketLike(market.marketNo).then(data => {
+            console.log('좋아요 여부 확인 성공!!!');
+            setLiked(data); // 좋아요 true, false 확인
+        }).catch(error => {
+            console.error("좋아요 여부 확인에 실패했습니다.", error);
+        });
+    };
+
     // 시장 좋아요 및 좋아요 취소
     const handlePostOrCancelLike = () => {
         if (!isAuthorization) {
@@ -143,17 +152,8 @@ function MarketDetail() {
         }
     };
 
-    const handleLikeCounts = () => {
+    const handleCountLikes = () => {
         setLikes(market.likes);
-    };
-
-    const handleCheckLike = () => {
-        getMarketLike(market.marketNo).then(data => {
-            console.log('좋아요 상태 확인 성공!!!');
-            setLiked(data); // 좋아요 true, false 확인
-        }).catch(error => {
-            console.error("좋아요 상태 확인에 실패했습니다.", error);
-        });
     };
 
     // 시장 내 상점 목록
@@ -216,8 +216,8 @@ function MarketDetail() {
     };
 
     useEffect(() => {
-        handleLikeCounts();
-        handleGetShops(); // Initially fetch all shops
+        handleCountLikes();
+        handleGetShops();
         handleCheckLike();
     }, []);
 

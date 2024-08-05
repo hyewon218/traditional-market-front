@@ -37,8 +37,10 @@ import {useNavigate} from "react-router";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
+    cancelItemLike,
     deleteItem,
     getItemComments,
+    getItemLike,
     postItemComment,
     postItemLike
 } from "../../api/itemApi";
@@ -47,13 +49,14 @@ import ResultModal from "../../components/common/ResultModal";
 import {postOrder} from "../../api/orderApi";
 
 function ItemDetail() {
-    const {isAdmin} = useCustomLogin()
+    const {isAdmin, isAuthorization} = useCustomLogin()
     const {state} = useLocation();
     const item = state; // 전달된 shop 데이터를 사용
     console.log(state);
     const [page, setPage] = useState(0);
 
     const [likes, setLikes] = useState(0);
+    const [liked, setLiked] = useState(false); // 좋아요 여부 확인
     const [comments, setComments] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [comment, setComment] = useState('');
@@ -93,6 +96,15 @@ function ItemDetail() {
 
     // 상품 댓글
     const handleWriteComment = () => {
+        if (!isAuthorization) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (!comment.trim()) { // 댓글 필드 비어있는지 확인
+            alert("댓글을 작성해주세요.");
+            return;
+        }
+
         console.log('handleWriteComment');
         const data = {itemNo: item.itemNo, comment: comment}
         postItemComment(data).then(data => {
@@ -117,17 +129,41 @@ function ItemDetail() {
         });
     };
 
-    // 상품 좋아요
-    const handlePostLike = () => {
-        postItemLike(item.itemNo).then(data => {
-            console.log('좋아요 성공!!!');
-            handleLikeCounts();
+    const handleCheckLike = () => {
+        getItemLike(item.itemNo).then(data => {
+            console.log('좋아요 상태 확인 성공!!!');
+            setLiked(data); // 좋아요 true, false 확인
         }).catch(error => {
-            console.error("상품 좋아요에 실패했습니다.", error);
+            console.error("좋아요 상태 확인에 실패했습니다.", error);
         });
     };
 
-    const handleLikeCounts = () => {
+    // 상품 좋아요 및 좋아요 취소
+    const handlePostOrCancelLike = () => {
+        if (!isAuthorization) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (liked) {
+            cancelItemLike(item.itemNo).then(data => {
+                console.log('좋아요 취소 성공!!!');
+                setLiked(false);
+                setLikes(prev => prev - 1); // Update likes count
+            }).catch(error => {
+                console.error("좋아요 취소에 실패했습니다.", error);
+            });
+        } else {
+            postItemLike(item.itemNo).then(data => {
+                console.log('좋아요 성공!!!');
+                setLiked(true);
+                setLikes(prev => prev + 1); // Update likes count
+            }).catch(error => {
+                console.error("상품 좋아요에 실패했습니다.", error);
+            });
+        }
+    };
+
+    const handleCountLikes = () => {
         setLikes(item.likes);
     };
 
@@ -171,7 +207,9 @@ function ItemDetail() {
         console.log("isAdmin : " + isAdmin)
 
         handleGetComments();
-        handleLikeCounts();
+        handleCountLikes();
+        handleCheckLike();
+
     }, []);
 
     return (
@@ -221,7 +259,7 @@ function ItemDetail() {
                                     variant="body2">{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.4}>
-                                        <MDButton onClick={handlePostLike}
+                                        <MDButton onClick={handlePostOrCancelLike}
                                                   variant="gradient"
                                                   sx={{fontFamily: 'JalnanGothic'}}
                                                   color="info">
