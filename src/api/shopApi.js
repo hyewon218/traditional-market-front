@@ -44,6 +44,7 @@ export const deleteShop = async (sno) => {
     return res.data
 }
 
+/*댓글*/
 export const postShopComment = async (data) => {
     const res = await axios.post(`${prefix}/comments`, data)
     return res.data
@@ -58,7 +59,18 @@ export const getShopComments = async (sno, pageParam) => {
     return res.data
 }
 
+/*좋아요*/
 export const postShopLike = async (sno) => {
     const res = await axios.post(`${prefix}/${sno}/likes`)
+    return res.data
+}
+
+export const getShopLike = async (sno) => { // 좋아요 여부 확인
+    const res = await axios.get(`${prefix}/${sno}/likes`)
+    return res.data
+}
+
+export const cancelShopLike = async (sno) => { // 좋아요 취소
+    const res = await axios.delete(`${prefix}/${sno}/likes`)
     return res.data
 }

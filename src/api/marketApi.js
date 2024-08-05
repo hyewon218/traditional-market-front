@@ -53,7 +53,7 @@ export const deleteMarket = async (mno) => {
     return res.data
 }
 
-// 댓글
+/*댓글*/
 export const postMarketComment = async (data) => {
     const res = await axios.post(`${prefix}/comments`, data)
     return res.data
@@ -68,12 +68,13 @@ export const getMarketComments = async (mno, pageParam) => {
     return res.data
 }
 
+/*좋아요*/
 export const postMarketLike = async (mno) => { // 좋아요 생성
     const res = await axios.post(`${prefix}/${mno}/likes`)
     return res.data
 }
 
-export const getMarketLike = async (mno) => { // 좋아요 상태 확인
+export const getMarketLike = async (mno) => { // 좋아요 여부 확인
     const res = await axios.get(`${prefix}/${mno}/likes`)
     return res.data
 }

@@ -37,8 +37,10 @@ import Button from "@mui/material/Button";
 import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
+    cancelShopLike,
     deleteShop,
     getShopComments,
+    getShopLike,
     postShopComment,
     postShopLike
 } from "../../api/shopApi";
@@ -47,7 +49,7 @@ import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 
 function ShopDetail() {
-    const {isAdmin} = useCustomLogin()
+    const {isAdmin, isAuthorization} = useCustomLogin()
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -55,6 +57,7 @@ function ShopDetail() {
     const [itemPage, setItemPage] = useState(0);
 
     const [likes, setLikes] = useState(0);
+    const [liked, setLiked] = useState(false); // 좋아요 여부 확인
     const [comments, setComments] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [comment, setComment] = useState('');
@@ -112,6 +115,15 @@ function ShopDetail() {
 
     // 상점 댓글
     const handleWriteComment = () => {
+        if (!isAuthorization) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (!comment.trim()) { // 댓글 필드 비어있는지 확인
+            alert("댓글을 작성해주세요.");
+            return;
+        }
+
         console.log('handleWriteComment');
         const data = {shopNo: shop.shopNo, comment: comment}
         postShopComment(data).then(data => {
@@ -136,17 +148,41 @@ function ShopDetail() {
         });
     };
 
-    // 시장 좋아요
-    const handlePostLike = () => {
-        postShopLike(shop.shopNo).then(data => {
-            console.log('좋아요 성공!!!');
-            handleLikeCounts();
+    const handleCheckLike = () => {
+        getShopLike(shop.shopNo).then(data => {
+            console.log('좋아요 상태 확인 성공!!!');
+            setLiked(data); // 좋아요 true, false 확인
         }).catch(error => {
-            console.error("상점 좋아요에 실패했습니다.", error);
+            console.error("좋아요 상태 확인에 실패했습니다.", error);
         });
     };
 
-    const handleLikeCounts = () => {
+    // 상점 좋아요 및 좋아요 취소
+    const handlePostOrCancelLike = () => {
+        if (!isAuthorization) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (liked) {
+            cancelShopLike(shop.shopNo).then(data => {
+                console.log('좋아요 취소 성공!!!');
+                setLiked(false);
+                setLikes(prev => prev - 1); // Update likes count
+            }).catch(error => {
+                console.error("좋아요 취소에 실패했습니다.", error);
+            });
+        } else {
+            postShopLike(shop.shopNo).then(data => {
+                console.log('좋아요 성공!!!');
+                setLiked(true);
+                setLikes(prev => prev + 1); // Update likes count
+            }).catch(error => {
+                console.error("상점 좋아요에 실패했습니다.", error);
+            });
+        }
+    };
+
+    const handleCountLikes = () => {
         setLikes(shop.likes);
     };
 
@@ -171,9 +207,9 @@ function ShopDetail() {
 
     useEffect(() => {
         console.log("isAdmin : " + isAdmin)
-
+        handleCountLikes();
+        handleCheckLike();
         handleGetComments();
-        handleLikeCounts();
         handleGetItems();
     }, []);
 
@@ -224,10 +260,11 @@ function ShopDetail() {
 
                                 <Grid container>
                                     <Grid item xs={1.4}>
-                                        <MDButton onClick={handlePostLike}
-                                                  variant="gradient"
-                                                  sx={{fontFamily: 'JalnanGothic'}}
-                                                  color="info">
+                                        <MDButton
+                                            onClick={handlePostOrCancelLike}
+                                            variant="gradient"
+                                            sx={{fontFamily: 'JalnanGothic'}}
+                                            color="info">
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>

@@ -51,6 +51,7 @@ export const deleteItem = async (ino) => {
     return res.data
 }
 
+/*댓글*/
 export const postItemComment = async (data) => {
     const res = await axios.post(`${prefix}/comments`, data)
     return res.data
@@ -65,7 +66,18 @@ export const getItemComments = async (ino, pageParam) => {
     return res.data
 }
 
+/*좋아요*/
 export const postItemLike = async (ino) => {
     const res = await axios.post(`${prefix}/${ino}/likes`)
+    return res.data
+}
+
+export const getItemLike = async (ino) => { // 좋아요 여부 확인
+    const res = await axios.get(`${prefix}/${ino}/likes`)
+    return res.data
+}
+
+export const cancelItemLike = async (ino) => { // 좋아요 취소
+    const res = await axios.delete(`${prefix}/${ino}/likes`)
     return res.data
 }
