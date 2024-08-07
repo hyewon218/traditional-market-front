@@ -12,9 +12,8 @@ const useCustomLogin = () => {
 
     const loginState = useSelector(state => state.loginSlice) //-------로그인 상태
 
-    console.log("현재 로그인 상태: ", loginState)
-
-    const isLogin = loginState.memberId !== "" //----------로그인 여부
+    //console.log("현재 로그인 상태: ", loginState)
+    //const isLogin = loginState.memberId !== "" //----------로그인 여부
 
     const isAuthorization = getCookie('Authorization')
 
@@ -56,7 +55,7 @@ const useCustomLogin = () => {
 
     return {
         loginState,
-        isLogin,
+        //isLogin,
         doLogin,
         doLogout,
         moveToPath,
