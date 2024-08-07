@@ -1,6 +1,5 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import useCustomLogin from "../../hooks/useCustomLogin";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
 
 import Grid from "@mui/material/Grid";
@@ -23,7 +22,6 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const DeliveryListModal = ({callbackFn}) => {
 
-    const {isLogin} = useCustomLogin()
     const [deliveries, setDeliveries] = useState([]);
     const [result, setResult] = useState(null) // 배송지 추가 모달창 관련
     const [putResult, setPutResult] = useState(null) // 배송지 수정 모달창 관련

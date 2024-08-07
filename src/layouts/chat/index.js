@@ -74,7 +74,10 @@ function Chat() {
                 <MDButton onClick={handlePostChatRoom}
                           variant="gradient"
                           size="large"
-                          sx={buttonStyle}
+                          sx={{
+                              ...buttonStyle,
+                              ml: 3, mb: 3
+                          }}
                 >채팅 상담하기
                 </MDButton>
 
