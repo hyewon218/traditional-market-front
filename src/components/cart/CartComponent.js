@@ -12,12 +12,16 @@ import MDTypography from "../MD/MDTypography";
 import {deleteCartItem, postCartOrder} from "../../api/cartApi";
 import MDButton from "../MD/MDButton";
 import {useNavigate} from "react-router";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const CartComponent = () => {
     const navigate = useNavigate();
     const {isAuthorization, userId} = useCustomLogin()
     const {refreshCart, cartItems, changeCart} = useCustomCart()
     const [counts, setCounts] = useState({}); // 각 장바구니 항목의 수량을 관리하기 위해
+    const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
     const total = useMemo(() => {
         let total = 0
@@ -67,6 +71,31 @@ const CartComponent = () => {
             navigate('/order');
         }).catch(error => {
             console.error("상품 주문에 실패했습니다.", error);
+        });
+    };
+
+    const handlePreviousImage = (cartItemNo) => {
+        setCurrentImageIndexes(prev => {
+            const currentIndex = prev[cartItemNo] || 0;
+            const imageListLength = cartItems.find(
+                item => item.cartItemNo === cartItemNo).imageList.length;
+            return {
+                ...prev,
+                [cartItemNo]: (currentIndex - 1 + imageListLength)
+                % imageListLength // Wrap around
+            };
+        });
+    };
+
+    const handleNextImage = (cartItemNo) => {
+        setCurrentImageIndexes(prev => {
+            const currentIndex = prev[cartItemNo] || 0;
+            const imageListLength = cartItems.find(
+                item => item.cartItemNo === cartItemNo).imageList.length;
+            return {
+                ...prev,
+                [cartItemNo]: (currentIndex + 1) % imageListLength // Wrap around
+            };
         });
     };
 
@@ -127,174 +156,197 @@ const CartComponent = () => {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     {cartItems.length > 0 && (
-                        <>
-                            <MDBox pb={3}>
-                                <Card>
-                                    <MDBox pt={2}>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={7}>
-                                                <div>
-                                                    <ul>
-                                                        {/* cartItems 가 배열인 경우에만 map 함수를 실행 */}
-                                                        {Array.isArray(
-                                                                cartItems)
-                                                            && cartItems.map(
-                                                                cartItem =>
-                                                                    <li key={cartItem.cartItemNo}
-                                                                        className="border-2 rounded-2"
-                                                                        style={{marginBottom: '16px'}}>
-                                                                        <MDBox
-                                                                            pt={2}
-                                                                            px={2}>
+                        <MDBox pb={3}>
+                            <Card>
+                                <MDBox pt={2}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={7}>
+                                            <ul>
+                                                {cartItems.map(cartItem => {
+                                                    const currentImageIndex = currentImageIndexes[cartItem.cartItemNo]
+                                                        || 0;
+                                                    return (
+                                                        <li key={cartItem.cartItemNo}
+                                                            className="border-2 rounded-2"
+                                                            style={{marginBottom: '16px'}}>
+                                                            <MDBox pt={2}
+                                                                   px={2}>
+                                                                <Grid container
+                                                                      spacing={2}>
+                                                                    <Grid item
+                                                                          xs={12}>
+                                                                        <MDTypography
+                                                                            fontWeight="bold"
+                                                                            variant="body2">
+                                                                            <button
+                                                                                className="m-1 p-1 text-xl text-white bg-red-500 w-8 rounded-lg"
+                                                                                onClick={() => handleDeleteCartItem(
+                                                                                    cartItem.cartItemNo)}
+                                                                            >
+                                                                                X
+                                                                            </button>
+                                                                        </MDTypography>
+                                                                    </Grid>
+                                                                </Grid>
+                                                                <Grid container
+                                                                      spacing={2}>
+                                                                    <Grid item
+                                                                          xs={8}>
+                                                                        <div
+                                                                            style={{
+                                                                                position: 'relative',
+                                                                                display: 'flex',
+                                                                                justifyContent: 'center',
+                                                                                alignItems: 'center'
+                                                                            }}>
+                                                                            {cartItem.imageList.length
+                                                                                > 1
+                                                                                && (
+                                                                                    <IconButton
+                                                                                        onClick={() => handlePreviousImage(
+                                                                                            cartItem.cartItemNo)}
+                                                                                        style={{
+                                                                                            position: 'absolute',
+                                                                                            left: 0
+                                                                                        }}
+                                                                                        disabled={cartItem.imageList.length
+                                                                                            <= 1}
+                                                                                    >
+                                                                                        <KeyboardArrowLeftIcon/>
+                                                                                    </IconButton>
+                                                                                )}
+                                                                            <img
+                                                                                alt="product"
+                                                                                src={cartItem.imageList[currentImageIndex].imageUrl}
+                                                                                style={{
+                                                                                    maxWidth: '100%',
+                                                                                    maxHeight: '300px'
+                                                                                }}
+                                                                            />
+                                                                            {cartItem.imageList.length
+                                                                                > 1
+                                                                                && (
+                                                                                    <IconButton
+                                                                                        onClick={() => handleNextImage(
+                                                                                            cartItem.cartItemNo)}
+                                                                                        style={{
+                                                                                            position: 'absolute',
+                                                                                            right: 0
+                                                                                        }}
+                                                                                        disabled={cartItem.imageList.length
+                                                                                            <= 1}
+                                                                                    >
+                                                                                        <KeyboardArrowRightIcon/>
+                                                                                    </IconButton>
+                                                                                )}
+                                                                        </div>
+                                                                    </Grid>
+                                                                    <Grid item
+                                                                          xs={4}
+                                                                          sx={{mt: 3}}>
+                                                                        <MDTypography
+                                                                            fontWeight="bold"
+                                                                            sx={{fontSize: '2.5rem'}}
+                                                                            variant="body2">
+                                                                            {cartItem.itemName}
+                                                                        </MDTypography>
+                                                                        <MDTypography
+                                                                            fontWeight="bold"
+                                                                            sx={{fontSize: '3rem'}}
+                                                                            variant="body2">
+                                                                            {cartItem.price
+                                                                                * (counts[cartItem.cartItemNo]
+                                                                                    || cartItem.initialCount)}원
+                                                                        </MDTypography>
+                                                                        <Grid
+                                                                            container
+                                                                            sx={{mt: 3}}>
                                                                             <Grid
-                                                                                container
-                                                                                spacing={2}>
-                                                                                <Grid
-                                                                                    item
-                                                                                    xs={12}>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        variant="body2">
-                                                                                        <button
-                                                                                            className="m-1 p-1 text-xl text-white bg-red-500 w-8 rounded-lg"
-                                                                                            onClick={() => handleDeleteCartItem(
-                                                                                                cartItem.cartItemNo)}
-                                                                                        >
-                                                                                            X
-                                                                                        </button>
-                                                                                    </MDTypography>
-                                                                                </Grid>
+                                                                                item
+                                                                                xs={2}>
+                                                                                <MDTypography
+                                                                                    fontWeight="bold"
+                                                                                    variant="body2">
+                                                                                    <button
+                                                                                        className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
+                                                                                        onClick={() => handleClickQty(
+                                                                                            cartItem.cartItemNo,
+                                                                                            -1,
+                                                                                            cartItem.itemNo)}
+                                                                                    >
+                                                                                        -
+                                                                                    </button>
+                                                                                </MDTypography>
                                                                             </Grid>
-
                                                                             <Grid
-                                                                                container
-                                                                                spacing={2}>
-                                                                                <Grid
-                                                                                    item
-                                                                                    xs={7}>
-                                                                                    <div
-                                                                                        className="m-1 p-1">
-                                                                                        {cartItem.imageList.map(
-                                                                                            (cartItem,
-                                                                                                i) =>
-                                                                                                <img
-                                                                                                    alt="product"
-                                                                                                    key={i}
-                                                                                                    /* className="p-4 w-1/2"*/
-                                                                                                    src={`${cartItem.imageUrl}`}/>
-                                                                                        )}
-                                                                                    </div>
-                                                                                </Grid>
-                                                                                <Grid
-                                                                                    item
-                                                                                    xs={5}
-                                                                                    sx={{mt: 3}}>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        sx={{fontSize: '2.5rem'}}
-                                                                                        variant="body2">
-                                                                                        {cartItem.itemName}
-                                                                                    </MDTypography>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        sx={{fontSize: '3rem'}}
-                                                                                        variant="body2">
-                                                                                        {cartItem.price
-                                                                                            * (counts[cartItem.cartItemNo]
-                                                                                                || cartItem.initialCount)}원
-                                                                                    </MDTypography>
-                                                                                    <Grid
-                                                                                        container
-                                                                                        sx={{mt: 3}}>
-                                                                                        <Grid
-                                                                                            item
-                                                                                            xs={2}>
-                                                                                            <MDTypography
-                                                                                                fontWeight="bold"
-                                                                                                variant="body2">
-                                                                                                <button
-                                                                                                    className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
-                                                                                                    onClick={() => handleClickQty(
-                                                                                                        cartItem.cartItemNo,
-                                                                                                        -1,
-                                                                                                        cartItem.itemNo)}
-                                                                                                >
-                                                                                                    -
-                                                                                                </button>
-                                                                                            </MDTypography>
-                                                                                        </Grid>
-                                                                                        <Grid
-                                                                                            item
-                                                                                            xs={1}
-                                                                                            sx={{mt: 1}}>
-                                                                                            <MDTypography
-                                                                                                fontWeight="bold"
-                                                                                                variant="body2">
-                                                                                                {counts[cartItem.cartItemNo]
-                                                                                                    || cartItem.initialCount}
-                                                                                            </MDTypography>
-                                                                                        </Grid>
-                                                                                        <Grid
-                                                                                            item
-                                                                                            xs={2}>
-                                                                                            <MDTypography
-                                                                                                fontWeight="bold"
-                                                                                                variant="body2">
-                                                                                                <button
-                                                                                                    className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
-                                                                                                    onClick={() => handleClickQty(
-                                                                                                        cartItem.cartItemNo,
-                                                                                                        +1,
-                                                                                                        cartItem.itemNo)}
-                                                                                                >
-                                                                                                    +
-                                                                                                </button>
-                                                                                            </MDTypography>
-                                                                                        </Grid>
-                                                                                    </Grid>
-                                                                                </Grid>
+                                                                                item
+                                                                                xs={1}
+                                                                                sx={{mt: 1}}>
+                                                                                <MDTypography
+                                                                                    fontWeight="bold"
+                                                                                    variant="body2">
+                                                                                    {counts[cartItem.cartItemNo]
+                                                                                        || cartItem.initialCount}
+                                                                                </MDTypography>
                                                                             </Grid>
-                                                                        </MDBox>
-                                                                    </li>
-                                                            )}
-                                                    </ul>
-                                                </div>
-                                            </Grid>
-                                            <Grid item xs={5}
-                                                  sx={{paddingRight: '26px'}}>
-                                                <div
-                                                    className="w-full"
-                                                    style={{marginBottom: '20px'}}>
-                                                    <MDTypography
-                                                        fontWeight="bold"
-                                                        sx={{
-                                                            fontSize: '2rem',
-                                                            paddingTop: '9px',
-                                                            paddingLeft: '13px'
-                                                        }}
-                                                        variant="body2">
-                                                        총 가격 : {total}
-                                                    </MDTypography>
-                                                </div>
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center'
-                                                }}>
-                                                    <MDButton
-                                                        onClick={handleClickOrder}
-                                                        variant="gradient"
-                                                        size="large"
-                                                        sx={buttonStyle}
-                                                    >주문하기
-                                                    </MDButton>
-                                                </div>
-
-                                            </Grid>
+                                                                            <Grid
+                                                                                item
+                                                                                xs={2}>
+                                                                                <MDTypography
+                                                                                    fontWeight="bold"
+                                                                                    variant="body2">
+                                                                                    <button
+                                                                                        className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
+                                                                                        onClick={() => handleClickQty(
+                                                                                            cartItem.cartItemNo,
+                                                                                            +1,
+                                                                                            cartItem.itemNo)}
+                                                                                    >
+                                                                                        +
+                                                                                    </button>
+                                                                                </MDTypography>
+                                                                            </Grid>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </MDBox>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
                                         </Grid>
-                                    </MDBox>
-                                </Card>
-                            </MDBox>
-                        </>
+                                        <Grid item xs={5}
+                                              sx={{paddingRight: '26px'}}>
+                                            <div className="w-full"
+                                                 style={{marginBottom: '20px'}}>
+                                                <MDTypography fontWeight="bold"
+                                                              sx={{
+                                                                  fontSize: '2rem',
+                                                                  paddingTop: '9px',
+                                                                  paddingLeft: '13px'
+                                                              }}
+                                                              variant="body2">
+                                                    총 가격 : {total}
+                                                </MDTypography>
+                                            </div>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <MDButton
+                                                    onClick={handleClickOrder}
+                                                    variant="gradient"
+                                                    size="large"
+                                                    sx={buttonStyle}
+                                                >
+                                                    주문하기
+                                                </MDButton>
+                                            </div>
+                                        </Grid>
+                                    </Grid>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
                     )}
                 </Grid>
             </Grid>
