@@ -47,6 +47,7 @@ import {
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import {postOrder} from "../../api/orderApi";
+import IconButton from "@mui/material/IconButton";
 
 function ItemDetail() {
     const {isAdmin, isAuthorization} = useCustomLogin()
@@ -63,6 +64,8 @@ function ItemDetail() {
 
     const [fetching, setFetching] = useState(false)
     const [result, setResult] = useState(null)
+
+    const [currentImageIndex, setCurrentImageIndex] = useState(0); // 이미지 인덱스 상태
 
     const navigate = useNavigate();
 
@@ -189,6 +192,20 @@ function ItemDetail() {
         });
     };
 
+    // 이전 이미지로 이동
+    const handlePreviousImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === 0 ? item.imageList.length - 1 : prevIndex - 1
+        );
+    };
+
+    // 다음 이미지로 이동
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === item.imageList.length - 1 ? 0 : prevIndex + 1
+        );
+    };
+
     const buttonStyle = {
         backgroundColor: '#50bcdf',
         color: '#ffffff',
@@ -226,71 +243,91 @@ function ItemDetail() {
             }
 
             <Grid container spacing={2}>
-                <Grid item xs={7}>
+                <Grid item xs={12} md={7}>
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <Grid container>
                                     <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
+                                        <MDTypography fontWeight="bold" variant="body2">
                                             {item.itemName}
                                         </MDTypography>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <MDTypography variant="body2"
-                                                      textAlign="right">
+                                        <MDTypography variant="body2" textAlign="right">
                                             {item.price}
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
-                                <div
-                                    className="w-full flex overflow-x-auto whitespace-nowrap">
-                                    {item.imageList.map((imgUrl, i) =>
-                                        <img
-                                            alt="product" key={i}
-                                            width={300}
-                                            src={`${imgUrl.imageUrl}`}/>
+                                <div style={{
+                                    position: 'relative',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}>
+                                    {/* Conditionally render navigation arrows */}
+                                    {item.imageList.length > 1 && (
+                                        <IconButton
+                                            onClick={handlePreviousImage}
+                                            style={{ position: 'absolute', left: 0 }}
+                                        >
+                                            <KeyboardArrowLeftIcon />
+                                        </IconButton>
+                                    )}
+                                    <img
+                                        alt="product"
+                                        width="100%"
+                                        style={{ maxWidth: '300px' }}
+                                        src={`${item.imageList[currentImageIndex]?.imageUrl}`}
+                                    />
+                                    {item.imageList.length > 1 && (
+                                        <IconButton
+                                            onClick={handleNextImage}
+                                            style={{ position: 'absolute', right: 0 }}
+                                        >
+                                            <KeyboardArrowRightIcon />
+                                        </IconButton>
                                     )}
                                 </div>
-                                <MDTypography
-                                    variant="body2">{item.itemDetail}</MDTypography>
-                                <MDTypography
-                                    variant="body2">{likes} LIKES</MDTypography>
+                                <MDTypography variant="body2">{item.itemDetail}</MDTypography>
+                                <MDTypography variant="body2">{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.4}>
-                                        <MDButton onClick={handlePostOrCancelLike}
-                                                  variant="gradient"
-                                                  sx={{fontFamily: 'JalnanGothic'}}
-                                                  color="info">
+                                        <MDButton
+                                            onClick={handlePostOrCancelLike}
+                                            variant="gradient"
+                                            sx={{ fontFamily: 'JalnanGothic' }}
+                                            color="info"
+                                        >
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
                                     {isAdmin && ( // 관리자일 때 버튼 생성
                                         <>
-                                        <Grid item xs={1.4}>
-                                            <MDButton
-                                                variant="gradient"
-                                                color="light"
-                                                sx={{fontFamily: 'JalnanGothic'}}
-                                                onClick={() => handleModifyItem(
-                                                    item)}>상품 수정
-                                            </MDButton>
-                                        </Grid>
-                                        <Grid item xs={1.3}>
-                                            <MDButton
-                                                variant="gradient"
-                                                color="light"
-                                                sx={{fontFamily: 'JalnanGothic'}}
-                                                onClick={() => handleDeleteItem(
-                                                    item.itemNo)}>상품 삭제
-                                            </MDButton>
-                                        </Grid>
+                                            <Grid item xs={1.4}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{ fontFamily: 'JalnanGothic' }}
+                                                    onClick={() => handleModifyItem(item)}
+                                                >
+                                                    상품 수정
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.3}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="light"
+                                                    sx={{ fontFamily: 'JalnanGothic' }}
+                                                    onClick={() => handleDeleteItem(item.itemNo)}
+                                                >
+                                                    상품 삭제
+                                                </MDButton>
+                                            </Grid>
                                         </>
                                     )}
                                 </Grid>
                             </MDBox>
-
                         </Card>
                     </MDBox>
                 </Grid>
@@ -392,7 +429,7 @@ function ItemDetail() {
                 </Grid>
             </Grid>
         </DashboardLayout>
-);
+    );
 }
 
 export default ItemDetail;

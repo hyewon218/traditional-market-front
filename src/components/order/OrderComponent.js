@@ -14,6 +14,9 @@ import {postPay} from "../../api/payApi";
 import DeliveryListModal from "../delivery/DeliveryListModal";
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material";
 import Typography from "@mui/material/Typography";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const OrderComponent = () => {
 
@@ -22,6 +25,8 @@ const OrderComponent = () => {
     const [result, setResult] = useState(null)
     const [selectedDelivery, setSelectedDelivery] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('KakaoPay'); // Default payment method
+
+    const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
     const total = useMemo(() => {
         let total = 0
@@ -131,6 +136,33 @@ const OrderComponent = () => {
     const buttonText = primaryDelivery
         ? '변경'
         : '배송지 추가';
+
+    const handlePreviousImage = (orderItemNo) => {
+        setCurrentImageIndexes(prev => {
+            const currentIndex = prev[orderItemNo] || 0;
+            const imageListLength = orderItems.find(
+                    item => item.orderItemNo === orderItemNo)?.imageList.length
+                || 0;
+            return {
+                ...prev,
+                [orderItemNo]: (currentIndex - 1 + imageListLength)
+                % imageListLength
+            };
+        });
+    };
+
+    const handleNextImage = (orderItemNo) => {
+        setCurrentImageIndexes(prev => {
+            const currentIndex = prev[orderItemNo] || 0;
+            const imageListLength = orderItems.find(
+                    item => item.orderItemNo === orderItemNo)?.imageList.length
+                || 0;
+            return {
+                ...prev,
+                [orderItemNo]: (currentIndex + 1) % imageListLength
+            };
+        });
+    };
 
     useEffect(() => {
         handleGetOrderItems();
@@ -266,11 +298,8 @@ const OrderComponent = () => {
             </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <MDTypography
-                        fontWeight="bold"
-                        variant="body2"
-                        fontSize="25px"
-                    >
+                    <MDTypography fontWeight="bold" variant="body2"
+                                  fontSize="25px">
                         주문상품
                     </MDTypography>
                     <Grid container spacing={4}>
@@ -278,95 +307,95 @@ const OrderComponent = () => {
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={2}>
-                                        <div>
-                                            <ul>
-                                                {/* cartItems 가 배열인 경우에만 map 함수를 실행 */}
-                                                {Array.isArray(
-                                                        orderItems)
-                                                    && orderItems.map(
-                                                        orderItem =>
-                                                            <li key={orderItem.orderItemNo}
-                                                                style={{marginBottom: '16px'}}>
-                                                                <MDBox
-                                                                    pt={2}
-                                                                    px={2}>
-                                                                    <Grid
-                                                                        container
-                                                                        spacing={2}>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={12}>
-                                                                            <MDTypography
-                                                                                fontWeight="bold"
-                                                                                variant="body2">
-
-                                                                            </MDTypography>
-                                                                        </Grid>
+                                        <ul>
+                                            {Array.isArray(orderItems)
+                                                && orderItems.map(orderItem => {
+                                                    const currentImageIndex = currentImageIndexes[orderItem.orderItemNo]
+                                                        || 0;
+                                                    return (
+                                                        <li key={orderItem.orderItemNo}
+                                                            style={{marginBottom: '16px'}}>
+                                                            <MDBox pt={2}
+                                                                   px={2}>
+                                                                <Grid container
+                                                                      spacing={2}>
+                                                                    <Grid item
+                                                                          xs={7}>
+                                                                        {/* Image Navigation */}
+                                                                        <div
+                                                                            style={{position: 'relative'}}>
+                                                                            <IconButton
+                                                                                onClick={() => handlePreviousImage(
+                                                                                    orderItem.orderItemNo)}
+                                                                                style={{
+                                                                                    position: 'absolute',
+                                                                                    left: 0,
+                                                                                    top: '50%',
+                                                                                    transform: 'translateY(-50%)'
+                                                                                }}
+                                                                            >
+                                                                                <KeyboardArrowLeftIcon/>
+                                                                            </IconButton>
+                                                                            <img
+                                                                                src={orderItem.imageList[currentImageIndex]?.imageUrl}
+                                                                                alt={orderItem.itemName}
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    height: 'auto'
+                                                                                }}
+                                                                            />
+                                                                            <IconButton
+                                                                                onClick={() => handleNextImage(
+                                                                                    orderItem.orderItemNo)}
+                                                                                style={{
+                                                                                    position: 'absolute',
+                                                                                    right: 0,
+                                                                                    top: '50%',
+                                                                                    transform: 'translateY(-50%)'
+                                                                                }}
+                                                                            >
+                                                                                <KeyboardArrowRightIcon/>
+                                                                            </IconButton>
+                                                                        </div>
                                                                     </Grid>
-
-                                                                    <Grid
-                                                                        container
-                                                                        spacing={2}>
+                                                                    <Grid item
+                                                                          xs={4}
+                                                                          sx={{mt: 3}}>
+                                                                        <MDTypography
+                                                                            fontWeight="bold"
+                                                                            sx={{fontSize: '2.5rem'}}
+                                                                            variant="body2">
+                                                                            {orderItem.itemName}
+                                                                        </MDTypography>
+                                                                        <MDTypography
+                                                                            fontWeight="bold"
+                                                                            sx={{fontSize: '3rem'}}
+                                                                            variant="body2">
+                                                                            {orderItem.orderPrice
+                                                                                * orderItem.count}원
+                                                                        </MDTypography>
                                                                         <Grid
-                                                                            item
-                                                                            xs={7}>
-                                                                            <div
-                                                                                className=" m-1 p-1 ">
-                                                                                {orderItem.imageList.map(
-                                                                                    (imageUrl,
-                                                                                        index) => (
-                                                                                        <img
-                                                                                            key={index}
-                                                                                            src={imageUrl.imageUrl}
-                                                                                            alt={orderItem.itemName}/>
-                                                                                    ))}
-                                                                            </div>
-                                                                        </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={5}
+                                                                            container
                                                                             sx={{mt: 3}}>
-                                                                            <MDTypography
-                                                                                fontWeight="bold"
-                                                                                sx={{fontSize: '2.5rem'}}
-                                                                                variant="body2">
-                                                                                {orderItem.itemName}
-                                                                            </MDTypography>
-                                                                            <MDTypography
-                                                                                fontWeight="bold"
-                                                                                sx={{fontSize: '3rem'}}
-                                                                                variant="body2">
-                                                                                {orderItem.orderPrice
-                                                                                    * orderItem.count}원
-                                                                            </MDTypography>
                                                                             <Grid
-                                                                                container
-                                                                                sx={{mt: 3}}>
-
-                                                                                <Grid
-                                                                                    item
-                                                                                    xs={3}
-                                                                                    sx={{mt: 1}}>
-                                                                                    <MDTypography
-                                                                                        fontWeight="bold"
-                                                                                        variant="body2"> 수량
-                                                                                        :
-                                                                                        {orderItem.count}개
-                                                                                    </MDTypography>
-                                                                                </Grid>
-                                                                                <Grid
-                                                                                    item
-                                                                                    xs={2}>
-
-                                                                                </Grid>
+                                                                                item
+                                                                                xs={3}
+                                                                                sx={{mt: 1}}>
+                                                                                <MDTypography
+                                                                                    fontWeight="bold"
+                                                                                    variant="body2">
+                                                                                    수량
+                                                                                    : {orderItem.count}개
+                                                                                </MDTypography>
                                                                             </Grid>
                                                                         </Grid>
                                                                     </Grid>
-                                                                </MDBox>
-                                                            </li>
-                                                    )}
-                                            </ul>
-                                        </div>
+                                                                </Grid>
+                                                            </MDBox>
+                                                        </li>
+                                                    );
+                                                })}
+                                        </ul>
                                     </MDBox>
                                 </Card>
                             </MDBox>

@@ -52,7 +52,6 @@ function ShopDetail() {
     const {isAdmin, isAuthorization} = useCustomLogin()
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
-    console.log(state);
     const [page, setPage] = useState(0);
     const [itemPage, setItemPage] = useState(0);
 
@@ -66,6 +65,8 @@ function ShopDetail() {
 
     const [fetching, setFetching] = useState(false)
     const [result, setResult] = useState(null)
+
+    const [currentItemImageIndices, setCurrentItemImageIndices] = useState([]);
 
     const navigate = useNavigate();
 
@@ -195,6 +196,7 @@ function ShopDetail() {
             console.log(data);
             setItems(data.content);
             setItemTotalPage(data.totalPages);
+            setCurrentItemImageIndices(Array(data.content.length).fill(0)); // 상품 이미지 인덱스 초기화
         }).catch(error => {
             console.error("상품 조회에 실패했습니다.", error);
         });
@@ -205,8 +207,27 @@ function ShopDetail() {
         navigate('/market')
     }
 
+    const handleNextItemImage = (index) => {
+        setCurrentItemImageIndices((prevIndices) => {
+            const newIndices = [...prevIndices];
+            newIndices[index] = (newIndices[index] + 1)
+                % items[index].imageList.length;
+            return newIndices;
+        });
+    };
+
+    const handlePreviousItemImage = (index) => {
+        setCurrentItemImageIndices((prevIndices) => {
+            const newIndices = [...prevIndices];
+            newIndices[index] = (newIndices[index] - 1
+                    + items[index].imageList.length)
+                % items[index].imageList.length;
+            return newIndices;
+        });
+    };
+
     useEffect(() => {
-        console.log("isAdmin : " + isAdmin)
+        //console.log("isAdmin : " + isAdmin)
         handleCountLikes();
         handleCheckLike();
         handleGetComments();
@@ -240,7 +261,7 @@ function ShopDetail() {
                                     <Grid item xs={6}>
                                         <MDTypography variant="body2"
                                                       textAlign="right">
-                                            {shop.postCode}
+                                            {shop.shopAddr}
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
@@ -253,8 +274,6 @@ function ShopDetail() {
                                             src={`${imgUrl.imageUrl}`}/>
                                     )}
                                 </div>
-                                <MDTypography
-                                    variant="body2">{shop.streetAddr}</MDTypography>
                                 <MDTypography
                                     variant="body2">{likes} LIKES</MDTypography>
 
@@ -309,7 +328,7 @@ function ShopDetail() {
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
-                                <MDBox pt={2} pb={2} px={3}>
+                                <MDBox pt={1} pb={2} px={3}>
                                     {comments.map((comment) => (
                                         <MDBox pt={2} pb={2}>
                                             <Card>
@@ -370,48 +389,83 @@ function ShopDetail() {
                 </Grid>
             </Grid>
 
-            <Grid container pt={3} pb={3}>
-                {items.map((item) => (
-                    <MDBox pt={2} pb={2} px={3}>
-                        <Card>
-                            <MDBox pt={2} pb={2} px={3}>
-                                <Grid container>
-                                    <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
-                                            {item.itemName}
-                                        </MDTypography>
+            <Grid container pt={1} pb={3}>
+                {items.map((item, index) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                        <MDBox pt={1} pb={2} px={3}>
+                            <Card>
+                                <MDBox pt={2} pb={2} px={3}>
+                                    <Grid container>
+                                        <Grid item xs={6}>
+                                            <MDTypography fontWeight="bold"
+                                                          variant="body2">
+                                                {item.itemName}
+                                            </MDTypography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <MDTypography variant="body2"
+                                                          textAlign="right">
+                                                {item.price}
+                                            </MDTypography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <MDTypography variant="body2"
-                                                      textAlign="right">
-                                            {item.price}
-                                        </MDTypography>
+                                    <MDTypography
+                                        variant="body2">{item.itemDetail}</MDTypography>
+                                    <Grid container>
+                                        <Grid item xs={10}></Grid>
+                                        <Grid item xs={2}>
+                                            <Button onClick={() => handleDetail(
+                                                item)}>Detail</Button>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                                <MDTypography
-                                    variant="body2">{item.itemDetail}</MDTypography>
-                                <Grid container>
-                                    <Grid item xs={10}></Grid>
-                                    <Grid item xs={1}>
-                                        <Button onClick={() => handleDetail(
-                                            item)}>Detail</Button>
-                                    </Grid>
-                                </Grid>
-                                <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
-                                    {item.imageList.map((imgUrl, i) =>
-                                        <img
-                                            alt="product" key={i}
-                                            width={300}
-                                            src={`${imgUrl.imageUrl}`}/>
-                                    )}
-                                </div>
-                            </MDBox>
-                        </Card>
-                    </MDBox>
+                                    <div
+                                        className="w-full flex flex-col items-center justify-center pt-2">
+                                        <Grid container alignItems="center"
+                                              justifyContent="center">
+                                            {item.imageList.length > 1 && (
+                                                <Grid item xs={2} display="flex"
+                                                      alignItems="center"
+                                                      justifyContent="center">
+                                                    <MDButton
+                                                        onClick={() => handlePreviousItemImage(
+                                                            index)}>
+                                                        <KeyboardArrowLeftIcon/>
+                                                    </MDButton>
+                                                </Grid>
+                                            )}
+                                            <Grid item xs={8} display="flex"
+                                                  alignItems="center"
+                                                  justifyContent="center">
+                                                <img
+                                                    alt="product"
+                                                    width={300}
+                                                    src={`${item.imageList[currentItemImageIndices[index]].imageUrl}`}
+                                                    style={{
+                                                        maxWidth: '100%',
+                                                        height: 'auto'
+                                                    }} // Ensures image is responsive
+                                                />
+                                            </Grid>
+                                            {item.imageList.length > 1 && (
+                                                <Grid item xs={2} display="flex"
+                                                      alignItems="center"
+                                                      justifyContent="center">
+                                                    <MDButton
+                                                        onClick={() => handleNextItemImage(
+                                                            index)}>
+                                                        <KeyboardArrowRightIcon/>
+                                                    </MDButton>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    </div>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    </Grid>
                 ))}
             </Grid>
+
 
             <MDPagination>
                 <MDPagination item>
