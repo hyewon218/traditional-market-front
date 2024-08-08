@@ -66,6 +66,20 @@ export const getItemComments = async (ino, pageParam) => {
     return res.data
 }
 
+export const putItemComment = async (cno, updatedComment) => {
+    const header = {headers: {"Content-Type": "application/json"}}
+    const data = {
+        comment: updatedComment
+    }
+    const res = await axios.put(`${prefix}/comments/${cno}`,JSON.stringify(data), header)
+    return res.data
+}
+
+export const deleteItemComment = async (cno) => {
+    const res = await axios.delete(`${prefix}/comments/${cno}`)
+    return res.data
+}
+
 /*좋아요*/
 export const postItemLike = async (ino) => {
     const res = await axios.post(`${prefix}/${ino}/likes`)
