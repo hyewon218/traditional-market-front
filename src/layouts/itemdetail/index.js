@@ -39,10 +39,12 @@ import useCustomLogin from "../../hooks/useCustomLogin";
 import {
     cancelItemLike,
     deleteItem,
+    deleteItemComment,
     getItemComments,
     getItemLike,
     postItemComment,
-    postItemLike
+    postItemLike,
+    putItemComment
 } from "../../api/itemApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
@@ -50,7 +52,7 @@ import {postOrder} from "../../api/orderApi";
 import IconButton from "@mui/material/IconButton";
 
 function ItemDetail() {
-    const {isAdmin, isAuthorization} = useCustomLogin()
+    const {isAdmin, isAuthorization, userId} = useCustomLogin()
     const {state} = useLocation();
     const item = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -66,6 +68,10 @@ function ItemDetail() {
     const [result, setResult] = useState(null)
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0); // 이미지 인덱스 상태
+
+    const [editingCommentId, setEditingCommentId] = useState(null); // State to manage editing mode
+    const [editingCommentText, setEditingCommentText] = useState(''); // State to manage the current comment text being edited
+
 
     const navigate = useNavigate();
 
@@ -206,6 +212,53 @@ function ItemDetail() {
         );
     };
 
+    const handleEditComment = (commentId, text) => {
+        setEditingCommentId(commentId);
+        setEditingCommentText(text);
+    };
+
+    const handleUpdateComment = (commentNo, updatedComment) => {
+        if (!updatedComment.trim()) { // 댓글 필드 비어있는지 확인
+            alert("댓글을 작성해주세요.");
+            return;
+        }
+        // Add your logic to update the comment here
+        putItemComment(commentNo, updatedComment).then(data => {
+            console.log('댓글 수정 성공:', data);
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === commentNo ? {
+                        ...comment,
+                        comment: updatedComment
+                    } : comment
+                )
+            );
+        }).catch(error => {
+            console.error("상품 댓글 수정에 실패했습니다.", error);
+        });
+
+        setEditingCommentId(null);
+        setEditingCommentText('');
+    };
+
+    const handleDeleteComment = (commentNo) => {
+        const confirmed = window.confirm('댓글을 삭제하시겠습니까?');
+        if (!confirmed) {
+            return; // If the user cancels, do nothing
+        }
+        deleteItemComment(commentNo).then(data => {
+            console.log('댓글 삭제 성공:', data);
+            setComments((prevComments) =>
+                prevComments.filter((comment) => comment.id !== commentNo)
+            );
+        }).catch(error => {
+            console.error("상품 댓글 삭제에 실패했습니다.", error);
+        });
+
+        setEditingCommentId(null);
+        setEditingCommentText('');
+    };
+
     const buttonStyle = {
         backgroundColor: '#50bcdf',
         color: '#ffffff',
@@ -249,12 +302,14 @@ function ItemDetail() {
                             <MDBox pt={2} pb={3} px={3}>
                                 <Grid container>
                                     <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold" variant="body2">
+                                        <MDTypography fontWeight="bold"
+                                                      variant="body2">
                                             {item.itemName}
                                         </MDTypography>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <MDTypography variant="body2" textAlign="right">
+                                        <MDTypography variant="body2"
+                                                      textAlign="right">
                                             {item.price}
                                         </MDTypography>
                                     </Grid>
@@ -269,34 +324,42 @@ function ItemDetail() {
                                     {item.imageList.length > 1 && (
                                         <IconButton
                                             onClick={handlePreviousImage}
-                                            style={{ position: 'absolute', left: 0 }}
+                                            style={{
+                                                position: 'absolute',
+                                                left: 0
+                                            }}
                                         >
-                                            <KeyboardArrowLeftIcon />
+                                            <KeyboardArrowLeftIcon/>
                                         </IconButton>
                                     )}
                                     <img
                                         alt="product"
                                         width="100%"
-                                        style={{ maxWidth: '300px' }}
+                                        style={{maxWidth: '300px'}}
                                         src={`${item.imageList[currentImageIndex]?.imageUrl}`}
                                     />
                                     {item.imageList.length > 1 && (
                                         <IconButton
                                             onClick={handleNextImage}
-                                            style={{ position: 'absolute', right: 0 }}
+                                            style={{
+                                                position: 'absolute',
+                                                right: 0
+                                            }}
                                         >
-                                            <KeyboardArrowRightIcon />
+                                            <KeyboardArrowRightIcon/>
                                         </IconButton>
                                     )}
                                 </div>
-                                <MDTypography variant="body2">{item.itemDetail}</MDTypography>
-                                <MDTypography variant="body2">{likes} LIKES</MDTypography>
+                                <MDTypography
+                                    variant="body2">{item.itemDetail}</MDTypography>
+                                <MDTypography
+                                    variant="body2">{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.4}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
-                                            sx={{ fontFamily: 'JalnanGothic' }}
+                                            sx={{fontFamily: 'JalnanGothic'}}
                                             color="info"
                                         >
                                             좋아요 👍🏻
@@ -308,8 +371,9 @@ function ItemDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{ fontFamily: 'JalnanGothic' }}
-                                                    onClick={() => handleModifyItem(item)}
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleModifyItem(
+                                                        item)}
                                                 >
                                                     상품 수정
                                                 </MDButton>
@@ -318,8 +382,9 @@ function ItemDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{ fontFamily: 'JalnanGothic' }}
-                                                    onClick={() => handleDeleteItem(item.itemNo)}
+                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    onClick={() => handleDeleteItem(
+                                                        item.itemNo)}
                                                 >
                                                     상품 삭제
                                                 </MDButton>
@@ -337,31 +402,90 @@ function ItemDetail() {
                     <MDBox pt={3} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
-                                <MDBox pt={2} pb={2} px={3}>
+                                <MDBox pt={3} pb={2} px={3}>
                                     {comments.map((comment) => (
-                                        <MDBox pt={2} pb={2}>
-                                            <Card>
-                                                <MDBox pt={2} pb={2} px={3}>
-                                                    <Grid container>
-                                                        <Grid item xs={6}>
-                                                            <MDTypography
-                                                                fontWeight="bold"
-                                                                variant="body2">
-                                                                {comment.comment}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <MDTypography
-                                                                variant="body2"
-                                                                textAlign="right">
-                                                                {comment.username}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                    </Grid>
+                                        <MDBox pt={2} pb={2} key={comment.id}>
+                                            <Grid container>
+                                                <Grid item xs={6}>
                                                     <MDTypography
-                                                        variant="body2">{comment.body}</MDTypography>
-                                                </MDBox>
-                                            </Card>
+                                                        fontWeight="bold"
+                                                        sx={{mt: -1}}
+                                                        variant="body2">
+                                                        {editingCommentId
+                                                        === comment.id ? (
+                                                            <MDInput
+                                                                type="text"
+                                                                value={editingCommentText}
+                                                                onChange={(e) => setEditingCommentText(
+                                                                    e.target.value)}
+                                                                fullWidth
+                                                            />
+                                                        ) : (
+                                                            comment.comment
+                                                        )}
+                                                    </MDTypography>
+                                                </Grid>
+                                                <Grid item xs={3}>
+                                                    <MDTypography
+                                                        variant="body2"
+                                                        textAlign="right">
+                                                        {comment.username}
+                                                    </MDTypography>
+                                                </Grid>
+
+                                                {comment.username === userId
+                                                    && (
+                                                        <MDBox mt={-1}>
+                                                            {editingCommentId
+                                                            === comment.id ? (
+                                                                <div>
+                                                                    <MDButton
+                                                                        variant="contained"
+                                                                        color="primary"
+                                                                        size="small"
+                                                                        onClick={() => handleUpdateComment(
+                                                                            comment.id,
+                                                                            editingCommentText)}
+                                                                    >
+                                                                        업데이트
+                                                                    </MDButton>
+                                                                    <MDButton
+                                                                        variant="contained"
+                                                                        color="secondary"
+                                                                        size="small"
+                                                                        onClick={() => {
+                                                                            setEditingCommentId(
+                                                                                null);
+                                                                            setEditingCommentText(
+                                                                                '');
+                                                                        }}
+                                                                        style={{
+                                                                            marginLeft: '0.5rem'
+                                                                        }}
+                                                                    >
+                                                                        취소
+                                                                    </MDButton>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <MDButton
+                                                                        onClick={() => handleEditComment(
+                                                                            comment.id,
+                                                                            comment.comment)}
+                                                                    >
+                                                                        수정
+                                                                    </MDButton>
+                                                                    <MDButton
+                                                                        onClick={() => handleDeleteComment(
+                                                                            comment.id)}
+                                                                    >
+                                                                        삭제
+                                                                    </MDButton>
+                                                                </>
+                                                            )}
+                                                        </MDBox>
+                                                    )}
+                                            </Grid>
                                         </MDBox>
                                     ))}
                                     <MDPagination>
@@ -382,20 +506,38 @@ function ItemDetail() {
                                         </MDPagination>
                                     </MDPagination>
 
-                                    <MDInput label="댓글"
-                                             onChange={(v) => setComment(
-                                                 v.target.value)} fullWidth/>
-                                </MDBox>
-                                <MDBox pt={2} pb={2} px={3} right>
-                                    <MDButton onClick={handleWriteComment}
-                                              variant="gradient" color="info">
-                                        댓글
-                                    </MDButton>
+                                    <MDBox sx={{mt: 2, mb: 0.5}}>
+                                        <Grid container spacing={2}>
+                                            <Grid item
+                                                  xs={9}> {/* Adjust xs value to control the width */}
+                                                <MDInput
+                                                    label="댓글"
+                                                    value={comment}
+                                                    onChange={(v) => setComment(
+                                                        v.target.value)}
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                            <Grid item
+                                                  xs={3}> {/* Adjust xs value to control the width */}
+                                                <MDButton
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={handleWriteComment}
+                                                    fullWidth
+                                                >
+                                                    댓글 작성
+                                                </MDButton>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
                                 </MDBox>
                             </MDBox>
                         </Card>
                     </MDBox>
                 </Grid>
+
+
             </Grid>
 
             <Grid container spacing={2} justifyContent="right">

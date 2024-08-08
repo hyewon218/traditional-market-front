@@ -33,9 +33,9 @@ export const getListCategory = async (pageParam, category) => {
     return res.data
 }
 
-export const putShop = async (sno, market) => {
+export const putShop = async (sno, formData) => {
     const header = {headers: {"Content-Type": "multipart/form-data"}}
-    const res = await axios.put(`${prefix}/${sno}`, market, header)
+    const res = await axios.put(`${prefix}/${sno}`, formData, header)
     return res.data
 }
 
@@ -56,6 +56,20 @@ export const getShopComments = async (sno, pageParam) => {
         params:
         {page: page, size: size}
     })
+    return res.data
+}
+
+export const putShopComment = async (cno, updatedComment) => {
+    const header = {headers: {"Content-Type": "application/json"}}
+    const data = {
+        comment: updatedComment
+    }
+    const res = await axios.put(`${prefix}/comments/${cno}`,JSON.stringify(data), header)
+    return res.data
+}
+
+export const deleteShopComment = async (cno) => {
+    const res = await axios.delete(`${prefix}/comments/${cno}`)
     return res.data
 }
 
