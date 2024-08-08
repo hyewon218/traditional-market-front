@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router';
 
 // @mui material components
 import Grid from '@mui/material/Grid';
@@ -20,12 +20,11 @@ import MDPagination from '../../components/MD/MDPagination';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import Button from '@mui/material/Button';
-import { getList, getListCategory, getListSearch } from "../../api/marketApi";
+import {getList, getListCategory, getListSearch} from "../../api/marketApi";
 import MDButton from "../../components/MD/MDButton";
 import MDInput from "../../components/MD/MDInput";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
-
 
 function Market() {
     const {isAuthorization} = useCustomLogin()
@@ -54,7 +53,9 @@ function Market() {
     }, []);
 
     useEffect(() => {
-        if (isSearchActive) return;
+        if (isSearchActive) {
+            return;
+        }
 
         if (selectedCategory) {
             fetchCategoryMarkets(0);
@@ -64,7 +65,7 @@ function Market() {
     }, [selectedCategory, isSearchActive]);
 
     const fetchMarkets = (pageNum = 0) => {
-        const pageParam = { page: pageNum, size: 8 };
+        const pageParam = {page: pageNum, size: 8};
         getList(pageParam).then(data => {
             setMarkets(data.content);
             setTotalPage(data.totalPages);
@@ -73,7 +74,7 @@ function Market() {
     };
 
     const fetchSearchMarkets = (pageNum) => {
-        const pageParam = { page: pageNum, size: 8 };
+        const pageParam = {page: pageNum, size: 8};
         getListSearch(pageParam, search).then(data => {
             setFilteredMarkets(data.content);
             setSearchTotalPage(data.totalPages);
@@ -82,7 +83,7 @@ function Market() {
     };
 
     const fetchCategoryMarkets = (pageNum = 0) => {
-        const pageParam = { page: pageNum, size: 8 };
+        const pageParam = {page: pageNum, size: 8};
         getListCategory(pageParam, selectedCategory).then(data => {
             setCategoryMarkets(data.content);
             setCategoryTotalPage(data.totalPages);
@@ -107,7 +108,7 @@ function Market() {
 
     const handleDetail = (market) => {
         console.log('handleDetail');
-        navigate('/market-detail', { state: market });
+        navigate('/market-detail', {state: market});
     };
 
     const handleCategorySelect = (category) => {
@@ -131,14 +132,22 @@ function Market() {
         }
     };
 
-    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory ? categoryMarkets : markets);
-    const currentTotalPage = isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage);
+    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory
+        ? categoryMarkets : markets);
+    const currentTotalPage = isSearchActive ? searchTotalPage
+        : (selectedCategory ? categoryTotalPage : totalPage);
 
     return (
         <DashboardLayout>
             {/* 시장 검색 */}
-            <MDBox pt={5} pb={5} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Card sx={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <MDBox pt={5} pb={5}
+                   sx={{display: 'flex', justifyContent: 'center'}}>
+                <Card sx={{
+                    width: '50%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
                     <MDInput
                         label="시장을 검색해 보세요!"
                         value={search}
@@ -157,85 +166,127 @@ function Market() {
                             marginLeft: '0px',
                         }}
                     />
-                    <IconButton onClick={handleSearchSubmit} sx={{ position: 'absolute', right: '15px' }}>
-                        <SearchIcon />
+                    <IconButton onClick={handleSearchSubmit}
+                                sx={{position: 'absolute', right: '15px'}}>
+                        <SearchIcon/>
                     </IconButton>
                 </Card>
                 {/* 장바구니 아이콘 + 장바구니에 담긴 상품 갯수*/}
-                <IconButton onClick={handleCartIcon} sx={{ position: 'absolute', right: '65px' }}>
+                <IconButton onClick={handleCartIcon}
+                            sx={{position: 'absolute', right: '65px'}}>
                     <Badge badgeContent={cartItems.length} color="primary">
-                        <ShoppingCartIcon />
+                        <ShoppingCartIcon/>
                     </Badge>
                 </IconButton>
             </MDBox>
 
             {/* 카테고리 */}
             <Grid container spacing={1} justifyContent="center">
-                {["서울", "인천", "경기도", "강원도", "충청도", "경상도", "전라도", "제주도"].map((category, index) => (
-                    <Grid item xs={index < 2 ? 0.9 : 1.0} key={category}>
-                        <MDBox>
-                            <MDButton
-                                onClick={() => handleCategorySelect(category)}
-                                variant="gradient"
-                                size="large"
-                                sx={{ backgroundColor: '#50bcdf', color: '#ffffff', fontSize: '1.28rem', fontFamily: 'JalnanGothic' }}
-                            >
-                                {category}
-                            </MDButton>
-                        </MDBox>
-                    </Grid>
-                ))}
+                {["서울", "인천", "경기도", "강원도", "충청도", "경상도", "전라도", "제주도"].map(
+                    (category, index) => (
+                        <Grid item xs={index < 2 ? 0.9 : 1.0} key={category}>
+                            <MDBox>
+                                <MDButton
+                                    onClick={() => handleCategorySelect(
+                                        category)}
+                                    variant="gradient"
+                                    size="large"
+                                    sx={{
+                                        backgroundColor: '#50bcdf',
+                                        color: '#ffffff',
+                                        fontSize: '1.28rem',
+                                        fontFamily: 'JalnanGothic'
+                                    }}
+                                >
+                                    {category}
+                                </MDButton>
+                            </MDBox>
+                        </Grid>
+                    ))}
             </Grid>
 
             {/* 시장 목록 조회 */}
             <Grid container pt={3} pb={3}>
-                {renderMarkets.map((market) => (
-                    <MDBox pt={2} pb={2} px={3} key={market.id}>
-                        <Card>
-                            <MDBox pt={2} pb={2} px={3}>
-                                <Grid container>
-                                    <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold" variant="body2">
-                                            {market.marketName}
-                                        </MDTypography>
+                {renderMarkets.length > 0 ? (
+                    renderMarkets.map((market) => (
+                        <MDBox pt={2} pb={2} px={3} key={market.id}>
+                            <Card>
+                                <MDBox pt={2} pb={2} px={3}>
+                                    <Grid container>
+                                        <Grid item xs={6}>
+                                            <MDTypography fontWeight="bold"
+                                                          variant="body2">
+                                                {market.marketName}
+                                            </MDTypography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <MDTypography variant="body2"
+                                                          textAlign="right">
+                                                {market.marketDetail}
+                                            </MDTypography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <MDTypography variant="body2" textAlign="right">
-                                            {market.marketDetail}
-                                        </MDTypography>
+                                    <MDTypography
+                                        variant="body2">{market.marketAddr}</MDTypography>
+                                    <Grid container>
+                                        <Grid item xs={10}></Grid>
+                                        <Grid item xs={1}>
+                                            <Button onClick={() => handleDetail(
+                                                market)}>Detail</Button>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                                <MDTypography variant="body2">{market.marketAddr}</MDTypography>
-                                <Grid container>
-                                    <Grid item xs={10}></Grid>
-                                    <Grid item xs={1}>
-                                        <Button onClick={() => handleDetail(market)}>Detail</Button>
-                                    </Grid>
-                                </Grid>
-                                <div className="w-full justify-center flex flex-col m-auto items-center">
-                                    {market.imageList.map((imgUrl, i) => (
-                                        <img alt="product" key={i} width={300} src={imgUrl.imageUrl} />
-                                    ))}
-                                </div>
-                            </MDBox>
-                        </Card>
-                    </MDBox>
-                ))}
+                                    <div
+                                        className="w-full justify-center flex flex-col m-auto items-center">
+                                        {market.imageList.map((imgUrl, i) => (
+                                            <img alt="product" key={i}
+                                                 width={300}
+                                                 src={imgUrl.imageUrl}/>
+                                        ))}
+                                    </div>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    ))
+                ) : (
+                    <Grid item xs={12}>
+                        <MDTypography
+                            variant="body2"
+                            textAlign="center"
+                            sx={{fontSize: '1.28rem', pt: 2}}
+                        >
+                            {isSearchActive
+                                ? '검색한 시장이 존재하지 않습니다.'
+                                : selectedCategory
+                                    ? '선택한 지역의 시장이 존재하지 않습니다.'
+                                    : '시장을 로딩 중입니다...'}
+                        </MDTypography>
+                    </Grid>
+                )}
             </Grid>
+
 
             {/* Pagination */}
             {currentTotalPage > 0 && (
                 <MDPagination>
-                    <MDPagination item onClick={() => changePage(page - 1)} disabled={page === 0}>
-                        <KeyboardArrowLeftIcon />
+                    <MDPagination item onClick={() => changePage(page - 1)}
+                                  disabled={page === 0}>
+                        <KeyboardArrowLeftIcon/>
                     </MDPagination>
-                    {[...Array(isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage)).keys()].map((i) => (
-                        <MDPagination item onClick={() => changePage(i)} key={i}>
-                            {i + 1}
-                        </MDPagination>
-                    ))}
-                    <MDPagination item onClick={() => changePage(page + 1)} disabled={page === (isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage)) - 1}>
-                        <KeyboardArrowRightIcon />
+                    {[...Array(
+                        isSearchActive ? searchTotalPage : (selectedCategory
+                            ? categoryTotalPage : totalPage)).keys()].map(
+                        (i) => (
+                            <MDPagination item onClick={() => changePage(i)}
+                                          key={i}>
+                                {i + 1}
+                            </MDPagination>
+                        ))}
+                    <MDPagination item onClick={() => changePage(page + 1)}
+                                  disabled={page === (isSearchActive
+                                          ? searchTotalPage : (selectedCategory
+                                              ? categoryTotalPage : totalPage))
+                                      - 1}>
+                        <KeyboardArrowRightIcon/>
                     </MDPagination>
                 </MDPagination>
             )}
