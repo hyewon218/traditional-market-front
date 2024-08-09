@@ -112,9 +112,13 @@ function Market() {
     };
 
     const handleCategorySelect = (category) => {
-        setSelectedCategory(category);
-        setIsSearchActive(false);
-        setPage(0);
+        if (category === "전체") {
+            fetchMarkets(0);
+        } else {
+            setSelectedCategory(category);
+            setIsSearchActive(false);
+            setPage(0);
+        }
     };
 
     const handleCartIcon = () => {
@@ -140,7 +144,7 @@ function Market() {
     return (
         <DashboardLayout>
             {/* 시장 검색 */}
-            <MDBox pt={5} pb={5}
+            <MDBox pt={2} pb={5}
                    sx={{display: 'flex', justifyContent: 'center'}}>
                 <Card sx={{
                     width: '50%',
@@ -182,9 +186,10 @@ function Market() {
 
             {/* 카테고리 */}
             <Grid container spacing={1} justifyContent="center">
-                {["서울", "인천", "경기도", "강원도", "충청도", "경상도", "전라도", "제주도"].map(
+                {["전체", "서울", "인천", "경기도", "강원도", "충청도", "경상도", "전라도",
+                    "제주도"].map(
                     (category, index) => (
-                        <Grid item xs={index < 2 ? 0.9 : 1.0} key={category}>
+                        <Grid item xs={index < 3 ? 1.0 : 1.15} key={category}>
                             <MDBox>
                                 <MDButton
                                     onClick={() => handleCategorySelect(
@@ -194,7 +199,7 @@ function Market() {
                                     sx={{
                                         backgroundColor: '#50bcdf',
                                         color: '#ffffff',
-                                        fontSize: '1.28rem',
+                                        fontSize: '1.0rem',
                                         fontFamily: 'JalnanGothic'
                                     }}
                                 >
@@ -206,47 +211,68 @@ function Market() {
             </Grid>
 
             {/* 시장 목록 조회 */}
-            <Grid container pt={3} pb={3}>
+            <Grid container pt={2} pb={3}>
                 {renderMarkets.length > 0 ? (
-                    renderMarkets.map((market) => (
-                        <MDBox pt={2} pb={2} px={3} key={market.id}>
-                            <Card>
-                                <MDBox pt={2} pb={2} px={3}>
-                                    <Grid container>
-                                        <Grid item xs={6}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
-                                                {market.marketName}
-                                            </MDTypography>
+                    renderMarkets.map((market, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                            <MDBox pt={2} pb={2} key={market.id}>
+                                <Card sx={{
+                                    width: '90%',
+                                    maxWidth: '350px',
+                                    mx: 'auto',
+                                    //ml: '-30px'
+                                }}>
+                                    <MDBox pt={2} pb={2} px={2}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2">
+                                                    {market.marketName}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <MDTypography variant="body2"
+                                                              textAlign="right">
+                                                    {market.marketDetail}
+                                                </MDTypography>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={6}>
-                                            <MDTypography variant="body2"
-                                                          textAlign="right">
-                                                {market.marketDetail}
-                                            </MDTypography>
+                                        <Grid container >
+                                            <Grid item xs={9} pt={1.1}>
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: '0.75rem',  // Adjust font size
+                                                        //padding: '10px 8px',   // Adjust padding (top-bottom left-right)
+                                                    }}
+                                                    variant="body2">{market.marketAddr}</MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}
+                                                  sx={{textAlign: 'right'}}>
+                                                <Button
+                                                    onClick={() => handleDetail(
+                                                        market)}
+                                                    sx={{
+                                                        padding: '4px 8px', // Adjust these values as needed
+                                                        mr: '-10px'
+                                                    }}
+                                                >Detail</Button>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                    <MDTypography
-                                        variant="body2">{market.marketAddr}</MDTypography>
-                                    <Grid container>
-                                        <Grid item xs={10}></Grid>
-                                        <Grid item xs={1}>
-                                            <Button onClick={() => handleDetail(
-                                                market)}>Detail</Button>
-                                        </Grid>
-                                    </Grid>
-                                    <div
-                                        className="w-full justify-center flex flex-col m-auto items-center">
-                                        {market.imageList.map((imgUrl, i) => (
-                                            <img alt="product" key={i}
-                                                 width={300}
-                                                 src={imgUrl.imageUrl}/>
-                                        ))}
-                                    </div>
-                                </MDBox>
-                            </Card>
-                        </MDBox>
+                                        <div
+                                            className="w-full justify-center flex flex-col m-auto items-center">
+                                            {market.imageList.map(
+                                                (imgUrl, i) => (
+                                                    <img alt="product" key={i}
+                                                         width={270}
+                                                         src={imgUrl.imageUrl}/>
+                                                ))}
+                                        </div>
+                                    </MDBox>
+                                </Card>
+                            </MDBox>
+                        </Grid>
                     ))
+
                 ) : (
                     <Grid item xs={12}>
                         <MDTypography
@@ -267,7 +293,7 @@ function Market() {
 
             {/* Pagination */}
             {currentTotalPage > 0 && (
-                <MDPagination>
+                <MDPagination size={"small"}>
                     <MDPagination item onClick={() => changePage(page - 1)}
                                   disabled={page === 0}>
                         <KeyboardArrowLeftIcon/>

@@ -24,9 +24,9 @@ export const getShopList = async (mno, pageParam) => {
     return res.data
 }
 
-export const getListCategory = async (pageParam, category) => {
+export const getListCategory = async (mno, pageParam, category) => {
     const {page, size} = pageParam
-    const res = await axios.get(`${prefix}/category`, {
+    const res = await axios.get(`${prefixApi}/${mno}/shops/category`, {
         params:
             {category: category, page: page, size: size}
     })

@@ -170,16 +170,30 @@ const CartComponent = () => {
                                                             className="border-2 rounded-2"
                                                             style={{marginBottom: '16px'}}>
                                                             <MDBox pt={2}
-                                                                   px={2}>
+                                                                   px={2}
+                                                                   pb={2}
+                                                            >
                                                                 <Grid container
-                                                                      spacing={2}>
+                                                                      spacing={2} >
                                                                     <Grid item
-                                                                          xs={12}>
+                                                                          xs={2}>
                                                                         <MDTypography
                                                                             fontWeight="bold"
                                                                             variant="body2">
                                                                             <button
-                                                                                className="m-1 p-1 text-xl text-white bg-red-500 w-8 rounded-lg"
+                                                                                style={{
+                                                                                    margin: '4px',
+                                                                                    padding: '2px 4px',
+                                                                                    fontSize: '0.875rem',  // Smaller font size
+                                                                                    color: 'white',
+                                                                                    backgroundColor: '#f56565', // Red color
+                                                                                    width: '24px',  // Smaller width
+                                                                                    height: '24px', // Smaller height
+                                                                                    borderRadius: '0.5rem', // Rounded corners
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center'
+                                                                                }}
                                                                                 onClick={() => handleDeleteCartItem(
                                                                                     cartItem.cartItemNo)}
                                                                             >
@@ -187,11 +201,8 @@ const CartComponent = () => {
                                                                             </button>
                                                                         </MDTypography>
                                                                     </Grid>
-                                                                </Grid>
-                                                                <Grid container
-                                                                      spacing={2}>
                                                                     <Grid item
-                                                                          xs={8}>
+                                                                          xs={5}>
                                                                         <div
                                                                             style={{
                                                                                 position: 'relative',
@@ -207,7 +218,7 @@ const CartComponent = () => {
                                                                                             cartItem.cartItemNo)}
                                                                                         style={{
                                                                                             position: 'absolute',
-                                                                                            left: 0
+                                                                                            left: '50px'
                                                                                         }}
                                                                                         disabled={cartItem.imageList.length
                                                                                             <= 1}
@@ -220,7 +231,7 @@ const CartComponent = () => {
                                                                                 src={cartItem.imageList[currentImageIndex].imageUrl}
                                                                                 style={{
                                                                                     maxWidth: '100%',
-                                                                                    maxHeight: '300px'
+                                                                                    maxHeight: '150px'
                                                                                 }}
                                                                             />
                                                                             {cartItem.imageList.length
@@ -231,7 +242,7 @@ const CartComponent = () => {
                                                                                             cartItem.cartItemNo)}
                                                                                         style={{
                                                                                             position: 'absolute',
-                                                                                            right: 0
+                                                                                            right: '50px'
                                                                                         }}
                                                                                         disabled={cartItem.imageList.length
                                                                                             <= 1}
@@ -242,17 +253,17 @@ const CartComponent = () => {
                                                                         </div>
                                                                     </Grid>
                                                                     <Grid item
-                                                                          xs={4}
-                                                                          sx={{mt: 3}}>
+                                                                          xs={5}
+                                                                    >
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{fontSize: '2.5rem'}}
+                                                                            sx={{fontSize: '1.5rem'}}
                                                                             variant="body2">
                                                                             {cartItem.itemName}
                                                                         </MDTypography>
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{fontSize: '3rem'}}
+                                                                            sx={{fontSize: '2rem'}}
                                                                             variant="body2">
                                                                             {cartItem.price
                                                                                 * (counts[cartItem.cartItemNo]
@@ -260,7 +271,7 @@ const CartComponent = () => {
                                                                         </MDTypography>
                                                                         <Grid
                                                                             container
-                                                                            sx={{mt: 3}}>
+                                                                            sx={{mt: 2}}>
                                                                             <Grid
                                                                                 item
                                                                                 xs={2}>
@@ -268,7 +279,7 @@ const CartComponent = () => {
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
                                                                                     <button
-                                                                                        className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
+                                                                                        className="m-1 p-0.5 text-sm bg-purple-200 text-purple-700 w-6 rounded-lg"
                                                                                         onClick={() => handleClickQty(
                                                                                             cartItem.cartItemNo,
                                                                                             -1,
@@ -281,7 +292,7 @@ const CartComponent = () => {
                                                                             <Grid
                                                                                 item
                                                                                 xs={1}
-                                                                                sx={{mt: 1}}>
+                                                                                sx={{mt: 0.5}}>
                                                                                 <MDTypography
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
@@ -296,7 +307,7 @@ const CartComponent = () => {
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
                                                                                     <button
-                                                                                        className="m-1 p-1 text-1xl bg-orange-500 w-8 rounded-lg"
+                                                                                        className="m-1 p-0.5 text-sm bg-purple-200 text-purple-700 w-6 rounded-lg"
                                                                                         onClick={() => handleClickQty(
                                                                                             cartItem.cartItemNo,
                                                                                             +1,

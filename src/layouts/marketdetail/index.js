@@ -46,6 +46,20 @@ import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
 
 const categoryMapping = {
+    "전체": 'ALL',
+    "농산물": 'AGRI',
+    "수산물": 'MARINE',
+    "축산물": 'LIVESTOCK',
+    "청과물": 'FRUITS',
+    "가공식품": 'PROCESSED',
+    "떡•방앗간": 'RICE',
+    "음식점": 'RESTAURANT',
+    "반찬": 'SIDEDISH',
+    "잡화•의류": 'STUFF',
+    "기타": 'ETC',
+};
+
+/*const categoryMapping = {
     "전체 👨🏻‍🌾": 'ALL',
     "농산물 🌾": 'AGRI',
     "수산물 🐟": 'MARINE',
@@ -57,7 +71,7 @@ const categoryMapping = {
     "반찬 🥗": 'SIDEDISH',
     "잡화•의류 👗": 'STUFF',
     "기타•마트 🧺": 'ETC',
-};
+};*/
 
 function MarketDetail() {
     const {isAdmin, isAuthorization} = useCustomLogin()
@@ -80,6 +94,20 @@ function MarketDetail() {
     const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        handleCountLikes();
+        handleGetShops();
+        handleCheckLike();
+    }, []);
+
+    useEffect(() => {
+        if (isCategoryFiltered && selectedCategory) {
+            handleGetCategoryShops(0);
+        } else {
+            handleGetShops(shopPage); // Fetch shops without category filter if not active
+        }
+    }, [selectedCategory, isCategoryFiltered]);
 
     const handleModifyMarket = (market) => {
         console.log('handleModify');
@@ -174,7 +202,7 @@ function MarketDetail() {
 
     /*카테고리 조회*/
     const handleCategorySelect = (category) => {
-        if (category === "전체 👨🏻‍🌾") {
+        if (category === "전체") {
             handleGetShops(0);
         } else {
             const mappedCategory = categoryMapping[category] || '';
@@ -188,10 +216,11 @@ function MarketDetail() {
         console.log('handleGetCategoryShops');
         //console.log('Selected Category:', selectedCategory); // Debugging line
         const pageParam = {page: pageNum, size: 8};
-        getListCategory(pageParam, selectedCategory).then(data => {
-            setFilteredShops(data.content);
-            setCategoryTotalPage(data.totalPages);
-        }).catch(error => {
+        getListCategory(market.marketNo, pageParam, selectedCategory).then(
+            data => {
+                setFilteredShops(data.content);
+                setCategoryTotalPage(data.totalPages);
+            }).catch(error => {
             console.error("시장 카테고리 조회에 실패했습니다.", error);
         });
     };
@@ -206,31 +235,9 @@ function MarketDetail() {
         navigate('/market')
     }
 
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '1rem',
-        fontFamily: 'JalnanGothic',
-        padding: '10px 40px',
-        width: '300px',
-    };
-
-    useEffect(() => {
-        handleCountLikes();
-        handleGetShops();
-        handleCheckLike();
-    }, []);
-
-    useEffect(() => {
-        if (isCategoryFiltered && selectedCategory) {
-            handleGetCategoryShops(0);
-        } else {
-            handleGetShops(shopPage); // Fetch shops without category filter if not active
-        }
-    }, [selectedCategory, isCategoryFiltered]);
-
     // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
-    const shouldShowPagination = !isCategoryFiltered || filteredShops.length > 0;
+    const shouldShowPagination = !isCategoryFiltered || filteredShops.length
+        > 0;
 
     return (
         <DashboardLayout>
@@ -246,9 +253,9 @@ function MarketDetail() {
             }
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <MDBox pt={3} pb={3}>
+                    <MDBox pt={1} pb={3}>
                         <Card>
-                            <MDBox pt={4} pb={3} px={3}>
+                            <MDBox pt={3} pb={3} px={3}>
                                 <Grid container>
                                     <Grid item xs={6}>
                                         <MDTypography fontWeight="bold"
@@ -268,7 +275,7 @@ function MarketDetail() {
                                     {market.imageList.map((img, i) =>
                                         <img
                                             alt="product" key={i}
-                                            width={300}
+                                            width={230}
                                             src={`${img.imageUrl}`}/>
                                     )}
                                 </div>
@@ -281,11 +288,14 @@ function MarketDetail() {
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
-                                            sx={{fontFamily: 'JalnanGothic'}}
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: '0.75rem',  // Adjust font size
+                                                padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                            }}
                                             color="info">좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
-
 
                                     {isAdmin && ( // 관리자일 때 버튼 생성
                                         <>
@@ -293,7 +303,10 @@ function MarketDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                    }}
                                                     onClick={() => handleModifyMarket(
                                                         market)}>시장 수정
                                                 </MDButton>
@@ -302,31 +315,45 @@ function MarketDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                    }}
                                                     onClick={() => handleDeleteMarket(
                                                         market.marketNo)}>시장 삭제
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={2.7}>
+                                            <Grid item xs={1.6}>
                                                 <MDButton
                                                     variant="gradient"
+
                                                     color="success"
-                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                    }}
                                                     onClick={() => handleAddShop(
                                                         market)}>상점 추가
                                                 </MDButton>
                                             </Grid>
                                         </>
                                     )}
-                                    <Grid item xs={4.5}>
+                                    <Grid item xs={5.6}>
                                         <div style={{
                                             display: 'flex',
-                                            justifyContent: 'center'
+                                            justifyContent: 'right'
                                         }}>
                                             <MDButton
                                                 onClick={handleGetTopFiveItemPage}
                                                 variant="gradient"
-                                                sx={buttonStyle}
+                                                sx={{
+                                                    backgroundColor: '#50bcdf',
+                                                    color: '#ffffff',
+                                                    fontSize: '0.75rem',
+                                                    fontFamily: 'JalnanGothic',
+                                                    padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                    minWidth: '100px',    // Optionally adjust the minimum width
+                                                }}
                                                 color="warning">🔥상품별 가격 순위
                                                 확인
                                             </MDButton>
@@ -340,8 +367,8 @@ function MarketDetail() {
 
                 {/*지도*/}
                 <Grid item xs={6}>
-                    <MDBox pt={3} pb={3}>
-                        <Card>
+                    <MDBox pt={1} pb={3}>
+                        <Card style={{height: '290px'}}>
                             <MDBox component="form" role="form">
                                 <MapComponent marketAddr={market.marketAddr}
                                               marketName={market.marketName}/>
@@ -352,15 +379,15 @@ function MarketDetail() {
             </Grid>
 
             {/*카테고리*/}
-            <Grid container spacing={1} justifyContent="center">
+            <Grid container spacing={0.1} justifyContent="center">
                 {Object.keys(categoryMapping).map((displayCategory, index) => (
                     <Grid item
                           xs={index === 0 ? 0.9 : index === 1 ? 1.0
                               : index === 2 ? 1.0 : index === 3 ? 1.0
-                                  : index === 4 ? 1.0 : index === 5 ? 1.1
-                                      : index === 6 ? 1.2 : index === 7 ? 0.9
-                                          : index === 8 ? 0.9 : index === 9
-                                              ? 1.2 : 1.2}
+                                  : index === 4 ? 1.0 : index === 5 ? 1.15
+                                      : index === 6 ? 1.25 : index === 7 ? 1.0
+                                          : index === 8 ? 0.85 : index === 9
+                                              ? 1.25 : 1.1}
                           key={displayCategory}>
                         <MDBox>
                             <MDButton
@@ -371,7 +398,7 @@ function MarketDetail() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1.28rem',
+                                    fontSize: '0.8rem',
                                     fontFamily: 'JalnanGothic'
                                 }}
                             >
@@ -383,61 +410,83 @@ function MarketDetail() {
             </Grid>
 
             {/* 시장 내 상점 목록 */}
-            <Grid container pt={3} pb={3}>
+            <Grid container pt={2} pb={3}>
                 {(isCategoryFiltered && filteredShops.length === 0) ? (
                     <Grid item xs={12}>
-                        <MDTypography variant="body2" textAlign="center" sx={{fontSize: '1.28rem', pt:2}}>
+                        <MDTypography variant="body2" textAlign="center"
+                                      sx={{fontSize: '1.28rem', pt: 2}}>
                             선택한 카테고리 내 상점이 존재하지 않습니다.
                         </MDTypography>
                     </Grid>
                 ) : (
-                    (isCategoryFiltered ? filteredShops : shops).map((shop) => (
-                        <MDBox pt={2} pb={2} px={3} key={shop.shopNo}>
-                            <Card>
-                                <MDBox pt={2} pb={2} px={3}>
-                                    <Grid container>
-                                        <Grid item xs={6}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
-                                                {shop.shopName}
-                                            </MDTypography>
+                    (isCategoryFiltered ? filteredShops : shops).map((shop, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                            <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
+                                <Card sx={{
+                                    width: '100%',
+                                    maxWidth: '380px',
+                                    mx: 'auto'
+                                }}>
+                                    <MDBox pt={2} pb={2} px={2}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold"
+                                                              sx={{
+                                                                  fontSize: '0.9rem',  // Adjust font size
+                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                              }}
+                                                              variant="body2">
+                                                    {shop.shopName}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <MDTypography variant="body2"
+                                                              sx={{
+                                                                  fontSize: '0.9rem',  // Adjust font size
+                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                              }}
+                                                              textAlign="right">
+                                                    {shop.tel}
+                                                </MDTypography>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={6}>
-                                            <MDTypography variant="body2"
-                                                          textAlign="right">
-                                                {shop.tel}
-                                            </MDTypography>
+                                        <Grid container>
+                                            <Grid item xs={8.7}>
+                                                <MDTypography variant="body2"
+                                                              sx={{
+                                                                  fontSize: '0.9rem',  // Adjust font size
+                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                              }}
+                                                >
+                                                    {shop.sellerName}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3.3}>
+                                                <Button
+                                                    onClick={() => handleDetail(
+                                                        shop)}>
+                                                    Detail
+                                                </Button>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                    <MDTypography variant="body2">
-                                        {shop.sellerName}
-                                    </MDTypography>
-                                    <Grid container>
-                                        <Grid item xs={10}></Grid>
-                                        <Grid item xs={1}>
-                                            <Button onClick={() => handleDetail(
-                                                shop)}>
-                                                Detail
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                    <div
-                                        className="w-full justify-center flex flex-col m-auto items-center">
-                                        {shop.imageList.map((imgUrl, i) => (
-                                            <img alt="product" key={i}
-                                                 width={300}
-                                                 src={`${imgUrl.imageUrl}`}/>
-                                        ))}
-                                    </div>
-                                </MDBox>
-                            </Card>
-                        </MDBox>
+                                        <div
+                                            className="w-full justify-center flex flex-col m-auto items-center">
+                                            {shop.imageList.map((imgUrl, i) => (
+                                                <img alt="product" key={i}
+                                                     width={250}
+                                                     src={`${imgUrl.imageUrl}`}/>
+                                            ))}
+                                        </div>
+                                    </MDBox>
+                                </Card>
+                            </MDBox>
+                        </Grid>
                     ))
                 )}
             </Grid>
 
             {shouldShowPagination && (
-                <MDPagination>
+                <MDPagination size={"small"}>
                     <MDPagination item>
                         <KeyboardArrowLeftIcon/>
                     </MDPagination>

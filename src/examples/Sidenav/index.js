@@ -30,8 +30,6 @@ import Icon from '@mui/material/Icon';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
-import MDButton from '../../components/MD/MDButton';
-
 // Material Dashboard 2 React example components
 import SidenavCollapse from '../../examples/Sidenav/SidenavCollapse';
 
@@ -71,7 +69,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       setWhiteSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav);
     }
 
-    /** 
+    /**
      The event listener that's calling the handleMiniSidenav function when resizing the window.
     */
     window.addEventListener('resize', handleMiniSidenav);
@@ -83,7 +81,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     return () => window.removeEventListener('resize', handleMiniSidenav);
   }, [dispatch, location]);
 
-  // Render all the routes from the routes.js (All the visible items on the Sidenav)
+  // Render all the routes from the RoutesComponent.js (All the visible items on the Sidenav)
   const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
     let returnValue;
 
@@ -146,7 +144,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       variant="permanent"
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
     >
-      <MDBox pt={3} pb={1} px={4} textAlign="center">
+      <MDBox pt={3} pb={1} px={2} textAlign="center">
         <MDBox
           display={{ xs: 'block', xl: 'none' }}
           position="absolute"
@@ -161,12 +159,18 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           </MDTypography>
         </MDBox>
         <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+          {/*{brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}*/}
           <MDBox
             width={!brandName && '100%'}
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
           >
-            <MDTypography component="h6" variant="button" fontWeight="medium" color={textColor}>
+            <MDTypography
+                component="h6"
+                variant="button"
+                fontWeight="medium"
+                color={textColor}
+                sx={{ fontSize: '1.2rem' }} // Adjust the font size as needed
+            >
               {brandName}
             </MDTypography>
           </MDBox>
