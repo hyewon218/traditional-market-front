@@ -93,15 +93,6 @@ const OrderComponent = () => {
         });
     }
 
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '2rem',
-        fontFamily: 'JalnanGothic',
-        padding: '20px 40px',
-        width: '660px',
-    };
-
     const getDeliveryAddressTitle = () => {
         const receiver = selectedDelivery?.receiver || primaryDelivery.receiver
             || '';
@@ -136,6 +127,16 @@ const OrderComponent = () => {
     const buttonText = primaryDelivery
         ? '변경'
         : '배송지 추가';
+
+
+    const buttonStyle = {
+        backgroundColor: '#50bcdf',
+        color: '#ffffff',
+        fontSize: '2rem',
+        fontFamily: 'JalnanGothic',
+        padding: '20px 40px',
+        width: '660px',
+    };
 
     const handlePreviousImage = (orderItemNo) => {
         setCurrentImageIndexes(prev => {
@@ -209,69 +210,57 @@ const OrderComponent = () => {
                         <Grid item xs={7}>
                             <MDBox pb={3}>
                                 <Card>
-                                    <MDBox pt={2}>
+                                    <MDBox>
                                         <div>
                                             <MDBox
+                                                pb={2}
                                                 pt={2}
                                                 px={2}>
-                                                <Grid
-                                                    container
-                                                    sx={{ml: 1, mb: 2}}
-                                                    spacing={2}>
-                                                    <Grid
-                                                        container
-                                                        spacing={2}>
-                                                        <Grid
-                                                            item
-                                                            xs={10}
+                                                <Grid item xs={12} container alignItems="center">
+                                                    <Grid item xs={9}>
+                                                        <MDTypography
+                                                            fontWeight="bold"
+                                                            sx={{ fontSize: '1.3rem' }}
+                                                            variant="body2"
                                                         >
-                                                            <MDTypography
-                                                                fontWeight="bold"
-                                                                sx={{fontSize: '1.5rem'}}
-                                                                variant="body2">
-                                                                {deliveryAddressTitleMessage}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                        <Grid
-                                                            item
-                                                            xs={2}
-                                                            sx={{mt: 1}}>
-                                                            <MDButton
-                                                                onClick={handleDeliveryModal}
-                                                                variant="gradient"
-                                                                color="light">
-                                                                {buttonText}
-                                                            </MDButton>
-                                                        </Grid>
+                                                            {deliveryAddressTitleMessage}
+                                                        </MDTypography>
                                                     </Grid>
-                                                    <Grid
-                                                        container>
-                                                        <Grid
-                                                            item
-                                                            xs={5}
-                                                            sx={{mt: 1}}>
-                                                            <MDTypography
-                                                                fontWeight="bold"
-                                                                variant="body2">
-                                                                {selectedDelivery?.phone
-                                                                    || primaryDelivery.phone}
-                                                            </MDTypography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Grid
-                                                        container>
-                                                        <Grid
-                                                            item
-                                                            xs={12}
-                                                            sx={{mt: 1}}>
-                                                            <MDTypography
-                                                                fontWeight="bold"
-                                                                variant="body2">
-                                                                {deliveryAddress}
-                                                            </MDTypography>
-                                                        </Grid>
+                                                    <Grid item xs={3} container justifyContent="flex-end">
+                                                        <MDButton
+                                                            onClick={handleDeliveryModal}
+                                                            variant="gradient"
+                                                            color="success"
+                                                            sx={{
+                                                                backgroundColor: '#50bcdf',
+                                                                color: '#ffffff',
+                                                                fontFamily: 'JalnanGothic',
+                                                                width: '80px',
+                                                                height: '40px', // Adjust height as needed
+                                                                fontSize: '0.875rem', // Adjust font size as needed
+                                                            }}
+                                                        >
+                                                            {buttonText}
+                                                        </MDButton>
                                                     </Grid>
                                                 </Grid>
+                                                <Grid item xs={12}>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                    >
+                                                        {selectedDelivery?.phone || primaryDelivery.phone}
+                                                    </MDTypography>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                    >
+                                                        {deliveryAddress}
+                                                    </MDTypography>
+                                                </Grid>
+
                                             </MDBox>
                                         </div>
                                     </MDBox>
@@ -306,86 +295,100 @@ const OrderComponent = () => {
                         <Grid item xs={7}>
                             <MDBox pb={3}>
                                 <Card>
-                                    <MDBox pt={2}>
+                                    <MDBox pt={1}>
                                         <ul>
                                             {Array.isArray(orderItems)
                                                 && orderItems.map(orderItem => {
-                                                    const currentImageIndex = currentImageIndexes[orderItem.orderItemNo]
-                                                        || 0;
+                                                    const currentImageIndex = currentImageIndexes[orderItem.orderItemNo] || 0;
+                                                    const imageList = orderItem.imageList || [];
+                                                    const hasImages = imageList.length > 1;
                                                     return (
                                                         <li key={orderItem.orderItemNo}
-                                                            style={{marginBottom: '16px'}}>
-                                                            <MDBox pt={2}
-                                                                   px={2}>
+                                                            style={{ marginBottom: '16px' }}>
+                                                            <MDBox px={2}>
                                                                 <Grid container
                                                                       spacing={2}>
                                                                     <Grid item
                                                                           xs={7}>
                                                                         {/* Image Navigation */}
                                                                         <div
-                                                                            style={{position: 'relative'}}>
-                                                                            <IconButton
-                                                                                onClick={() => handlePreviousImage(
-                                                                                    orderItem.orderItemNo)}
-                                                                                style={{
-                                                                                    position: 'absolute',
-                                                                                    left: 0,
-                                                                                    top: '50%',
-                                                                                    transform: 'translateY(-50%)'
-                                                                                }}
-                                                                            >
-                                                                                <KeyboardArrowLeftIcon/>
-                                                                            </IconButton>
+                                                                            style={{
+                                                                                position: 'relative',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                width: '300px',  // Adjust the width as needed
+                                                                                height: '150px', // Adjust the height as needed
+                                                                                margin: '0 auto' // Center the entire image container
+                                                                            }}
+                                                                        >
+                                                                            {hasImages && (
+                                                                                <IconButton
+                                                                                    onClick={() => handlePreviousImage(orderItem.orderItemNo)}
+                                                                                    style={{
+                                                                                        position: 'absolute',
+                                                                                        left: '-30px',  // Adjusted to align with the image's new position
+                                                                                        top: '50%',
+                                                                                        transform: 'translateY(-50%)',
+                                                                                        zIndex: 1  // Ensure the button is on top of the image
+                                                                                    }}
+                                                                                >
+                                                                                    <KeyboardArrowLeftIcon />
+                                                                                </IconButton>
+                                                                            )}
+
                                                                             <img
-                                                                                src={orderItem.imageList[currentImageIndex]?.imageUrl}
+                                                                                src={imageList[currentImageIndex]?.imageUrl}
                                                                                 alt={orderItem.itemName}
                                                                                 style={{
-                                                                                    width: '100%',
-                                                                                    height: 'auto'
+                                                                                    maxWidth: '100%', // Scale the image to fit the container
+                                                                                    maxHeight: '100%',
+                                                                                    objectFit: 'contain', // Ensure the image maintains its aspect ratio
+                                                                                    marginRight: '50px'  // Adjust this to move the image slightly to the left
                                                                                 }}
                                                                             />
-                                                                            <IconButton
-                                                                                onClick={() => handleNextImage(
-                                                                                    orderItem.orderItemNo)}
-                                                                                style={{
-                                                                                    position: 'absolute',
-                                                                                    right: 0,
-                                                                                    top: '50%',
-                                                                                    transform: 'translateY(-50%)'
-                                                                                }}
-                                                                            >
-                                                                                <KeyboardArrowRightIcon/>
-                                                                            </IconButton>
+
+                                                                            {hasImages && (
+                                                                                <IconButton
+                                                                                    onClick={() => handleNextImage(orderItem.orderItemNo)}
+                                                                                    style={{
+                                                                                        position: 'absolute',
+                                                                                        right: '10px', // Align this with the image's new position
+                                                                                        top: '50%',
+                                                                                        transform: 'translateY(-50%)',
+                                                                                        zIndex: 1 // Ensure the button is on top of the image
+                                                                                    }}
+                                                                                >
+                                                                                    <KeyboardArrowRightIcon />
+                                                                                </IconButton>
+                                                                            )}
                                                                         </div>
                                                                     </Grid>
                                                                     <Grid item
-                                                                          xs={4}
-                                                                          sx={{mt: 3}}>
+                                                                          xs={4}  sx={{ mt: 3 }}>
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{fontSize: '2.5rem'}}
+                                                                            sx={{ fontSize: '1.5rem' }}
                                                                             variant="body2">
                                                                             {orderItem.itemName}
                                                                         </MDTypography>
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{fontSize: '3rem'}}
+                                                                            sx={{ fontSize: '1.5rem' }}
                                                                             variant="body2">
-                                                                            {orderItem.orderPrice
-                                                                                * orderItem.count}원
+                                                                            {orderItem.orderPrice * orderItem.count}원
                                                                         </MDTypography>
                                                                         <Grid
                                                                             container
-                                                                            sx={{mt: 3}}>
+                                                                           >
                                                                             <Grid
                                                                                 item
-                                                                                xs={3}
-                                                                                sx={{mt: 1}}>
+                                                                                xs={7}
+                                                                                sx={{ mt: 1 }}>
                                                                                 <MDTypography
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
-                                                                                    수량
-                                                                                    : {orderItem.count}개
+                                                                                    수량 : {orderItem.count}개
                                                                                 </MDTypography>
                                                                             </Grid>
                                                                         </Grid>

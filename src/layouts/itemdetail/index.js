@@ -72,7 +72,6 @@ function ItemDetail() {
     const [editingCommentId, setEditingCommentId] = useState(null); // State to manage editing mode
     const [editingCommentText, setEditingCommentText] = useState(''); // State to manage the current comment text being edited
 
-
     const navigate = useNavigate();
 
     //장바구니 기능
@@ -128,7 +127,7 @@ function ItemDetail() {
 
     const handleGetComments = (pageNum) => {
         console.log('handleGetComments');
-        const pageParam = {page: pageNum, size: 2};
+        const pageParam = {page: pageNum, size: 3};
         getItemComments(item.itemNo, pageParam).then(data => {
             console.log('상품 댓글 조회 성공!!!');
             setComments(data.content);
@@ -359,7 +358,12 @@ function ItemDetail() {
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
-                                            sx={{fontFamily: 'JalnanGothic'}}
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: '0.75rem',  // Adjust font size here
+                                                padding: '4px 8px',   // Adjust padding for smaller button
+                                                minWidth: 'auto'      // Adjust the minimum width to fit content
+                                            }}
                                             color="info"
                                         >
                                             좋아요 👍🏻
@@ -371,7 +375,11 @@ function ItemDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        //fontSize: '0.75rem',  // Adjust font size
+                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                    }}
                                                     onClick={() => handleModifyItem(
                                                         item)}
                                                 >
@@ -382,7 +390,10 @@ function ItemDetail() {
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
-                                                    sx={{fontFamily: 'JalnanGothic'}}
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                    }}
                                                     onClick={() => handleDeleteItem(
                                                         item.itemNo)}
                                                 >
@@ -406,10 +417,13 @@ function ItemDetail() {
                                     {comments.map((comment) => (
                                         <MDBox pt={2} pb={2} key={comment.id}>
                                             <Grid container>
-                                                <Grid item xs={6}>
+                                                <Grid item xs={5}>
                                                     <MDTypography
                                                         fontWeight="bold"
-                                                        sx={{mt: -1}}
+                                                        sx={{
+                                                            mt: -2,
+                                                            fontSize: '0.9rem'  // Adjust font size here
+                                                        }}
                                                         variant="body2">
                                                         {editingCommentId
                                                         === comment.id ? (
@@ -425,9 +439,13 @@ function ItemDetail() {
                                                         )}
                                                     </MDTypography>
                                                 </Grid>
-                                                <Grid item xs={3}>
+                                                <Grid item xs={2}>
                                                     <MDTypography
                                                         variant="body2"
+                                                        sx={{
+                                                            mt: -2,
+                                                            fontSize: '0.9rem'  // Adjust font size here
+                                                        }}
                                                         textAlign="right">
                                                         {comment.username}
                                                     </MDTypography>
@@ -435,22 +453,35 @@ function ItemDetail() {
 
                                                 {comment.username === userId
                                                     && (
-                                                        <MDBox mt={-1}>
+                                                        <MDBox mt={-3}>
                                                             {editingCommentId
                                                             === comment.id ? (
                                                                 <div>
                                                                     <MDButton
                                                                         variant="contained"
-                                                                        color="primary"
+                                                                        sx={{
+                                                                            fontFamily: 'JalnanGothic',
+                                                                            fontSize: '0.8rem',  // Adjust font size
+                                                                            mt: 1,
+                                                                            ml: 1
+                                                                            //padding: '10px 8px',   // Adjust padding (top-bottom left-right)
+                                                                        }}
+                                                                        color="success"
                                                                         size="small"
                                                                         onClick={() => handleUpdateComment(
                                                                             comment.id,
                                                                             editingCommentText)}
                                                                     >
-                                                                        업데이트
+                                                                        수정
                                                                     </MDButton>
                                                                     <MDButton
                                                                         variant="contained"
+                                                                        sx={{
+                                                                            fontFamily: 'JalnanGothic',
+                                                                            fontSize: '0.8rem',  // Adjust font size
+                                                                            mt: 1,
+                                                                            //padding: '10px 8px',   // Adjust padding (top-bottom left-right)
+                                                                        }}
                                                                         color="secondary"
                                                                         size="small"
                                                                         onClick={() => {
@@ -488,7 +519,7 @@ function ItemDetail() {
                                             </Grid>
                                         </MDBox>
                                     ))}
-                                    <MDPagination>
+                                    <MDPagination size={"small"}>
                                         <MDPagination item>
                                             <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
                                         </MDPagination>
@@ -523,6 +554,11 @@ function ItemDetail() {
                                                 <MDButton
                                                     variant="contained"
                                                     color="primary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        fontSize: '0.9rem',  // Adjust font size
+                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                    }}
                                                     onClick={handleWriteComment}
                                                     fullWidth
                                                 >
@@ -535,41 +571,40 @@ function ItemDetail() {
                             </MDBox>
                         </Card>
                     </MDBox>
-                </Grid>
-
-
-            </Grid>
-
-            <Grid container spacing={2} justifyContent="right">
-                <Grid item xs={2.45}>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center'
-                    }}>
-                        <MDButton onClick={handleClickAddCart}
-                                  variant="gradient"
-                                  size="large"
-                                  sx={buttonStyle}
-                        >장바구니
-                        </MDButton>
-                    </div>
-                </Grid>
-                <Grid item xs={2.45}>
-                    <MDBox>
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'center'
-                        }}>
-                            <MDButton onClick={handleClickOrder}
-                                      variant="gradient"
-                                      size="large"
-                                      sx={buttonStyle}
-                            >구매하기
-                            </MDButton>
-                        </div>
-                    </MDBox>
+                    <Grid container spacing={2} justifyContent="right">
+                        <Grid item xs={6}>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}>
+                                <MDButton onClick={handleClickAddCart}
+                                          variant="gradient"
+                                          size="large"
+                                          sx={buttonStyle}
+                                >장바구니
+                                </MDButton>
+                            </div>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <MDBox>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                }}>
+                                    <MDButton onClick={handleClickOrder}
+                                              variant="gradient"
+                                              size="large"
+                                              sx={buttonStyle}
+                                    >구매하기
+                                    </MDButton>
+                                </div>
+                            </MDBox>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
+
+
         </DashboardLayout>
     );
 }

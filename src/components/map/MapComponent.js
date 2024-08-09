@@ -247,58 +247,62 @@ const MapComponent = ({marketAddr, marketName}) => {
     return (
         <div>
             <Grid container>
-                <Grid item xs={9}>
+                <Grid item xs={9.1}>
                     <div id="map" className="map"></div>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2.9}>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '1.3rem', mb: 2}}
+                        sx={{fontSize: '1.1rem', mb: 1}}
                         textAlign="right">
                         날씨 정보
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="current-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="feels-like"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="min-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="max-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="humidity"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
+                        sx={{fontSize: '0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="weather-description"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2">
                         <p id="weather-image-container" style={{
-                            width: '60px',
-                            height: '35px',
+                            width: '50px',
+                            height: '30px',
                             marginLeft: 'auto'
                         }}></p>
                     </MDTypography>
                 </Grid>
             </Grid>
-
-
         </div>
 
     );

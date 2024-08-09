@@ -151,11 +151,11 @@ const DeliveryListModal = ({callbackFn}) => {
             <div
                 className={`fixed top-0 left-0 z-[1050] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}
             >
-                <MDBox pt={6} pb={3}
+                <MDBox pt={3} pb={3}
                        style={{
                            width: '80%',
                            maxWidth: '600px',
-                           marginTop: '50px'
+                           marginTop: '25px'
                        }}>
                     <Card>
                         <MDButton
@@ -208,9 +208,9 @@ const DeliveryListModal = ({callbackFn}) => {
                             <Grid container spacing={4}>
                                 <Grid item xs={12}>
                                     <MDBox
-                                        pb={3}
+                                        pb={1}
                                         style={{
-                                            maxHeight: '700px', // Adjust the height as needed
+                                            maxHeight: '400px', // Adjust the height as needed
                                             overflowY: 'auto'  // Enable vertical scrolling
                                         }}
                                     >

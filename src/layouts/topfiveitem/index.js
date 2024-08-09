@@ -74,7 +74,7 @@ function TopFiveItem() {
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}> <MDTypography fontWeight="bold"
-                                  sx={{fontSize: '2rem', pb:3, pt:3}}
+                                  sx={{fontSize: '1.5rem', pb:3, pt:3}}
                                   variant="body2">
                     원하시는 상품의 카테고리를 먼저 선택해주세요!
                 </MDTypography>
@@ -94,7 +94,7 @@ function TopFiveItem() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1.28rem',
+                                    fontSize: '1.0rem',
                                     fontFamily: 'JalnanGothic'
                                 }}
                             >
@@ -105,9 +105,15 @@ function TopFiveItem() {
                 ))}
             </Grid>
 
-            {/* 상품 목록 조회 */}
+            {/* 카테고리 상품 목록 조회 */}
             <Grid container pt={3} pb={3}>
-                {categoryItems && categoryItems.length > 0 ? (
+                {selectedCategory && categoryItems.length === 0 ? (
+                    <MDBox pt={3} pb={3} textAlign="center">
+                        <MDTypography variant="body2" color="textSecondary">
+                            선택한 카테고리 내 상품이 존재하지 않습니다.
+                        </MDTypography>
+                    </MDBox>
+                ) : (
                     categoryItems.map((item) => (
                         <MDBox pt={2} pb={2} px={3} key={item.id}>
                             <Card>
@@ -115,8 +121,7 @@ function TopFiveItem() {
                                     <Grid container>
                                         <Grid item xs={6}>
                                             <MDTypography fontWeight="bold"
-                                                          onClick={() => handleGetTopFiveItems(
-                                                              item.itemName)}
+                                                          onClick={() => handleGetTopFiveItems(item.itemName)}
                                                           sx={{ cursor: 'pointer' }} // Added cursor pointer for better UX
                                                           variant="body2">
                                                 {item.itemName}
@@ -127,11 +132,10 @@ function TopFiveItem() {
                             </Card>
                         </MDBox>
                     ))
-                ) : (
-                    <p></p>
                 )}
             </Grid>
 
+            {/* TOP 5 상품 목록 조회 */}
             <Grid container pt={3} pb={3}>
                 {items && items.length > 0 ? (
                     items.map((item) => (

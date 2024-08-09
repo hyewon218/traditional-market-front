@@ -121,6 +121,7 @@ function collapseText(theme, ownerState) {
       fontSize: size.max,
       fontFamily: 'JalnanGothic',
       lineHeight: 0,
+      textAlign: 'left',  // Add this line to align text to the left
     },
   };
 }

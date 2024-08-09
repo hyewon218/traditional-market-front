@@ -78,7 +78,7 @@ function SignIn() {
     if (!isAuthorization) {
         return (
             <DashboardLayout>
-                <MDBox mt={30} mb={3}>
+                <MDBox mt={20} mb={3} ml={-7}>
                     <Grid container spacing={3} justifyContent="center">
                         <Grid item xs={12} lg={8}>
                             <Card>
