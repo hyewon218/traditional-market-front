@@ -32,7 +32,7 @@ function collapseItem(theme, ownerState) {
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    padding: `${pxToRem(8)} ${pxToRem(10)}`,
+    padding: `${pxToRem(20)} ${pxToRem(10)}`,
     margin: `${pxToRem(1.5)} ${pxToRem(16)}`,
     borderRadius: borderRadius.md,
     cursor: 'pointer',
@@ -118,7 +118,8 @@ function collapseText(theme, ownerState) {
 
     '& span': {
       fontWeight: active ? fontWeightRegular : fontWeightLight,
-      fontSize: size.max,
+      fontSize: pxToRem(18),
+      //fontSize: size.max,
       fontFamily: 'JalnanGothic',
       lineHeight: 0,
       textAlign: 'left',  // Add this line to align text to the left
