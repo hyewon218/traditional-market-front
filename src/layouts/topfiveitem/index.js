@@ -1,3 +1,18 @@
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.1.0
+ =========================================================
+
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+ Coded by www.creative-tim.com
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
+
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
@@ -14,7 +29,7 @@ import MDTypography from '../../components/MD/MDTypography';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import MDButton from "../../components/MD/MDButton";
 import {useLocation} from "react-router-dom";
-import {getListCategory, getListTopFiveItem} from "../../api/itemApi";
+import {getListCategoryByMarket, getListTopFiveItem} from "../../api/itemApi";
 
 function TopFiveItem() {
     const {state} = useLocation();
@@ -39,7 +54,7 @@ function TopFiveItem() {
     };
 
     const handleGetCategoryItems = () => {
-        getListCategory(market.marketNo, selectedCategory).then(data => {
+        getListCategoryByMarket(market.marketNo, selectedCategory).then(data => {
             setCategoryItems(data);
             console.log(data);
         }).catch(error => {
@@ -84,7 +99,7 @@ function TopFiveItem() {
 
             {/* 카테고리 */}
             <Grid container spacing={1} justifyContent="center">
-                {["과일", "채소", "육류", "생선"].map((category, index) => (
+                {["과일", "채소", "육류", "생선"].map((category) => (
                     <Grid item xs={1.0} key={category}>
                         <MDBox>
                             <MDButton

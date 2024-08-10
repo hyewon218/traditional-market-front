@@ -145,7 +145,7 @@ function ModifyShop() {
         formData.append('shopName', shop.shopName);
         formData.append('tel', shop.tel); //상점 전화번호
         formData.append('sellerName', shop.sellerName); //상점 사장님 이름
-        formData.append('postCode', shop.shopAddr); //상점 주소
+        formData.append('shopAddr', shop.shopAddr); //상점 주소
         formData.append('category', categories[shop.category]); // 상점 카테고리 코드 value
 
         // 새로 추가된 이미지 추가
