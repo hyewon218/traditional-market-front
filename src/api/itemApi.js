@@ -24,7 +24,16 @@ export const getItemList = async (sno, pageParam) => {
     return res.data
 }
 
-export const getListCategory = async (mno, category) => {
+export const getListCategoryByShop = async (sno, pageParam, category) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefixApi}/${sno}/items/category-by-shop`, {
+        params:
+            {page: page, size: size, category: category}
+    })
+    return res.data
+}
+
+export const getListCategoryByMarket = async (mno, category) => {
     const res = await axios.get(`${prefixApi}/${mno}/items/category`, {
         params:
             {category: category}
@@ -59,9 +68,9 @@ export const postItemComment = async (data) => {
 
 export const getItemComments = async (ino, pageParam) => {
     const {page, size} = pageParam
-    const res = await axios.get(`${prefix}/${ino}/comments`,{
+    const res = await axios.get(`${prefix}/${ino}/comments`, {
         params:
-        {page: page, size: size}
+            {page: page, size: size}
     })
     return res.data
 }
@@ -71,7 +80,8 @@ export const putItemComment = async (cno, updatedComment) => {
     const data = {
         comment: updatedComment
     }
-    const res = await axios.put(`${prefix}/comments/${cno}`,JSON.stringify(data), header)
+    const res = await axios.put(`${prefix}/comments/${cno}`,
+        JSON.stringify(data), header)
     return res.data
 }
 
