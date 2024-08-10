@@ -302,14 +302,20 @@ function ItemDetail() {
                                 <Grid container>
                                     <Grid item xs={6}>
                                         <MDTypography fontWeight="bold"
+                                                      sx={{
+                                                          fontSize: '1.5rem',
+                                                      }} // Adjust font size here
                                                       variant="body2">
                                             {item.itemName}
                                         </MDTypography>
                                     </Grid>
                                     <Grid item xs={6}>
                                         <MDTypography variant="body2"
+                                                      sx={{
+                                                          fontSize: '1.5rem',
+                                                      }} // Adjust font size here
                                                       textAlign="right">
-                                            {item.price}
+                                            {item.price}원
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
@@ -350,9 +356,18 @@ function ItemDetail() {
                                     )}
                                 </div>
                                 <MDTypography
-                                    variant="body2">{item.itemDetail}</MDTypography>
+                                    variant="body2"
+                                    sx={{
+                                        marginBottom: '10px'
+                                    }} // Adjust font size here
+                                >{item.itemDetail}</MDTypography>
                                 <MDTypography
-                                    variant="body2">{likes} LIKES</MDTypography>
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: '0.75rem',
+                                        marginLeft: '8px'
+                                    }} // Adjust font size here
+                                >{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.4}>
                                         <MDButton
@@ -603,8 +618,6 @@ function ItemDetail() {
                     </Grid>
                 </Grid>
             </Grid>
-
-
         </DashboardLayout>
     );
 }

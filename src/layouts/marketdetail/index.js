@@ -91,7 +91,7 @@ function MarketDetail() {
     const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
     const [filteredShops, setFilteredShops] = useState([]); // 시장 카테고리 조회
     const [categoryTotalPage, setCategoryTotalPage] = useState(0); // 검색 시장 조회 페이지
-    const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
+    const [isCategoryFiltered, setIsCategoryFiltered] = useState(false); // 카테고리 필터 활성화되었는지 확인
 
     const navigate = useNavigate();
 
@@ -253,7 +253,7 @@ function MarketDetail() {
             }
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <MDBox pt={1} pb={3}>
+                    <MDBox pt={0} pb={3}>
                         <Card>
                             <MDBox pt={3} pb={3} px={3}>
                                 <Grid container>
@@ -282,7 +282,12 @@ function MarketDetail() {
                                 <MDTypography
                                     variant="body2">{market.marketDetail}</MDTypography>
                                 <MDTypography
-                                    variant="body2">{likes} LIKES</MDTypography>
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: '0.75rem',
+                                        marginLeft: '8px'
+                                    }} // Adjust font size here
+                                >{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.6}>
                                         <MDButton
@@ -351,8 +356,8 @@ function MarketDetail() {
                                                     color: '#ffffff',
                                                     fontSize: '0.75rem',
                                                     fontFamily: 'JalnanGothic',
-                                                    padding: '4px 8px',   // Adjust padding (top-bottom left-right)
-                                                    minWidth: '100px',    // Optionally adjust the minimum width
+                                                    padding: '4px 8px',
+                                                    minWidth: '100px',
                                                 }}
                                                 color="warning">🔥상품별 가격 순위
                                                 확인
@@ -367,7 +372,7 @@ function MarketDetail() {
 
                 {/*지도*/}
                 <Grid item xs={6}>
-                    <MDBox pt={1} pb={3}>
+                    <MDBox pt={0} pb={3}>
                         <Card style={{height: '290px'}}>
                             <MDBox component="form" role="form">
                                 <MapComponent marketAddr={market.marketAddr}
@@ -432,8 +437,8 @@ function MarketDetail() {
                                             <Grid item xs={6}>
                                                 <MDTypography fontWeight="bold"
                                                               sx={{
-                                                                  fontSize: '0.9rem',  // Adjust font size
-                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                                  fontSize: '0.9rem',
+                                                                  minWidth: '100px',
                                                               }}
                                                               variant="body2">
                                                     {shop.shopName}
@@ -442,8 +447,8 @@ function MarketDetail() {
                                             <Grid item xs={6}>
                                                 <MDTypography variant="body2"
                                                               sx={{
-                                                                  fontSize: '0.9rem',  // Adjust font size
-                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                                  fontSize: '0.9rem',
+                                                                  minWidth: '100px',
                                                               }}
                                                               textAlign="right">
                                                     {shop.tel}
@@ -454,8 +459,8 @@ function MarketDetail() {
                                             <Grid item xs={8.7}>
                                                 <MDTypography variant="body2"
                                                               sx={{
-                                                                  fontSize: '0.9rem',  // Adjust font size
-                                                                  minWidth: '100px',    // Optionally adjust the minimum width
+                                                                  fontSize: '0.9rem',
+                                                                  minWidth: '100px',
                                                               }}
                                                 >
                                                     {shop.sellerName}
@@ -485,7 +490,7 @@ function MarketDetail() {
                 )}
             </Grid>
 
-            {shouldShowPagination && (
+           {shouldShowPagination && (
                 <MDPagination size={"small"}>
                     <MDPagination item>
                         <KeyboardArrowLeftIcon/>
