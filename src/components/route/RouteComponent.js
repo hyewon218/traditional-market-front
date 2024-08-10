@@ -98,7 +98,7 @@ const RoutesComponent = () => {
         },
         {
             type: 'collapse',
-            name: '회원 목록 조회',
+            name: '회원 목록',
             key: 'member',
             route: '/member-list',
             component: <MemberList />,
