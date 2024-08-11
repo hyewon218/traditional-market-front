@@ -105,3 +105,8 @@ export const cancelItemLike = async (ino) => { // 좋아요 취소
     const res = await axios.delete(`${prefix}/${ino}/likes`)
     return res.data
 }
+
+export const getItemLikeCount = async () => { // 좋아요 갯수 조회
+    const res = await axios.get(`${prefix}/likes`)
+    return res.data
+}

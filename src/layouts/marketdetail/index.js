@@ -37,10 +37,12 @@ import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
     cancelMarketLike,
-    deleteMarket, getMarketLike,
+    deleteMarket,
+    getMarketLike,
+    getMarketLikeCount,
     postMarketLike,
 } from "../../api/marketApi";
-import {getShopList, getListCategory} from "../../api/shopApi";
+import {getListCategory, getShopList} from "../../api/shopApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
@@ -181,7 +183,12 @@ function MarketDetail() {
     };
 
     const handleCountLikes = () => {
-        setLikes(market.likes);
+        getMarketLikeCount().then(data => {
+            console.log('시장 댓글 조회 성공!!!');
+            setLikes(data);
+        }).catch(error => {
+            console.error("시장 댓글 조회에 실패했습니다.", error);
+        });
     };
 
     // 시장 내 상점 목록

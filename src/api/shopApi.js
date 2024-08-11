@@ -88,3 +88,8 @@ export const cancelShopLike = async (sno) => { // 좋아요 취소
     const res = await axios.delete(`${prefix}/${sno}/likes`)
     return res.data
 }
+
+export const getShopLikeCount = async () => { // 좋아요 갯수 조회
+    const res = await axios.get(`${prefix}/likes`)
+    return res.data
+}
