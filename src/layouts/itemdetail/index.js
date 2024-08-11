@@ -41,7 +41,7 @@ import {
     deleteItem,
     deleteItemComment,
     getItemComments,
-    getItemLike,
+    getItemLike, getItemLikeCount,
     postItemComment,
     postItemLike,
     putItemComment
@@ -172,7 +172,12 @@ function ItemDetail() {
     };
 
     const handleCountLikes = () => {
-        setLikes(item.likes);
+        getItemLikeCount().then(data => {
+            console.log('상품 댓글 조회 성공!!!');
+            setLikes(data);
+        }).catch(error => {
+            console.error("상점 댓글 조회에 실패했습니다.", error);
+        });
     };
 
     // 장바구니에 추가
@@ -278,7 +283,6 @@ function ItemDetail() {
         handleGetComments();
         handleCountLikes();
         handleCheckLike();
-
     }, []);
 
     return (

@@ -42,6 +42,7 @@ import {
     deleteShopComment,
     getShopComments,
     getShopLike,
+    getShopLikeCount,
     postShopComment,
     postShopLike,
     putShopComment
@@ -216,7 +217,12 @@ function ShopDetail() {
     };
 
     const handleCountLikes = () => {
-        setLikes(shop.likes);
+        getShopLikeCount().then(data => {
+            console.log('상점 댓글 조회 성공!!!');
+            setLikes(data);
+        }).catch(error => {
+            console.error("상점 댓글 조회에 실패했습니다.", error);
+        });
     };
 
     // 상점 내 상품 목록
