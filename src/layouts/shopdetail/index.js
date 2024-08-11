@@ -50,6 +50,7 @@ import {
 import {getItemList, getListCategoryByShop} from "../../api/itemApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
+import ShopMapComponent from "../../components/map/ShopMapComponent"; // 상점 위치 출력
 
 const categoryMapping = {
     "전체": '전체',
@@ -63,6 +64,7 @@ function ShopDetail() {
     const {isAdmin, isAuthorization, userId} = useCustomLogin()
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
+    console.log(state);
     const [page, setPage] = useState(0);
     const [itemPage, setItemPage] = useState(0);
 
@@ -166,7 +168,7 @@ function ShopDetail() {
             setComment(''); // 댓글 입력란 초기화
             handleGetComments();
         }).catch(error => {
-            console.error("시장 댓글 작성에 실패했습니다.", error);
+            console.error("상점 댓글 작성에 실패했습니다.", error);
         });
     };
 
@@ -342,6 +344,16 @@ function ShopDetail() {
     const shouldShowPagination = !isCategoryFiltered || filteredItems.length
         > 0;
 
+    // 상점 위치 정보 (위도, 경도) 배열
+    const locations = [
+        {
+            latitude: shop.shopLat, // 상점의 위도
+            longitude: shop.shopLng, // 상점의 경도
+            info: shop.shopName, // 상점 이름
+            tel: shop.tel // 상점 전화번호
+        }
+    ];
+
     return (
         <DashboardLayout>
             {fetching ? <FetchingModal/> : <></>}
@@ -391,16 +403,11 @@ function ShopDetail() {
                                 >{likes} LIKES</MDTypography>
 
                                 <Grid container>
-                                    <Grid item xs={1.6}>
-                                        <MDButton
-                                            onClick={handlePostOrCancelLike}
-                                            variant="gradient"
-                                            sx={{
-                                                fontFamily: 'JalnanGothic',
-                                                fontSize: '0.75rem',  // Adjust font size
-                                                padding: '4px 8px',   // Adjust padding (top-bottom left-right)
-                                            }}
-                                            color="info">
+                                    <Grid item xs={1.4}>
+                                        <MDButton onClick={handlePostOrCancelLike}
+                                                  variant="gradient"
+                                                  sx={{fontFamily: 'JalnanGothic'}}
+                                                  color="info">
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
@@ -614,6 +621,21 @@ function ShopDetail() {
                         </Card>
                     </MDBox>
                 </Grid>
+
+                {/* 지도 */}
+                <Grid item xs={6}>
+                    <MDBox pt={3} pb={3}>
+                        <Card>
+                            <MDBox component="form" role="form">
+                                <ShopMapComponent
+                                    containerId="shop-map" // 지도 컨테이너 ID
+                                    locations={locations} // 위치 데이터
+                                    title={shop.shopName} // 지도 제목
+                                />
+                            </MDBox>
+                        </Card>
+                    </MDBox>
+                </Grid>
             </Grid>
 
             {/*카테고리*/}
@@ -746,25 +768,20 @@ function ShopDetail() {
                 )}
             </Grid>
 
-            {shouldShowPagination && (
-                <MDPagination size={"small"}>
-                    <MDPagination item>
-                        <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
-                    </MDPagination>
-                    {[...Array(isCategoryFiltered ? categoryTotalPage
-                        : itemTotalPage).keys()].map((i) => (
-                        <MDPagination item key={i}
-                                      onClick={() => isCategoryFiltered
-                                          ? handleGetCategoryItems(i)
-                                          : changeItemsPage(i)}>
-                            {i + 1}
-                        </MDPagination>
-                    ))}
-                    <MDPagination item>
-                        <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
-                    </MDPagination>
+            <MDPagination>
+                <MDPagination item>
+                    <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
                 </MDPagination>
-            )}
+                {[...Array(itemTotalPage).keys()].map((i) => (
+                    <MDPagination item key={i}
+                                  onClick={() => changeItemsPage(i)}>
+                        {i + 1}
+                    </MDPagination>
+                ))}
+                <MDPagination item>
+                    <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                </MDPagination>
+            </MDPagination>
         </DashboardLayout>
     );
 }

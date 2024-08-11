@@ -13,6 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
+// 수정 필드에 소속시장, 소속 상점 추가(수정은 불가), 수정 후 해당 상품 상세 페이지로 이동 추가
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
@@ -29,10 +30,9 @@ import MDButton from '../../components/MD/MDButton';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
-import {putItem} from "../../api/itemApi";
+import {putItem, getItemOne} from "../../api/itemApi";
+import {getShopOne} from "../../api/shopApi";
+import {getOne} from "../../api/marketApi";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -53,14 +53,26 @@ const getCategoryKeyByValue = (value) => {
         key => itemSellStatusOptions[key] === value);
 };
 
-function ModifyShop() {
+// 수정 후 해당 상품 상세 페이지로 가기 위해 해당 상품의 정보 조회
+const fetchItem = async (itemNo) => {
+
+  try {
+      // getItemOne 함수를 사용하여 API 호출
+      const data = await getItemOne(itemNo);
+      console.log("fetchItem data: ", data);
+      return data;
+
+  } catch (error) {
+      console.error("상품 정보 불러오기 오류:", error);
+  }
+};
+
+function ModifyItem() {
     const {state} = useLocation();
     const initItem = state || {}; // state 가 정의 되었는지 확인
     console.log(initItem);
 
     const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
 
     const [item, setItem] = useState({
         ...initItem,
@@ -72,8 +84,32 @@ function ModifyShop() {
         initItem.imageList || []); // 기존에 있던 이미지들
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
+    const [market, setMarket] = useState(''); // 소속 시장 매핑하기위한 상태
+    const [shop, setShop] = useState(''); // 소속 상점 매핑하기위한 상태
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        // 소속 시장과 상점 데이터를 불러오기
+        const loadMarketAndShop = async () => {
+            try {
+                if (item.shopNo) {
+                    const shopData = await getShopOne(item.shopNo);
+                    setShop(shopData);
+                }
+
+                if (shop.marketNo) {
+                    const marketData = await getOne(shop.marketNo);
+                    setMarket(marketData);
+                }
+
+            } catch (error) {
+                console.error("시장, 상점 데이터 불러오기 오류:", error);
+            }
+        };
+
+        loadMarketAndShop();
+    }, [shop.shopNo]);
 
     const handleChangeItem = (e) => {
         const {name, value} = e.target;
@@ -116,7 +152,11 @@ function ModifyShop() {
         });
     };
 
-    const handleModifyMarket = () => {
+    const handleModifyItem = async () => {
+
+        if (!window.confirm('상품을 수정하시겠습니까?')) {
+            return;
+        }
 
         // 유효성 검사
         if (!item.itemName || !item.price || !item.itemDetail
@@ -162,23 +202,15 @@ function ModifyShop() {
 
         console.log(formData)
 
-        setFetching(true)
+        try {
+            const data = await putItem(item.itemNo, formData);
+            const itemData = await fetchItem(data.itemNo);
+            navigate(`/item-detail`, { state: itemData });
 
-        putItem(item.itemNo, formData).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
-            console.log("result.itemName!!!!!!!!!!!!!" + data.itemName)
-            setResult(data)
-        }).catch(error => {
-            setFetching(false);
-            console.error("Error updating item:", error);
-            setResult({success: false, message: "상품 수정에 실패했습니다."});
-        });
+        } catch (error) {
+            console.error("상품 수정 오류: ", error);
+        }
     };
-
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market')
-    }
 
     useEffect(() => {
         // Clean up previews on component unmount
@@ -189,21 +221,28 @@ function ModifyShop() {
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'시장 수정 결과'}
-                    content={`${result.itemName} 수정 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
-
             <MDBox pt={6} pb={3}>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
+                            <MDBox mb={2}>
+                                <MDInput
+                                    name="marketName"
+                                    label="소속 시장"
+                                    value={market.marketName || ''}
+                                    disabled={true}
+                                    fullWidth
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    name="shopName"
+                                    label="소속 상점"
+                                    value={shop.shopName || ''}
+                                    disabled={true}
+                                    fullWidth
+                                />
+                            </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
                                     name="itemName"
@@ -338,7 +377,7 @@ function ModifyShop() {
                                 ))}
                             </MDBox>
                             <MDBox mt={4} mb={1} right>
-                                <MDButton onClick={handleModifyMarket}
+                                <MDButton onClick={handleModifyItem}
                                           variant="gradient" color="info">
                                     수정하기
                                 </MDButton>
@@ -351,4 +390,4 @@ function ModifyShop() {
     );
 }
 
-export default ModifyShop;
+export default ModifyItem;

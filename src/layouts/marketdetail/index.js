@@ -46,6 +46,8 @@ import {getListCategory, getShopList} from "../../api/shopApi";
 import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
+import ParkingModal from '../../components/common/ParkingModal'; // 주차장 모달
+import TransportModal from '../../components/common/TransportModal'; // 대중교통 모달
 
 const categoryMapping = {
     "전체": 'ALL',
@@ -93,7 +95,9 @@ function MarketDetail() {
     const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
     const [filteredShops, setFilteredShops] = useState([]); // 시장 카테고리 조회
     const [categoryTotalPage, setCategoryTotalPage] = useState(0); // 검색 시장 조회 페이지
-    const [isCategoryFiltered, setIsCategoryFiltered] = useState(false); // 카테고리 필터 활성화되었는지 확인
+    const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
+    const [showParkingModal, setShowParkingModal] = useState(false); // 주차장 모달 상태
+    const [showTransportModal, setShowTransportModal] = useState(false); // 대중교통 모달 상태
 
     const navigate = useNavigate();
 
@@ -242,6 +246,22 @@ function MarketDetail() {
         navigate('/market')
     }
 
+    const openParkingModal = () => {
+        setShowParkingModal(true);
+    };
+
+    const closeParkingModal = () => {
+        setShowParkingModal(false);
+    };
+
+    const openTransportModal = () => {
+        setShowTransportModal(true);
+    };
+
+    const closeTransportModal = () => {
+        setShowTransportModal(false);
+    };
+
     // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
     const shouldShowPagination = !isCategoryFiltered || filteredShops.length
         > 0;
@@ -258,6 +278,9 @@ function MarketDetail() {
                 />
                 : <></>
             }
+            {showParkingModal && <ParkingModal open={showParkingModal} onClose={closeParkingModal} marketNo={market.marketNo} />}
+            {showTransportModal && <TransportModal open={showTransportModal} onClose={closeTransportModal} marketNo={market.marketNo}/>}
+
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <MDBox pt={0} pb={3}>
@@ -346,6 +369,16 @@ function MarketDetail() {
                                                     }}
                                                     onClick={() => handleAddShop(
                                                         market)}>상점 추가
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.6}>
+                                                <MDButton variant="gradient" color="primary" onClick={openParkingModal}>
+                                                    주차장
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item xs={1.6}>
+                                                <MDButton variant="gradient" color="secondary" onClick={openTransportModal}>
+                                                    대중교통
                                                 </MDButton>
                                             </Grid>
                                         </>

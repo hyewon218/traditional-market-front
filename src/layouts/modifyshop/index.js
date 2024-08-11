@@ -30,9 +30,8 @@ import MDButton from '../../components/MD/MDButton';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
-import {putShop} from "../../api/shopApi";
+import {putShop, getShopOne} from "../../api/shopApi";
+import {getOne} from "../../api/marketApi";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -60,7 +59,6 @@ function ModifyShop() {
     console.log(initShop);
 
     const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
     const [result, setResult] = useState(null)
 
     const [shop, setShop] = useState({...initShop,
@@ -71,8 +69,57 @@ function ModifyShop() {
     const [initialImages, setInitialImages] = useState(initShop.imageList || []); // 기존에 있던 이미지들
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
+    const [market, setMarket] = useState(''); // 소속 시장 매핑하기위한 상태
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        // 소속 시장 데이터를 불러오기
+        const loadMarket = async () => {
+            try {
+                if (shop.marketNo) {
+                    const marketData = await getOne(shop.marketNo);
+                    setMarket(marketData);
+                }
+
+            } catch (error) {
+                console.error("시장 데이터 불러오기 오류:", error);
+            }
+        };
+
+        loadMarket();
+    }, []);
+
+    // 지도에서 선택한 좌표를 버스 X/Y, 지하철 X/Y에 대입
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin === window.location.origin) {
+                const { type, coords } = event.data;
+                if (type === 'UPDATE_SHOP_COORDS') {
+                    setShop(prevShop => ({
+                        ...prevShop,
+                        shopLat: coords.lat,
+                        shopLng: coords.lng
+                    }));
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []);
+
+    // 좌표 찾기 서비스 새창으로 열기
+    const handleOpenMapPopup = () => {
+        const width = 600;
+        const height = 500;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        window.open('/coordinate-popup', 'coordinatePopup', `width=${width},height=${height},left=${left},top=${top}`);
+    };
 
     const handleChangeShop = (e) => {
         const {name, value} = e.target;
@@ -119,11 +166,14 @@ function ModifyShop() {
         });
     };
 
-    const handleModifyMarket = () => {
-
+    const handleModifyShop = async () => {
         console.log('shopName : ' + shop.shopName);
-        console.log('postCode : ' + shop.postCode);
+        console.log('shopAddr : ' + shop.shopAddr);
         console.log('shopNo : ' + shop.shopNo);
+
+        if (!window.confirm('상점을 수정하시겠습니까?')) {
+            return;
+        }
 
         // 유효성 검사
         if (!shop.shopName || !shop.tel || !shop.sellerName || !shop.shopAddr || !shop.category) {
@@ -146,6 +196,8 @@ function ModifyShop() {
         formData.append('tel', shop.tel); //상점 전화번호
         formData.append('sellerName', shop.sellerName); //상점 사장님 이름
         formData.append('shopAddr', shop.shopAddr); //상점 주소
+        formData.append('shopLat', shop.shopLat);
+        formData.append('shopLng', shop.shopLng);
         formData.append('category', categories[shop.category]); // 상점 카테고리 코드 value
 
         // 새로 추가된 이미지 추가
@@ -165,23 +217,15 @@ function ModifyShop() {
 
         console.log(formData)
 
-        setFetching(true)
-
         putShop(shop.shopNo, formData).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
             console.log("result.shopName!!!!!!!!!!!!!"+data.shopName)
             setResult(data)
+            navigate(`/shop-detail`, { state: result });
         }).catch(error => {
-            setFetching(false);
-            console.error("Error updating shop:", error);
-            setResult({ success: false, message: "상점 수정에 실패했습니다." });
+            console.error("상점 수정 오류:", error);
+
         });
     };
-
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market')
-    }
 
     useEffect(() => {
         // Clean up previews on component unmount
@@ -192,21 +236,18 @@ function ModifyShop() {
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'시장 수정 결과'}
-                    content={`${result.shopName} 수정 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
-
             <MDBox pt={6} pb={3}>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
+                            <MDBox mb={2}>
+                                <MDInput
+                                    name="marketName"
+                                    label="소속 시장"
+                                    value={market.marketName || ''}
+                                    disabled={true}
+                                    fullWidth/>
+                            </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
                                     name="shopName"
@@ -242,6 +283,24 @@ function ModifyShop() {
                                 />
                             </MDBox>
                             <MDBox mb={2}>
+                                <MDInput
+                                    fullWidth
+                                    label="상점 X(위도, lat)"
+                                    name="shopLat"
+                                    value={shop.shopLat}
+                                    onChange={handleChangeShop}
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    fullWidth
+                                    label="상점 Y(경도, lng)"
+                                    name="shopLng"
+                                    value={shop.shopLng}
+                                    onChange={handleChangeShop}
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
                                 <FormControl fullWidth>
                                     <InputLabel
                                         id="category-label">카테고리</InputLabel>
@@ -259,6 +318,11 @@ function ModifyShop() {
                                         ))}
                                     </Select>
                                 </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDButton onClick={handleOpenMapPopup}>
+                                    좌표 찾기
+                                </MDButton>
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
@@ -318,7 +382,7 @@ function ModifyShop() {
                                 ))}
                             </MDBox>
                             <MDBox mt={4} mb={1} right>
-                                <MDButton onClick={handleModifyMarket}
+                                <MDButton onClick={handleModifyShop}
                                           variant="gradient" color="info">
                                     수정하기
                                 </MDButton>

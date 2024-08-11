@@ -1,16 +1,3 @@
-/*
-import React from 'react';
-import {RouterProvider} from "react-router-dom";
-import root from "./router/root" ;
-
-function App() {
-    return (
-        < RouterProvider router={root}/>
-    );
-}
-
-export default App;*/
-
 import { useState, useEffect, useMemo } from 'react';
 
 // react-router components
@@ -23,8 +10,7 @@ import Icon from '@mui/material/Icon';
 
 // Material Dashboard 2 React components
 import MDBox from './components/MD/MDBox';
-
-// Material Dashboard 2 React example components
+import ProtectedRoute from './components/ProtectedRoute';
 import Sidenav from './examples/Sidenav';
 //import Sidenav from './examples/Navbars/DashboardNavbar';
 import Configurator from './examples/Configurator';
@@ -53,8 +39,10 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from './
 import brandWhite from './assets/images/logo-ct.png';
 import brandDark from './assets/images/logo-ct-dark.png';
 
-// routes
+// Import layout components
+import PostMarket from './layouts/postmarket';
 import MarketDetail from './layouts/marketdetail';
+import InquiryDetail from './layouts/inquirydetail';
 import ModifyMarket from './layouts/modifymarket';
 import ShopDetail from './layouts/shopdetail';
 import PostShop from './layouts/postshop';
@@ -67,8 +55,16 @@ import Cart from './layouts/cart';
 import Order from './layouts/order';
 import OrderComplete from './layouts/ordercomplete';
 import TopFiveItem from './layouts/topfiveitem';
-import root from "./router/root"
-import {RouterProvider} from "react-router";
+import MarketDetailAdmin from './layouts/admin/marketdetail';
+import ShopDetailAdmin from './layouts/admin/shopdetail';
+import ItemDetailAdmin from './layouts/admin/itemdetail';
+import MemberDetailAdmin from './layouts/admin/memberdetail';
+import PostShopAdmin from './layouts/admin/postshop';
+import PostItemAdmin from './layouts/admin/postitem';
+import PostNoticeAdmin from './layouts/admin/postnotice';
+import NoticeDetail from './layouts/noticedetail';
+import ModifyNotice from './layouts/admin/modifynotice';
+import CoordinatePopupPage from './pages/CoordinatePopupPage';
 
 export default function App() {
     const routes = RoutesComponent();
@@ -135,7 +131,17 @@ export default function App() {
             }
 
             if (route.route) {
-                return <Route exact path={route.route} element={route.component} key={route.key} />;
+                // Admin routes are wrapped with ProtectedRoute
+                return route.isAdmin ? (
+                    <Route
+                        exact
+                        path={route.route}
+                        element={<ProtectedRoute>{route.component}</ProtectedRoute>}
+                        key={route.key}
+                    />
+                ) : (
+                    <Route exact path={route.route} element={route.component} key={route.key} />
+                );
             }
 
             return null;
@@ -186,6 +192,75 @@ export default function App() {
                 <Routes>
                     {getRoutes(routes)}
                     <Route path="*" element={<Navigate to="/market" />} />
+                    <Route path="/coordinate-popup" element={<CoordinatePopupPage />} />
+                    <Route path="/market-detail" element={<MarketDetail />} />
+                    <Route path="/inquiry-detail" element={<InquiryDetail />} />
+                    <Route path="/shop-detail" element={<ShopDetail />} />
+                    <Route path="/item-detail" element={<ItemDetail />} />
+                    <Route path="/chat-detail" element={<ChatDetail />} />
+                    <Route path="/notice-detail" element={<NoticeDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/order" element={<Order />} />
+                    <Route path="/order-complete" element={<OrderComplete />} />
+                    <Route path="/top-five-item" element={<TopFiveItem />} />
+
+                    // admin 권한만 접근 가능
+                    <Route
+                        path="/post-market"
+                        element={<ProtectedRoute><PostMarket /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/modify-market"
+                        element={<ProtectedRoute><ModifyMarket /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/post-shop"
+                        element={<ProtectedRoute><PostShop /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/modify-shop"
+                        element={<ProtectedRoute><ModifyShop /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/post-item"
+                        element={<ProtectedRoute><PostItem /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/modify-item"
+                        element={<ProtectedRoute><ModifyItem /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/market-detail-admin"
+                        element={<ProtectedRoute><MarketDetailAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/shop-detail-admin"
+                        element={<ProtectedRoute><ShopDetailAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/item-detail-admin"
+                        element={<ProtectedRoute><ItemDetailAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/member-detail-admin"
+                        element={<ProtectedRoute><MemberDetailAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/post-shop-admin"
+                        element={<ProtectedRoute><PostShopAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/post-item-admin"
+                        element={<ProtectedRoute><PostItemAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/post-notice-admin"
+                        element={<ProtectedRoute><PostNoticeAdmin /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/modify-notice"
+                        element={<ProtectedRoute><ModifyNotice /></ProtectedRoute>}
+                    />
                 </Routes>
             </ThemeProvider>
         </CacheProvider>
@@ -206,23 +281,79 @@ export default function App() {
                 </>
             )}
             {layout === 'vr' && <Configurator />}
-            <Routes >
+            <Routes>
                 {/*< RouterProvider router={root}/>*/}
                 {getRoutes(routes)}
                 <Route path="*" element={<Navigate to="/market" />} />
-                <Route path="/market-detail" element=<MarketDetail /> />
-                <Route path="/modify-market" element=<ModifyMarket /> />
-                <Route path="/post-shop" element=<PostShop /> />
-                <Route path="/shop-detail" element=<ShopDetail /> />
-                <Route path="/modify-shop" element=<ModifyShop /> />
-                <Route path="/post-item" element=<PostItem /> />
-                <Route path="/item-detail" element=<ItemDetail /> />
-                <Route path="/modify-item" element=<ModifyItem /> />
-                <Route path="/chat-detail" element=<ChatDetail /> />
-                <Route path="/cart" element=<Cart /> />
-                <Route path="/order" element=<Order /> />
-                <Route path="/order-complete" element=<OrderComplete /> />
-                <Route path="/top-five-item" element=<TopFiveItem /> />
+                <Route path="/coordinate-popup" element={<CoordinatePopupPage />} />
+                <Route path="/market-detail" element={<MarketDetail />} />
+                <Route path="/inquiry-detail" element={<InquiryDetail />} />
+                <Route path="/shop-detail" element={<ShopDetail />} />
+                <Route path="/item-detail" element={<ItemDetail />} />
+                <Route path="/chat-detail" element={<ChatDetail />} />
+                <Route path="/notice-detail" element={<NoticeDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/order" element={<Order />} />
+                <Route path="/order-complete" element={<OrderComplete />} />
+                <Route path="/top-five-item" element={<TopFiveItem />} />
+
+                // admin 권한만 접근 가능
+                <Route
+                    path="/post-market"
+                    element={<ProtectedRoute><PostMarket /></ProtectedRoute>}
+                />
+                <Route
+                    path="/modify-market"
+                    element={<ProtectedRoute><ModifyMarket /></ProtectedRoute>}
+                />
+                <Route
+                    path="/post-shop"
+                    element={<ProtectedRoute><PostShop /></ProtectedRoute>}
+                />
+                <Route
+                    path="/modify-shop"
+                    element={<ProtectedRoute><ModifyShop /></ProtectedRoute>}
+                />
+                <Route
+                    path="/post-item"
+                    element={<ProtectedRoute><PostItem /></ProtectedRoute>}
+                />
+                <Route
+                    path="/modify-item"
+                    element={<ProtectedRoute><ModifyItem /></ProtectedRoute>}
+                />
+                <Route
+                    path="/market-detail-admin"
+                    element={<ProtectedRoute><MarketDetailAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/shop-detail-admin"
+                    element={<ProtectedRoute><ShopDetailAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/item-detail-admin"
+                    element={<ProtectedRoute><ItemDetailAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/member-detail-admin"
+                    element={<ProtectedRoute><MemberDetailAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/post-shop-admin"
+                    element={<ProtectedRoute><PostShopAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/post-item-admin"
+                    element={<ProtectedRoute><PostItemAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/post-notice-admin"
+                    element={<ProtectedRoute><PostNoticeAdmin /></ProtectedRoute>}
+                />
+                <Route
+                    path="/modify-notice"
+                    element={<ProtectedRoute><ModifyNotice /></ProtectedRoute>}
+                />
             </Routes>
         </ThemeProvider>
     );

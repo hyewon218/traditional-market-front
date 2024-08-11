@@ -13,9 +13,10 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
+// 이미지 미리보기, 좌표 찾기 서비스, 생성 후 해당 상점 상세 페이지로 이동 추가
 import * as React from 'react';
-import {useRef, useState} from 'react';
-import {postShop} from "../../api/shopApi";
+import {useRef, useState, useEffect} from 'react';
+import {postShop, getShopOne} from "../../api/shopApi";
 
 // @mui material components
 import Card from '@mui/material/Card';
@@ -27,8 +28,6 @@ import MDButton from '../../components/MD/MDButton';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
 import {useLocation, useNavigate} from "react-router-dom";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -56,30 +55,91 @@ const initState = {
     imageFiles: []
 }
 
+// 생성 후 해당 상점 상세 페이지로 가기 위해 해당 상점의 정보 조회
+const fetchShop = async (shopNo) => {
+
+    try {
+        // getShopOne 함수를 사용하여 API 호출
+        const data = await getShopOne(shopNo);
+        console.log("fetchShop data: ", data);
+        return data;
+
+    } catch (error) {
+        console.error("상점 정보 불러오기 오류:", error);
+    }
+};
+
 function PostShop() {
     const {state} = useLocation();
     const market = state; // 전달된 market 데이터를 사용
 
     const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
     const [result, setResult] = useState(null)
+    const [previewImages, setPreviewImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]); // 실제 파일 상태 관리
 
     const navigate = useNavigate()
 
     const [shop, setShop] = useState({...initState})
+
+    // 지도에서 선택한 좌표를 버스 X/Y, 지하철 X/Y에 대입
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin === window.location.origin) {
+                const { type, coords } = event.data;
+                if (type === 'UPDATE_SHOP_COORDS') {
+                    setShop(prevShop => ({
+                        ...prevShop,
+                        shopLat: coords.lat,
+                        shopLng: coords.lng
+                    }));
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []);
+
+    // 좌표 찾기 서비스 새창으로 열기
+    const handleOpenMapPopup = () => {
+        const width = 600;
+        const height = 500;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        window.open('/coordinate-popup', 'coordinatePopup', `width=${width},height=${height},left=${left},top=${top}`);
+    };
 
     const handleChangeShop = (e) => {
         const {name, value} = e.target;
         setShop((prevShop) => ({...prevShop, [name]: value}));
     }
 
-    const handleFileChange = (e) => {
-        const files = e.target.files;
-        setShop((prevShop) => ({...prevShop, imageFiles: files}));
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        const newPreviewImages = files.map(file => URL.createObjectURL(file));
+
+        // 같은 파일을 다시 업로드할 수 있도록 파일 입력 값(파일 선택 필드의 값)을 리셋
+        event.target.value = null;
+
+        setImageFiles(prevFiles => [...prevFiles, ...files]);
+        setPreviewImages(prevImages => [...prevImages, ...newPreviewImages]);
     };
 
-    const handleAddShop = (event) => {
+    const handleRemoveImage = (index) => {
+        setPreviewImages(prevImages => prevImages.filter((_, i) => i !== index));
+        setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const handleAddShop = async (event) => {
         event.preventDefault(); // 폼 전송 이벤트 방지
+
+        if (!window.confirm('상점을 추가하시겠습니까?')) {
+            return;
+        }
 
         // 유효성 검사
         if (!shop.shopName || !shop.tel || !shop.sellerName || !shop.shopAddr || !shop.category
@@ -104,38 +164,27 @@ function PostShop() {
         formData.append('tel', shop.tel); //상점 전화번호
         formData.append('sellerName', shop.sellerName); //상점 사장님 이름
         formData.append('shopAddr', shop.shopAddr); //상점 주소
+        formData.append('shopLat', shop.shopLat); // 상점 X(위도)
+        formData.append('shopLng', shop.shopLng); // 상점 Y(경도)
         formData.append('category', categories[shop.category]); // 상점 카테고리 코드
-        for (let i = 0; i < shop.imageFiles.length; i++) {
-            formData.append("imageFiles", shop.imageFiles[i]);
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("imageFiles", imageFiles[i]);
         }
 
         console.log(formData)
 
-        setFetching(true)
+        try {
+            const data = await postShop(formData);
+            const shopData = await fetchShop(data.shopNo);
+            navigate(`/shop-detail`, { state: shopData });
 
-        postShop(formData).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
-            console.log(data)
-            setResult(data)
-        })
+        } catch (error) {
+            console.error("상점 추가 오류: ", error);
+        }
     };
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market-detail' ,{state: market}) //모달 창이 닫히면 이동
-    }
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'Product Add Result'}
-                    content={`${result.shopName} 등록 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
             <MDBox pt={6} pb={3}>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
@@ -165,9 +214,26 @@ function PostShop() {
                                 <MDInput
                                     name="shopAddr"
                                     label="상점 주소"
-                                    multiline
                                     onChange={handleChangeShop}
                                     fullWidth
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    fullWidth
+                                    label="상점 X(위도, lat)"
+                                    name="shopLat"
+                                    value={shop.shopLat}
+                                    onChange={handleChangeShop}
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    fullWidth
+                                    label="상점 Y(경도, lng)"
+                                    name="shopLng"
+                                    value={shop.shopLng}
+                                    onChange={handleChangeShop}
                                 />
                             </MDBox>
                             <MDBox mb={2}>
@@ -192,6 +258,11 @@ function PostShop() {
                                 </FormControl>
                             </MDBox>
                             <MDBox mb={2}>
+                                <MDButton onClick={handleOpenMapPopup}>
+                                    좌표 찾기
+                                </MDButton>
+                            </MDBox>
+                            <MDBox mb={2}>
                                 <MDInput
                                     inputRef={uploadRef}
                                     onChange={handleFileChange}
@@ -199,6 +270,34 @@ function PostShop() {
                                     type={'file'} multiple={true}
                                     fullWidth/>
                             </MDBox>
+                            {previewImages.length > 0 && (
+                                <MDBox mb={2} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                                    {previewImages.map((image, index) => (
+                                        <MDBox key={index} sx={{ position: 'relative', marginRight: '10px', marginBottom: '10px' }}>
+                                            <img
+                                                src={image}
+                                                alt={`preview-${index}`}
+                                                style={{
+                                                    maxWidth: '150px',
+                                                    maxHeight: '150px',
+                                                }}
+                                            />
+                                            <MDButton
+                                                onClick={() => handleRemoveImage(index)}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    top: '5px',
+                                                    right: '5px',
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                                    padding: '5px',
+                                                }}
+                                            >
+                                                X
+                                            </MDButton>
+                                        </MDBox>
+                                    ))}
+                                </MDBox>
+                            )}
                             <MDBox mt={4} mb={1} right>
                                 <MDButton onClick={handleAddShop}
                                           variant="gradient" color="info">
