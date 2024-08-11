@@ -235,7 +235,7 @@ const MapComponent = ({marketAddr, marketName}) => {
                     alert('날씨 정보를 가져오는 중 오류가 발생했습니다.');
                 });
             } else {
-                alert('주소에 대한 검색 결과가 없습니다.');
+                console.log('주소에 대한 검색 결과가 없습니다.');
             }
         });
     }

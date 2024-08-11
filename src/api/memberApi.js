@@ -20,7 +20,12 @@ export const logoutPost = async () => {
     return res.data
 }
 
-export const getMemberList = async () => {
-    const res = await axios.get(`${prefixApi}`)
+export const getMemberList = async (pageParam) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefixApi}`, {
+        params:
+            {page: page, size: size}
+    })
     return res.data
 }
+

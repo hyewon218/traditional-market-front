@@ -13,6 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
+// 좌표 찾기 서비스, 수정 후 해당 시장 상세 페이지로 이동 추가한 코드
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
@@ -30,9 +31,7 @@ import MDButton from '../../components/MD/MDButton';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import {putMarket} from "../../api/marketApi";
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
+import {putMarket, getOne} from "../../api/marketApi";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -40,7 +39,7 @@ const categories = {
     서울: '서울',
     인천: '인천',
     경기도: '경기도',
-    강원도: '강원도',
+    강원: '강원',
     충청도: '충청도',
     경상도: '경상도',
     전라도: '전라도',
@@ -51,16 +50,29 @@ const getCategoryKeyByValue = (value) => {
     return Object.keys(categories).find(key => categories[key] === value);
 };
 
+// 수정 후 해당 시장 상세 페이지로 가기 위해 해당 시장의 정보 조회
+const fetchMarket = async (marketNo) => {
+
+  try {
+      // getOne 함수를 사용하여 API 호출
+      const data = await getOne(marketNo);
+      console.log("fetchMarket data: ", data);
+      return data;
+
+  } catch (error) {
+      console.error("시장 정보 불러오기 오류:", error);
+  }
+};
+
 function ModifyMarket() {
     const {state} = useLocation();
     const initMarket = state || {}; // state 가 정의 되었는지 확인
     console.log(initMarket);
 
-    const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
+    const uploadRef = useRef();
 
-    const [market, setMarket] = useState({...initMarket,
+    const [market, setMarket] = useState({
+        ...initMarket,
         category: getCategoryKeyByValue(initMarket.category) || '', // key 값 얻기
         imageFiles: initMarket.imageFiles || [],
     });
@@ -69,24 +81,23 @@ function ModifyMarket() {
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleChangeMarket = (e) => {
-        const {name, value} = e.target;
-        setMarket((prevMarket) => ({...prevMarket, [name]: value}));
-    }
+        const { name, value } = e.target;
+        setMarket((prevMarket) => ({ ...prevMarket, [name]: value }));
+    };
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setMarket((prevMarket) => ({...prevMarket, imageFiles: files}));
+        setMarket((prevMarket) => ({ ...prevMarket, imageFiles: files }));
 
         const previews = files.map(file => URL.createObjectURL(file));
         setFilePreviews(previews);
     };
 
     const handleRemoveInitialImage = (index) => {
-        setRemovedImages((prevRemovedImages) => [...prevRemovedImages,
-            initialImages[index].imageUrl]);
+        setRemovedImages((prevRemovedImages) => [...prevRemovedImages, initialImages[index].imageUrl]);
 
         // 선택된(x버튼) 이미지를 제거하기 위해 initialImages 상태 업데이트
         setInitialImages((prevImages) => {
@@ -101,7 +112,7 @@ function ModifyMarket() {
         setMarket((prevMarket) => {
             const updatedFiles = [...prevMarket.imageFiles];
             updatedFiles.splice(index, 1);
-            return {...prevMarket, imageFiles: updatedFiles};
+            return { ...prevMarket, imageFiles: updatedFiles };
         });
 
         setFilePreviews((prevPreviews) => {
@@ -112,11 +123,14 @@ function ModifyMarket() {
         });
     };
 
-    const handleModifyMarket = () => {
-
+    const handleModifyMarket = async (event) => {
         console.log('marketName : ' + market.marketName);
         console.log('marketAddr : ' + market.marketAddr);
         console.log('no : ' + market.marketNo);
+
+        if (!window.confirm('시장을 수정하시겠습니까?')) {
+            return;
+        }
 
         // 유효성 검사
         if (!market.marketName || !market.marketAddr || !market.category) {
@@ -140,6 +154,14 @@ function ModifyMarket() {
         formData.append('marketAddr', market.marketAddr);
         formData.append('category', categories[market.category]); // 상점 카테고리 코드
         formData.append('marketDetail', market.marketDetail);
+        formData.append('parkingInfo1', market.parkingInfo1);
+        formData.append('parkingInfo2', market.parkingInfo2);
+        formData.append('busInfo', market.busInfo);
+        formData.append('busLat', market.busLat);
+        formData.append('busLng', market.busLng);
+        formData.append('subwayInfo', market.subwayInfo);
+        formData.append('subwayLat', market.subwayLat);
+        formData.append('subwayLng', market.subwayLng);
 
         // 새로 추가된 이미지 추가
         for (let i = 0; i < market.imageFiles.length; i++) {
@@ -148,34 +170,59 @@ function ModifyMarket() {
 
         // 기존 이미지 중 삭제되지 않은(남은) 이미지만 추가
         if (initialImages != null) {
-            const remainingInitialImages = initialImages.filter(
-                img => !removedImages.includes(img.imageUrl));
+            const remainingInitialImages = initialImages.filter(img => !removedImages.includes(img.imageUrl));
             remainingInitialImages.forEach(img => {
                 formData.append('imageUrls', img.imageUrl);
             });
             console.log("Remaining initial images:", remainingInitialImages);
         }
 
-        console.log(formData)
+        console.log(formData);
 
-        setFetching(true)
+        try {
+            const data = await putMarket(formData);
+            const marketData = await fetchMarket(data.marketNo);
+            navigate(`/market-detail`, { state: marketData });
 
-        putMarket(formData).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
-            console.log("result.marketName!!!!!!!!!!!!!"+data.marketName)
-            setResult(data)
-        }).catch(error => {
-            setFetching(false);
-            console.error("Error updating market:", error);
-            setResult({ success: false, message: "시장 수정에 실패했습니다." });
-        });
+        } catch (error) {
+            console.error("시장 수정 오류: ", error);
+        }
     };
 
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market')
-        //moveToList({page: 1}) //모달 창이 닫히면 이동
-    }
+    const handleOpenMapPopup = () => {
+        const width = 600;
+        const height = 500;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        window.open('/coordinate-popup', 'coordinatePopup', `width=${width},height=${height},left=${left},top=${top}`);
+    };
+
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin === window.location.origin) {
+                const { type, coords } = event.data;
+                if (type === 'UPDATE_BUS_COORDS') {
+                    setMarket(prevMarket => ({
+                        ...prevMarket,
+                        busLat: coords.lat,
+                        busLng: coords.lng
+                    }));
+                } else if (type === 'UPDATE_SUBWAY_COORDS') {
+                    setMarket(prevMarket => ({
+                        ...prevMarket,
+                        subwayLat: coords.lat,
+                        subwayLng: coords.lng
+                    }));
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []);
 
     useEffect(() => {
         // Clean up previews on component unmount
@@ -186,133 +233,168 @@ function ModifyMarket() {
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'시장 수정 결과'}
-                    content={`${result.marketName} 수정 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
-
-            <MDBox pt={6} pb={3}>
+            <MDBox pt={6} pb={3} px={3}>
                 <Card>
-                    <MDBox pt={4} pb={3} px={3}>
-                        <MDBox component="form" role="form">
-                            <MDBox mb={2}>
-                                <MDInput
-                                    name="marketName"
-                                    label="시장 이름"
-                                    defaultValue={initMarket.marketName}
+                    <MDBox pt={3} px={3} lineHeight={1.5}>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="시장 이름"
+                                name="marketName"
+                                value={market.marketName || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="시장 주소"
+                                name="marketAddr"
+                                value={market.marketAddr || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <FormControl fullWidth>
+                                <InputLabel>카테고리</InputLabel>
+                                <Select
+                                    name="category"
+                                    value={market.category || ''}
                                     onChange={handleChangeMarket}
                                     fullWidth
-                                />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <MDInput
-                                    name="marketAddr"
-                                    label="시장 주소"
-                                    defaultValue={initMarket.marketAddr}
-                                    multiline
-                                    onChange={handleChangeMarket}
-                                    fullWidth
-                                />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <FormControl fullWidth>
-                                    <InputLabel
-                                        id="category-label">카테고리</InputLabel>
-                                    <Select
-                                        labelId="category-label"
-                                        name="category"
-                                        value={market.category}
-                                        onChange={handleChangeMarket}
-                                        sx={{ minHeight: 56 }}
-                                    >
-                                        {Object.keys(categories).map((category) => (
-                                            <MenuItem key={category} value={category}>
-                                                {category}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <MDInput
-                                    name="marketDetail"
-                                    label="시장 상세설명"
-                                    defaultValue={initMarket.marketDetail}
-                                    multiline
-                                    rows={10}
-                                    onChange={handleChangeMarket}
-                                    fullWidth
-                                />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <MDInput
-                                    inputRef={uploadRef}
-                                    onChange={handleFileChange}
-                                    inputType={'file'}
-                                    type={'file'} multiple={true}
-                                    fullWidth/>
-                            </MDBox>
-                            <MDBox mb={2} display="flex" flexWrap="wrap">
-                                {initialImages.map((img, index) => (
-                                    <MDBox key={index} position="relative"
-                                           mr={2} mb={2}>
-                                        <img key={index} src={`${img.imageUrl}`}
-                                             alt={`preview-${index}`}
-                                             width="300px"
-                                             style={{marginRight: '10px'}}/>
-                                        <IconButton
-                                            size="small"
-                                            color="secondary"
-                                            onClick={() => handleRemoveInitialImage(
-                                                index)}
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 0,
-                                                backgroundColor: 'rgba(255, 255, 255, 0.7)'
-                                            }}
-                                        >
-                                            <CloseIcon/>
-                                        </IconButton>
-                                    </MDBox>
-                                ))}
-                            </MDBox>
-                            <MDBox mb={2} display="flex" flexWrap="wrap">
+                                >
+                                    {Object.keys(categories).map(categoryKey => (
+                                        <MenuItem key={categoryKey} value={categoryKey}>
+                                            {categories[categoryKey]}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                multiline
+                                rows={4}
+                                label="상세 정보"
+                                name="marketDetail"
+                                value={market.marketDetail || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="주차 정보 1"
+                                name="parkingInfo1"
+                                value={market.parkingInfo1 || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="주차 정보 2"
+                                name="parkingInfo2"
+                                value={market.parkingInfo2 || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="버스 정보"
+                                name="busInfo"
+                                value={market.busInfo || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="버스 위도"
+                                name="busLat"
+                                value={market.busLat || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="버스 경도"
+                                name="busLng"
+                                value={market.busLng || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="지하철 정보"
+                                name="subwayInfo"
+                                value={market.subwayInfo || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="지하철 위도"
+                                name="subwayLat"
+                                value={market.subwayLat || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                fullWidth
+                                label="지하철 경도"
+                                name="subwayLng"
+                                value={market.subwayLng || ''}
+                                onChange={handleChangeMarket}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <input
+                                type="file"
+                                ref={uploadRef}
+                                onChange={handleFileChange}
+                                multiple
+                                style={{ display: 'none' }}
+                            />
+                            <MDButton variant="outlined" color="primary" onClick={() => uploadRef.current.click()}>
+                                이미지 업로드
+                            </MDButton>
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDButton variant="outlined" color="primary" onClick={handleOpenMapPopup}>
+                                좌표 찾기
+                            </MDButton>
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <div>
                                 {filePreviews.map((preview, index) => (
-                                    <MDBox key={index} position="relative"
-                                           mr={2} mb={2}>
-                                        <img src={preview}
-                                             alt={`preview-${index}`}
-                                             width="400px"/>
-                                        <IconButton
-                                            size="small"
-                                            color="secondary"
-                                            onClick={() => handleRemovePreviewFile(
-                                                index)}
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 0,
-                                                backgroundColor: 'rgba(255, 255, 255, 0.7)'
-                                            }}
-                                        >
-                                            <CloseIcon/>
+                                    <div key={index}>
+                                        <img src={preview} alt={`preview ${index}`} width="100" />
+                                        <IconButton onClick={() => handleRemovePreviewFile(index)}>
+                                            <CloseIcon />
                                         </IconButton>
-                                    </MDBox>
+                                    </div>
                                 ))}
-                            </MDBox>
-                            <MDBox mt={4} mb={1} right>
-                                <MDButton onClick={handleModifyMarket}
-                                          variant="gradient" color="info">
-                                    수정하기
-                                </MDButton>
-                            </MDBox>
+                                {initialImages.map((img, index) => (
+                                    <div key={index}>
+                                        <img src={img.imageUrl} alt={`initial ${index}`} width="100" />
+                                        <IconButton onClick={() => handleRemoveInitialImage(index)}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </div>
+                                ))}
+                            </div>
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDButton variant="contained" color="primary" onClick={handleModifyMarket}>
+                                수정 완료
+                            </MDButton>
                         </MDBox>
                     </MDBox>
                 </Card>

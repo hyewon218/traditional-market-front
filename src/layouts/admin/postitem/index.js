@@ -13,24 +13,26 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
-// 이미지 미리보기, 생성 후 해당 상품 상세 페이지로 이동 추가
 import * as React from 'react';
-import {useRef, useState} from 'react';
-import {postItem, getItemOne} from "../../api/itemApi";
+import { useRef, useEffect, useState } from 'react';
 
 // @mui material components
 import Card from '@mui/material/Card';
 
 // Material Dashboard 2 React components
-import MDBox from '../../components/MD/MDBox';
-import MDInput from '../../components/MD/MDInput';
-import MDButton from '../../components/MD/MDButton';
+import MDBox from '../../../components/MD/MDBox';
+import MDInput from '../../../components/MD/MDInput';
+import MDButton from '../../../components/MD/MDButton';
 
 // Material Dashboard 2 React example components
-import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-import {useLocation, useNavigate} from "react-router-dom";
-import {FormControl, InputLabel, Select} from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
+import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
+import { useNavigate } from "react-router-dom";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+
+// Data
+import { getList } from "../../../api/marketApi";
+import { getShopList } from "../../../api/shopApi";
+import { postItem, getItemOne } from "../../../api/itemApi";
 
 const categories = {
     판매중: 'SELL',
@@ -38,55 +40,99 @@ const categories = {
 };
 
 const itemCategories = {
-    과일: '과일',
-    채소: '채소',
-    육류: '육류',
-    생선: '생선'
+    과일 : '과일',
+    채소 : '채소',
+    육류 : '육류',
+    생선 : '생선'
 };
 
 const initState = {
+    marketNo: 0,
     shopNo: 0,
     itemName: '',
-    price: 0,
+    price: '',
     itemDetail: '',
-    stockNumber: 0,
-    itemSellStatus: '판매중',
+    stockNumber: '',
     itemCategory: '과일',
+    itemSellStatus: '판매중',
     imageFiles: []
 }
 
-// 생성 후 해당 상품 상세 페이지로 가기 위해 해당 상품의 정보 조회
+const itemCache = {};
+
 const fetchItem = async (itemNo) => {
+  if (itemCache[itemNo]) {
+    return itemCache[itemNo];
+  }
 
-    try {
-        // getItemOne 함수를 사용하여 API 호출
-        const data = await getItemOne(itemNo);
-        console.log("fetchItem data: ", data);
-        return data;
-
-    } catch (error) {
-        console.error("상품 정보 불러오기 오류:", error);
-    }
+  try {
+    const data = await getItemOne(itemNo);
+    console.log("fetchItem data: ", data);
+    itemCache[itemNo] = data;
+    return data;
+  } catch (error) {
+    console.error("상품 정보 불러오기 오류:", error);
+    itemCache[itemNo] = { itemName : '정보 없음' };
+    return { itemName: '정보 없음' };
+  }
 };
 
-function PostItem() {
-    const {state} = useLocation();
-    const shop = state; // 전달된 shop 데이터를 사용
-
-    const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
+function PostItemAdmin() {
+    const uploadRef = useRef();
+    const [markets, setMarkets] = useState([]);
+    const [shops, setShops] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [imageFiles, setImageFiles] = useState([]); // 실제 파일 상태 관리
+    const navigate = useNavigate();
+    const [item, setItem] = useState({ ...initState });
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        // 시장 목록 조회(드롭다운 채우기)
+        const loadMarkets = async () => {
+            try {
+                const data = await getList({ page: 0, size: 100 });
+                setMarkets(data.content);
+            } catch (err) {
+                console.error("시장 목록 불러오기 오류: ", err);
+            }
+        };
 
-    const [item, setItem] = useState({...initState})
+        loadMarkets();
+    }, []);
+
+    useEffect(() => {
+        // 특정 시장에 해당하는 상점 목록 조회(드롭다운 채우기)
+        const loadShopsByMarket = async () => {
+//          if (selectedMarketNo === 'all') return; // 전체 보기일 때는 상점 목록을 로드하지 않음
+          try {
+            const pageParam = { page: 0, size: 100 };
+            const data = await getShopList(item.marketNo, pageParam); // size는 드롭다운에 출력될 상점 개수
+            console.log("특정 시장에 속한 상점 목록:", data);
+            setShops(data.content);
+          } catch (err) {
+            console.error("상점 목록 불러오기 오류: ", err);
+          }
+        };
+
+        // 시장이 선택된 경우에만 상점 목록 로드
+        if (item.marketNo !== 0) {
+          loadShopsByMarket();
+        }
+
+      }, [item.marketNo]);
+
 
     const handleChangeItem = (e) => {
-        const {name, value} = e.target;
-        setItem((prevItem) => ({...prevItem, [name]: value}));
-    }
+        const { name, value } = e.target;
+        console.log("e.target : ", e.target);
+        setItem(prevItem => ({ ...prevItem, [name]: value }));
+
+        // 시장이 변경되면 상점 목록 초기화
+        if (name === 'marketNo') {
+            setShops([]);
+            setItem(prevItem => ({ ...prevItem, shopNo: 0 }));
+        }
+    };
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -104,52 +150,46 @@ function PostItem() {
         setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
     };
 
-    const handleAddItem= async (event) => {
-        event.preventDefault(); // 폼 전송 이벤트 방지
+    const handleAddItem = async (event) => {
+        event.preventDefault();
 
         if (!window.confirm('상품을 추가하시겠습니까?')) {
+          return;
+        }
+
+        if (!item.marketNo || !item.shopNo || !item.itemName || !item.price || !item.itemDetail || !item.stockNumber || !item.itemCategory) {
+            alert('모든 필드를 입력하세요.');
             return;
         }
 
-        // 유효성 검사
-        if (!item.itemName || !item.price || !item.itemDetail
-            || !item.stockNumber || !item.itemSellStatus || !item.itemCategory
-        ) {
-            alert('모든 필드를 입력하고 파일을 선택해주세요.');
-            return;
-        }
-
-        // 파일 크기 제한
-        const maxFileSize = 30 * 1024 * 1024; // 30MB 제한
-        for (let i = 0; i < item.imageFiles.length; i++) {
-            if (item.imageFiles[i].size > maxFileSize) {
-                alert(`파일 크기는 30MB를 초과할 수 없습니다: ${item.imageFiles[i].name}`);
+        const maxFileSize = 30 * 1024 * 1024;
+        for (let i = 0; i < imageFiles.length; i++) {
+            if (imageFiles[i].size > maxFileSize) {
+                alert(`파일 크기는 30MB를 초과할 수 없습니다: ${imageFiles[i].name}`);
                 return;
             }
         }
 
-        // FormData 생성
         const formData = new FormData();
-        formData.append('shopNo', shop.shopNo);
+        formData.append('shopNo', item.shopNo);
         formData.append('itemName', item.itemName);
         formData.append('price', item.price);
         formData.append('itemDetail', item.itemDetail);
         formData.append('stockNumber', item.stockNumber);
         formData.append('itemCategory', itemCategories[item.itemCategory]);
         formData.append('itemSellStatus', categories[item.itemSellStatus]);
-        for (let i = 0; i < item.imageFiles.length; i++) {
-            formData.append("imageFiles", item.imageFiles[i]);
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("imageFiles", imageFiles[i]);
         }
 
-        console.log(formData)
-
         try {
-            const data = await postItem(formData);
-            const itemData = await fetchItem(data.itemNo);
-            navigate(`/item-detail`, { state: itemData });
+          const data = await postItem(formData);
+
+          const itemData = await fetchItem(data.itemNo);
+          navigate(`/item-detail`, { state: itemData });
 
         } catch (error) {
-            console.error("상품 추가 오류: ", error);
+          console.error("상품 추가 오류: ", error);
         }
     };
 
@@ -160,24 +200,61 @@ function PostItem() {
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="market-label">시장 선택</InputLabel>
+                                    <Select
+                                        labelId="market-label"
+                                        name="marketNo"
+                                        value={item.marketNo}
+                                        onChange={handleChangeItem}
+                                        sx={{ minHeight: 56 }}
+                                    >
+                                        {markets.map(market => (
+                                            <MenuItem key={market.marketNo} value={market.marketNo}>
+                                                {market.marketName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="shop-label">상점 선택</InputLabel>
+                                    <Select
+                                        labelId="shop-label"
+                                        name="shopNo"
+                                        value={item.shopNo}
+                                        onChange={handleChangeItem}
+                                        sx={{ minHeight: 56 }}
+                                    >
+                                        {shops.map(shop => (
+                                            <MenuItem key={shop.shopNo} value={shop.shopNo}>
+                                                {shop.shopName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
                                 <MDInput
                                     name="itemName"
                                     label="상품 이름"
                                     onChange={handleChangeItem}
-                                    fullWidth/>
+                                    fullWidth
+                                />
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
                                     name="price"
                                     label="상품 가격"
                                     onChange={handleChangeItem}
-                                    fullWidth/>
+                                    fullWidth
+                                />
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
                                     name="itemDetail"
                                     label="상품 상세설명"
-                                    multiline
                                     onChange={handleChangeItem}
                                     fullWidth
                                 />
@@ -186,51 +263,47 @@ function PostItem() {
                                 <MDInput
                                     name="stockNumber"
                                     label="상품 재고 갯수"
-                                    multiline
                                     onChange={handleChangeItem}
                                     fullWidth
                                 />
                             </MDBox>
                             <MDBox mb={2}>
                                 <FormControl fullWidth>
-                                    <InputLabel
-                                        id="category-label">상품 카테고리</InputLabel>
+                                    <InputLabel id="category-label">상품 카테고리</InputLabel>
                                     <Select
                                         labelId="category-label"
                                         name="itemCategory"
                                         value={item.itemCategory}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{ minHeight: 56 }}
                                     >
                                         {Object.keys(itemCategories).map(
-                                            (category) => (
-                                                <MenuItem key={category}
-                                                          value={category}>
-                                                    {category}
+                                            (itemCategory) => (
+                                                <MenuItem key={itemCategory} value={itemCategory}>
+                                                    {itemCategory}
                                                 </MenuItem>
-                                            ))}
+                                            )
+                                        )}
                                     </Select>
                                 </FormControl>
                             </MDBox>
                             <MDBox mb={2}>
                                 <FormControl fullWidth>
-                                    <InputLabel
-                                        id="category-label">상품 판매
-                                        상태</InputLabel>
+                                    <InputLabel id="category-label">상품 판매</InputLabel>
                                     <Select
                                         labelId="category-label"
                                         name="itemSellStatus"
                                         value={item.itemSellStatus}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{ minHeight: 56 }}
                                     >
                                         {Object.keys(categories).map(
                                             (category) => (
-                                                <MenuItem key={category}
-                                                          value={category}>
+                                                <MenuItem key={category} value={category}>
                                                     {category}
                                                 </MenuItem>
-                                            ))}
+                                            )
+                                        )}
                                     </Select>
                                 </FormControl>
                             </MDBox>
@@ -239,8 +312,10 @@ function PostItem() {
                                     inputRef={uploadRef}
                                     onChange={handleFileChange}
                                     inputType={'file'}
-                                    type={'file'} multiple={true}
-                                    fullWidth/>
+                                    type={'file'}
+                                    multiple={true}
+                                    fullWidth
+                                />
                             </MDBox>
                             {previewImages.length > 0 && (
                                 <MDBox mb={2} sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -271,8 +346,7 @@ function PostItem() {
                                 </MDBox>
                             )}
                             <MDBox mt={4} mb={1} right>
-                                <MDButton onClick={handleAddItem}
-                                          variant="gradient" color="info">
+                                <MDButton onClick={handleAddItem} variant="gradient" color="info">
                                     저장
                                 </MDButton>
                             </MDBox>
@@ -284,4 +358,4 @@ function PostItem() {
     );
 }
 
-export default PostItem;
+export default PostItemAdmin;
