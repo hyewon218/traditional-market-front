@@ -1,3 +1,18 @@
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.1.0
+ =========================================================
+
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+ Coded by www.creative-tim.com
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
+
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import useCustomLogin from "../../hooks/useCustomLogin";
@@ -93,13 +108,12 @@ function ChatDetail() {
 
     // 채팅 배열에 새로 받은 메시지를 추가
     const sendChat = () => {
-        if (chat === "" ) {
+        if (chat === "") {
             return;
         }
         const formattedDate = new Date().toLocaleTimeString(); // UTC 시간으로 포맷
-        const sender = isAdmin ? "관리자" : userId;
         const newMessage = {
-            sender: sender,
+            sender: userId,
             message: chat,
             createdAt: formattedDate
         };
@@ -116,7 +130,7 @@ function ChatDetail() {
     const callback = function (message) {
         if (message.body) {
             let msg = JSON.parse(message.body);
-            console.log("callback!!!!!!!!!!!" + JSON.stringify(msg))
+            //console.log("callback!!!!!!!!!!!" + JSON.stringify(msg))
             setChatList((chats) => [...chats, msg]);// 채팅 배열에 새로 받은 메시지를 추가
         }
     };
@@ -134,8 +148,8 @@ function ChatDetail() {
 
     const msgBox = chatList.map((chat, index) => {
         //console.log("로그인 사용자 ID = " + userId + "/sender =" + chat.sender)
-
-        if (chat.sender === userId || '관리자') {
+        const sender = isAdmin ? chat.sender : '관리자' /*else 에서 사용,*/
+        if (chat.sender === userId) {
             return (
                 <MDBox key={index} pt={2} pb={2} px={3}>
                     <Grid container justifyContent="flex-end">
@@ -143,19 +157,19 @@ function ChatDetail() {
                             <Card sx={{backgroundColor: yellow[500]}}>
                                 <MDBox pt={2} pb={2} px={3}>
                                     <Grid container>
-                                        <Grid item xs={8}>
+                                        <Grid item xs={6}>
                                             <MDTypography fontWeight="bold"
                                                           variant="body2">
                                                 {chat.message}
                                             </MDTypography>
                                         </Grid>
-                                        <Grid item xs={2}>
+                                        <Grid item xs={3}>
                                             <MDTypography fontWeight="bold"
                                                           variant="body2">
-                                                {chat.sender}
+                                                {/* {chat.sender}*/}
                                             </MDTypography>
                                         </Grid>
-                                        <Grid item xs={2}>
+                                        <Grid item xs={3}>
                                             <MDTypography fontWeight=""
                                                           variant="body2">
                                                 {chat.createdAt}
@@ -176,19 +190,19 @@ function ChatDetail() {
                             <Card>
                                 <MDBox pt={2} pb={2} px={3}>
                                     <Grid container>
-                                        <Grid item xs={8}>
+                                        <Grid item xs={6}>
                                             <MDTypography fontWeight="bold"
                                                           variant="body2">
                                                 {chat.message}
                                             </MDTypography>
                                         </Grid>
-                                        <Grid item xs={2}>
+                                        <Grid item xs={3}>
                                             <MDTypography fontWeight="bold"
                                                           variant="body2">
-                                                {chat.sender}
+                                                {sender}
                                             </MDTypography>
                                         </Grid>
-                                        <Grid item xs={2}>
+                                        <Grid item xs={3}>
                                             <MDTypography fontWeight=""
                                                           variant="body2">
                                                 {chat.createdAt}
@@ -206,7 +220,7 @@ function ChatDetail() {
 
     return (
         <DashboardLayout>
-            <MDBox sx={{maxWidth: '1200px', margin: '0 auto'}}>
+            <MDBox sx={{maxWidth: '800px', margin: '0 auto'}}> {/* Adjusted the maxWidth */}
                 <MDBox pt={5} pb={5}
                        sx={{display: 'flex', justifyContent: 'center'}}>
                     <Card sx={{

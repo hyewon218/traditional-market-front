@@ -11,17 +11,25 @@ export const postChatRoom = async () => {
     return res.data;
 };
 
-export const getChatRooms = async () => { // 전체 채팅방
-    const res = await axios.get(`${prefix}`);
+export const getChatRooms = async (pageParam) => { // 전체 채팅방(관리자)
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefix}`, {
+        params:
+            {page: page, size: size}
+    });
     return res.data;
 };
 
-export const getMyChatRooms = async () => {
-    const res = await axios.get(`${myPrefix}`);
+export const getMyChatRooms = async (pageParam) => { // 나의 채팅방
+    const {page, size} = pageParam
+    const res = await axios.get(`${myPrefix}`, {
+        params:
+            {page: page, size: size}
+    });
     return res.data;
 };
 
-export const getChatDetails = async (rno) => {
+export const getChatDetails = async (rno) => { // 채팅방 내 채팅목록 조회
     const res = await axios.get(`${prefix}/chat/${rno}`);
     return res.data;
 };
@@ -29,3 +37,15 @@ export const getChatDetails = async (rno) => {
 export const deleteChatRoom = async (rno) => {
     return await axios.delete(`${prefix}/${rno}`);
 };
+
+/*채팅방 읽음 상태로 변경*/
+export const putIsRead = async (rno) => {
+    const res = await axios.put(`${prefix}/${rno}/read`)
+    return res.data
+}
+
+/*채팅방 읾음 여부 조회*/
+export const getIsRead = async (rno) => {
+    const res = await axios.get(`${prefix}/${rno}/read`)
+    return res.data
+}

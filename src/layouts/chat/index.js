@@ -8,7 +8,15 @@ import MDTypography from "../../components/MD/MDTypography";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import MDButton from "../../components/MD/MDButton";
-import {getChatRooms, getMyChatRooms, postChatRoom} from "../../api/chatApi"
+import {
+    getChatRooms, getIsRead,
+    getMyChatRooms,
+    postChatRoom,
+    putIsRead
+} from "../../api/chatApi"
+import MDPagination from "../../components/MD/MDPagination";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const initState = {
     no: '',
@@ -17,6 +25,9 @@ const initState = {
 }
 function Chat() {
     const [chatRoom, setChatRoom] = useState(initState); // 채팅방 기록
+    const [page, setPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+
     const navigate = useNavigate()
     const {moveToLoginReturn, isAuthorization, isAdmin} = useCustomLogin() // 로그인이 필요한 페이지
 
@@ -35,20 +46,51 @@ function Chat() {
         });
     };
 
-    const handleGetChatRooms = () => {
+    const handleGetChatRooms = (pageNum) => {
+        const pageParam = {page: pageNum, size: 7};
         const apiCall = isAdmin ? getChatRooms : getMyChatRooms;
-        apiCall().then(data => {
-            setChatRoom(data)
-            console.log(data);
+        apiCall(pageParam).then(data => {
+            setChatRoom(data.content)
+            setTotalPage(data.totalPages);
+            console.log("data.content!!!!!!"+ data.content);
         }).catch(error => {
             console.error("채팅방 조회에 실패했습니다.", error);
         });
     };
 
-    const handleDetail = (chatRoom) => {
+    const handlePutRead = (charRoomNo) => {
+        putIsRead(charRoomNo).then(data => {
+            console.log('채팅방 읽음 상태로 변경!!!');
+            handleGetIsRead(charRoomNo);
+        }).catch(error => {
+            console.error("채팅방 읽음 상태로 변경에 실패했습니다.", error);
+        });
+    }
+
+    const handleGetIsRead = (charRoomNo) => {
+        getIsRead(charRoomNo).then(data => {
+            console.log('채팅방 읽음 상태 조회!!!');
+            console.log(data);
+        }).catch(error => {
+            console.error("채팅방 읽음 상태 조회에 실패했습니다.", error);
+        });
+    }
+
+    const handleDetail = (chatRoom) => { // 채팅방 클릭
+        if (!chatRoom.read) {
+            handlePutRead(chatRoom.no);
+        }
         console.log('handleDetail');
         console.log("chat!!!!!!!!!!!"+chatRoom);
         navigate('/chat-detail', { state: chatRoom });
+    };
+
+    const changePage = (pageNum) => {
+        console.log('change pages');
+        console.log(pageNum);
+        console.log(page);
+        setPage(pageNum);
+        handleGetChatRooms(pageNum);
     };
 
     const buttonStyle = {
@@ -61,8 +103,9 @@ function Chat() {
     };
 
     useEffect(() => {
-        handleGetChatRooms();
-    }, [])
+        handleGetChatRooms(page);
+    }, [page]); // Add 'page' as a dependency to fetch data whenever page changes
+
 
     if(!isAuthorization){
         return moveToLoginReturn()
@@ -70,22 +113,36 @@ function Chat() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                <MDButton onClick={handlePostChatRoom}
-                          variant="gradient"
-                          size="large"
-                          sx={{
-                              ...buttonStyle,
-                              ml: 3, mb: 3
-                          }}
-                >채팅 상담하기
-                </MDButton>
+            <MDBox pt={1} pb={3}>
+                {!isAdmin && (
+                    <MDBox pt={3} pb={3}>
+                        <MDButton
+                            onClick={handlePostChatRoom}
+                            variant="gradient"
+                            size="large"
+                            sx={{
+                                ...buttonStyle,
+                                ml: 3, mb: 3
+                            }}
+                        >
+                            채팅 상담하기
+                        </MDButton>
+                    </MDBox>
+                )}
 
-                {chatRoom.chatRoomList.map((chatRoom) => (
+                {Array.isArray(
+                        chatRoom)
+                    &&chatRoom.map((chatRoom) => (
                     <MDBox pt={2} pb={2} px={3} key={chatRoom.no}>
-                        <Card>
+                        <Card
+                            sx={{
+                                backgroundColor: chatRoom.read ? '#ffffff' : '#fff8b0', // White for read, light yellow for unread
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => handleDetail(chatRoom)}
+                        >
                             <MDBox pt={2} pb={2} px={3}>
-                                <Grid container onClick={() => handleDetail(chatRoom)}>
+                                <Grid container>
                                     <Grid item xs={8}>
                                         <MDTypography fontWeight="bold"
                                                       variant="body2">
@@ -112,6 +169,24 @@ function Chat() {
                     </MDBox>
                 ))}
             </MDBox>
+
+            <MDPagination size={"small"}>
+                <MDPagination item>
+                    <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
+                </MDPagination>
+                {[...Array(totalPage).keys()].map(
+                    (i) => (
+                        <MDPagination item
+                                      key={i}
+                                      onClick={() => changePage(
+                                          i)}>
+                            {i + 1}
+                        </MDPagination>
+                    ))}
+                <MDPagination item>
+                    <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                </MDPagination>
+            </MDPagination>
         </DashboardLayout>
     )
 }
