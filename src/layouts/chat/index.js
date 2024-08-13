@@ -39,7 +39,7 @@ function Chat() {
                 ...prevState,
                 chatRoomList: [...prevState.chatRoomList, newChatRoom]
             }));
-            navigate('/chat-detail', { state: newChatRoom });
+            navigate('/chat-detail', {state: newChatRoom});
             console.log(data);
         }).catch(error => {
             console.error("채팅방 생성에 실패했습니다.", error);
@@ -52,7 +52,7 @@ function Chat() {
         apiCall(pageParam).then(data => {
             setChatRoom(data.content)
             setTotalPage(data.totalPages);
-            console.log("data.content!!!!!!"+ data.content);
+            console.log("data.content!!!!!!" + data.content);
         }).catch(error => {
             console.error("채팅방 조회에 실패했습니다.", error);
         });
@@ -81,8 +81,8 @@ function Chat() {
             handlePutRead(chatRoom.no);
         }
         console.log('handleDetail');
-        console.log("chat!!!!!!!!!!!"+chatRoom);
-        navigate('/chat-detail', { state: chatRoom });
+        console.log("chat!!!!!!!!!!!" + chatRoom);
+        navigate('/chat-detail', {state: chatRoom});
     };
 
     const changePage = (pageNum) => {
@@ -96,78 +96,89 @@ function Chat() {
     const buttonStyle = {
         backgroundColor: '#50bcdf',
         color: '#ffffff',
-        fontSize: '2rem',
+        fontSize: '1.5rem',
         fontFamily: 'JalnanGothic',
-        padding: '20px 40px',
-        width: '330px',
+        width: '220px',
     };
 
     useEffect(() => {
         handleGetChatRooms(page);
     }, [page]); // Add 'page' as a dependency to fetch data whenever page changes
 
-
-    if(!isAuthorization){
+    if (!isAuthorization) {
         return moveToLoginReturn()
     }
 
     return (
         <DashboardLayout>
             <MDBox pt={1} pb={3}>
-                {!isAdmin && (
-                    <MDBox pt={3} pb={3}>
-                        <MDButton
-                            onClick={handlePostChatRoom}
-                            variant="gradient"
-                            size="large"
-                            sx={{
-                                ...buttonStyle,
-                                ml: 3, mb: 3
-                            }}
-                        >
-                            채팅 상담하기
-                        </MDButton>
-                    </MDBox>
-                )}
-
-                {Array.isArray(
-                        chatRoom)
-                    &&chatRoom.map((chatRoom) => (
-                    <MDBox pt={2} pb={2} px={3} key={chatRoom.no}>
-                        <Card
-                            sx={{
-                                backgroundColor: chatRoom.read ? '#ffffff' : '#fff8b0', // White for read, light yellow for unread
-                                cursor: 'pointer'
-                            }}
-                            onClick={() => handleDetail(chatRoom)}
-                        >
-                            <MDBox pt={2} pb={2} px={3}>
-                                <Grid container>
-                                    <Grid item xs={8}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
-                                            {chatRoom.title}
-                                        </MDTypography>
-                                    </Grid>
-                                    {isAdmin && (
-                                        <Grid item xs={2}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
-                                                {chatRoom.username}
-                                            </MDTypography>
-                                        </Grid>
-                                    )}
-                                    <Grid item xs={2}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
-                                            {chatRoom.createTime}
-                                        </MDTypography>
-                                    </Grid>
-                                </Grid>
+                <Grid container>
+                    <Grid item xs={9.5}>
+                        <MDTypography fontWeight="bold"
+                                      sx={{ml:4, mt:1, fontSize: '2rem'}}
+                                      variant="body2">
+                            채팅 상담 목록
+                        </MDTypography>
+                    </Grid>
+                    <Grid item xs={2.5}>
+                        {!isAdmin && (
+                            <MDBox  >
+                                <MDButton
+                                    onClick={handlePostChatRoom}
+                                    variant="gradient"
+                                    size="large"
+                                    sx={{
+                                        ...buttonStyle,
+                                    }}
+                                >
+                                    채팅 상담하기
+                                </MDButton>
                             </MDBox>
-                        </Card>
-                    </MDBox>
-                ))}
+                        )}
+                    </Grid>
+                </Grid>
+
+
+                    {Array.isArray(
+                            chatRoom)
+                        && chatRoom.map((chatRoom) => (
+                            <MDBox pt={2} pb={2} px={3} key={chatRoom.no}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: chatRoom.read
+                                            ? '#ffffff' : '#fff8b0', // White for read, light yellow for unread
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => handleDetail(chatRoom)}
+                                >
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={8}>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2">
+                                                    {chatRoom.title}
+                                                </MDTypography>
+                                            </Grid>
+                                            {isAdmin && (
+                                                <Grid item xs={2}>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2">
+                                                        {chatRoom.username}
+                                                    </MDTypography>
+                                                </Grid>
+                                            )}
+                                            <Grid item xs={2}>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2">
+                                                    {chatRoom.createTime}
+                                                </MDTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
+                                </Card>
+                            </MDBox>
+                        ))}
             </MDBox>
 
             <MDPagination size={"small"}>
@@ -188,7 +199,7 @@ function Chat() {
                 </MDPagination>
             </MDPagination>
         </DashboardLayout>
-    )
+)
 }
 
 export default Chat

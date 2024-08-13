@@ -28,16 +28,14 @@ import MDTypography from "../../components/MD/MDTypography";
 import MDInput from "../../components/MD/MDInput";
 import MDButton from "../../components/MD/MDButton";
 import {yellow} from "@mui/material/colors";
-import {getChatDetails} from '../../api/chatApi';
+import {getChatDetails, getIsRead, putIsRead} from '../../api/chatApi';
 
 function ChatDetail() {
     const {state} = useLocation();
     const charRoom = state; // 전달된 charRoom 데이터를 사용
-
     let [client, changeClient] = useState(null);
     const [chat, setChat] = useState(""); // 입력된 chat 을 받을 변수
     const [chatList, setChatList] = useState([]); // 채팅 기록
-    //const [sending, setSending] = useState(false); // To prevent duplicate sends
 
     const {
         moveToLoginReturn,
@@ -56,11 +54,11 @@ function ChatDetail() {
 
     useEffect(() => {
         handleGetChatDetails();
-    }, []);
 
-    if (!isAuthorization) {
-        return moveToLoginReturn()
-    }
+        if (!charRoom.read) {
+            handlePutRead(charRoom.no); // 채팅방 읽음 상태로 변경
+        }
+    }, []);
 
     const handleGetChatDetails = () => {
         getChatDetails(charRoom.no).then(data => {
@@ -70,6 +68,28 @@ function ChatDetail() {
             console.error("채팅방 조회에 실패했습니다.", error);
         });
     };
+
+    const handlePutRead = (charRoomNo) => {
+        putIsRead(charRoomNo).then(data => {
+            console.log('채팅방 읽음 상태로 변경!!!');
+            handleGetIsRead(charRoomNo);
+        }).catch(error => {
+            console.error("채팅방 읽음 상태로 변경에 실패했습니다.", error);
+        });
+    }
+
+    const handleGetIsRead = (charRoomNo) => { // 알람을 통해 들어왔을 때
+        getIsRead(charRoomNo).then(data => {
+            console.log('채팅방 읽음 상태 조회!!!');
+            console.log(data);
+        }).catch(error => {
+            console.error("채팅방 읽음 상태 조회에 실패했습니다.", error);
+        });
+    }
+
+    if (!isAuthorization) {
+        return moveToLoginReturn()
+    }
 
     const connect = () => {
         // WebSocket connection
@@ -106,14 +126,13 @@ function ChatDetail() {
         client.deactivate();
     };
 
-    // 채팅 배열에 새로 받은 메시지를 추가
     const sendChat = () => {
         if (chat === "") {
             return;
         }
         const formattedDate = new Date().toLocaleTimeString(); // UTC 시간으로 포맷
         const newMessage = {
-            sender: userId,
+            sender: userId, /*로그인한 사용자*/
             message: chat,
             createdAt: formattedDate
         };
@@ -121,7 +140,7 @@ function ChatDetail() {
             destination: "/pub/chat/message/" + charRoom.no,
             body: JSON.stringify(newMessage),
         });
-        console.log("formattedDate!!!!!" + formattedDate)
+        //console.log("formattedDate!!!!!" + formattedDate)
         setChat("");
     };
 
@@ -220,42 +239,72 @@ function ChatDetail() {
 
     return (
         <DashboardLayout>
-            <MDBox sx={{maxWidth: '800px', margin: '0 auto'}}> {/* Adjusted the maxWidth */}
-                <MDBox pt={5} pb={5}
+            <MDBox sx={{
+                maxWidth: '800px',
+                margin: '0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh'
+            }}>
+                <MDBox pt={5} pb={3}
                        sx={{display: 'flex', justifyContent: 'center'}}>
                     <Card sx={{
                         width: '50%',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
-                    }}> <MDTypography fontWeight="bold"
+                    }}>
+                        <MDTypography fontWeight="bold"
                                       sx={{fontSize: '2rem', pb: 3, pt: 3}}
                                       variant="body2">
-                        무엇을 도와드릴까요?
-                    </MDTypography>
-
+                            무엇을 도와드릴까요?
+                        </MDTypography>
                     </Card>
                 </MDBox>
-                {msgBox}
-                <MDBox pt={2} pb={2} px={3}>
-                    <Card>
-                        <MDBox pt={2} pb={2} px={3}>
-                            <Grid container>
-                                <Grid item xs={10}>
+
+                <MDBox sx={{
+                    flexGrow: 1,
+                    overflowY: 'auto',
+                    paddingBottom: '72px'
+                }}>
+                    {msgBox}
+                </MDBox>
+
+                <MDBox sx={{
+                    position: 'fixed',
+                    bottom: 30,
+                    left: 450,
+                    width: '100%',
+                    backgroundColor: 'white',
+                    //boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
+                    padding: '16px',
+                    maxWidth: '800px',
+                    margin: '0 auto',
+                    display: 'flex',
+                    justifyContent: 'center', /* Centering the content */
+                }}>
+                    <Card sx={{width: '100%'}}>
+                        <MDBox pt={1} pb={1} px={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <Grid container justifyContent="center" alignItems="center">
+                                <Grid item xs={10.5}>
                                     <MDInput label="메시지 보내기"
                                              type="text"
                                              id="msg"
                                              onChange={onChangeChat}
                                              onKeyDown={handleKeyDown}
-                                             value={chat} // Bind the input value to the state
+                                             value={chat}
                                              fullWidth/>
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <MDBox pb={2} px={3} right>
+                                <Grid item xs={1.5}>
+                                    <MDBox sx={{display: 'flex', justifyContent: 'center'}}>
                                         <MDButton onClick={sendChat}
                                                   variant="gradient"
                                                   color="info"
-                                                  fullWidth>
+                                                  sx={{
+                                                      fontFamily: 'JalnanGothic',
+                                                      fontSize: '1rem',
+                                                      padding: '4px 20px',
+                                                  }}>
                                             전송
                                         </MDButton>
                                     </MDBox>
