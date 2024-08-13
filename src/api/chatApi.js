@@ -29,6 +29,11 @@ export const getMyChatRooms = async (pageParam) => { // 나의 채팅방
     return res.data;
 };
 
+export const getChatRoom = async (rno) => { // 채팅방 단건 조회
+    const res = await axios.get(`${prefix}/${rno}`);
+    return res.data;
+};
+
 export const getChatDetails = async (rno) => { // 채팅방 내 채팅목록 조회
     const res = await axios.get(`${prefix}/chat/${rno}`);
     return res.data;

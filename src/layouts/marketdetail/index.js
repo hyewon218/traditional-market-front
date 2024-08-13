@@ -278,8 +278,12 @@ function MarketDetail() {
                 />
                 : <></>
             }
-            {showParkingModal && <ParkingModal open={showParkingModal} onClose={closeParkingModal} marketNo={market.marketNo} />}
-            {showTransportModal && <TransportModal open={showTransportModal} onClose={closeTransportModal} marketNo={market.marketNo}/>}
+            {showParkingModal && <ParkingModal open={showParkingModal}
+                                               onClose={closeParkingModal}
+                                               marketNo={market.marketNo}/>}
+            {showTransportModal && <TransportModal open={showTransportModal}
+                                                   onClose={closeTransportModal}
+                                                   marketNo={market.marketNo}/>}
 
             <Grid container spacing={2}>
                 <Grid item xs={6}>
@@ -300,15 +304,70 @@ function MarketDetail() {
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
-                                <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
-                                    {market.imageList.map((img, i) =>
-                                        <img
-                                            alt="product" key={i}
-                                            width={230}
-                                            src={`${img.imageUrl}`}/>
-                                    )}
-                                </div>
+                                <Grid container>
+                                    <Grid item xs={6}>
+                                        <div
+                                            className="w-full justify-center flex flex-col m-auto items-center">
+                                            {market.imageList.map((img, i) =>
+                                                <img
+                                                    alt="product" key={i}
+                                                    width={230}
+                                                    src={`${img.imageUrl}`}/>
+                                            )}
+                                        </div>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <MDBox mt={14}>
+                                            <Grid container
+                                                  justifyContent="flex-end"
+                                                  spacing={0.5}>
+                                                <Grid item>
+                                                    <MDButton
+                                                        variant="gradient"
+                                                        color="primary"
+                                                        sx={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            padding: '4px 8px',
+                                                        }}
+                                                        onClick={openParkingModal}
+                                                    >
+                                                        주차장
+                                                    </MDButton>
+                                                </Grid>
+                                                <Grid item>
+                                                    <MDButton
+                                                        variant="gradient"
+                                                        color="secondary"
+                                                        sx={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            padding: '4px 8px',
+                                                        }}
+                                                        onClick={openTransportModal}
+                                                    >
+                                                        대중교통
+                                                    </MDButton>
+                                                </Grid>
+                                                <Grid item>
+                                                    <MDButton
+                                                        onClick={handleGetTopFiveItemPage}
+                                                        variant="gradient"
+                                                        sx={{
+                                                            backgroundColor: '#50bcdf',
+                                                            color: '#ffffff',
+                                                            fontSize: '0.75rem',
+                                                            fontFamily: 'JalnanGothic',
+                                                            padding: '4px 8px',
+                                                            minWidth: '100px',
+                                                        }}
+                                                        color="warning"
+                                                    >
+                                                        🔥상품별 가격 순위
+                                                    </MDButton>
+                                                </Grid>
+                                            </Grid>
+                                        </MDBox>
+                                    </Grid>
+                                </Grid>
                                 <MDTypography
                                     variant="body2">{market.marketDetail}</MDTypography>
                                 <MDTypography
@@ -316,16 +375,16 @@ function MarketDetail() {
                                     sx={{
                                         fontSize: '0.75rem',
                                         marginLeft: '8px'
-                                    }} // Adjust font size here
+                                    }}
                                 >{likes} LIKES</MDTypography>
                                 <Grid container>
-                                    <Grid item xs={1.6}>
+                                    <Grid item xs={1.5}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: '0.75rem',  // Adjust font size
+                                                fontSize: '0.75rem',
                                                 padding: '4px 8px',   // Adjust padding (top-bottom left-right)
                                             }}
                                             color="info">좋아요 👍🏻
@@ -334,7 +393,7 @@ function MarketDetail() {
 
                                     {isAdmin && ( // 관리자일 때 버튼 생성
                                         <>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
@@ -346,7 +405,7 @@ function MarketDetail() {
                                                         market)}>시장 수정
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
@@ -358,10 +417,9 @@ function MarketDetail() {
                                                         market.marketNo)}>시장 삭제
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
-
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
@@ -371,39 +429,9 @@ function MarketDetail() {
                                                         market)}>상점 추가
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.6}>
-                                                <MDButton variant="gradient" color="primary" onClick={openParkingModal}>
-                                                    주차장
-                                                </MDButton>
-                                            </Grid>
-                                            <Grid item xs={1.6}>
-                                                <MDButton variant="gradient" color="secondary" onClick={openTransportModal}>
-                                                    대중교통
-                                                </MDButton>
-                                            </Grid>
                                         </>
                                     )}
-                                    <Grid item xs={5.6}>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'right'
-                                        }}>
-                                            <MDButton
-                                                onClick={handleGetTopFiveItemPage}
-                                                variant="gradient"
-                                                sx={{
-                                                    backgroundColor: '#50bcdf',
-                                                    color: '#ffffff',
-                                                    fontSize: '0.75rem',
-                                                    fontFamily: 'JalnanGothic',
-                                                    padding: '4px 8px',
-                                                    minWidth: '100px',
-                                                }}
-                                                color="warning">🔥상품별 가격 순위
-                                                확인
-                                            </MDButton>
-                                        </div>
-                                    </Grid>
+
                                 </Grid>
                             </MDBox>
                         </Card>
@@ -464,73 +492,79 @@ function MarketDetail() {
                         </MDTypography>
                     </Grid>
                 ) : (
-                    (isCategoryFiltered ? filteredShops : shops).map((shop, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                            <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
-                                <Card sx={{
-                                    width: '100%',
-                                    maxWidth: '380px',
-                                    mx: 'auto'
-                                }}>
-                                    <MDBox pt={2} pb={2} px={2}>
-                                        <Grid container>
-                                            <Grid item xs={6}>
-                                                <MDTypography fontWeight="bold"
-                                                              sx={{
-                                                                  fontSize: '0.9rem',
-                                                                  minWidth: '100px',
-                                                              }}
-                                                              variant="body2">
-                                                    {shop.shopName}
-                                                </MDTypography>
+                    (isCategoryFiltered ? filteredShops : shops).map(
+                        (shop, index) => (
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                                <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
+                                    <Card sx={{
+                                        width: '100%',
+                                        maxWidth: '380px',
+                                        mx: 'auto'
+                                    }}>
+                                        <MDBox pt={2} pb={2} px={2}>
+                                            <Grid container>
+                                                <Grid item xs={6}>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        sx={{
+                                                            fontSize: '0.9rem',
+                                                            minWidth: '100px',
+                                                        }}
+                                                        variant="body2">
+                                                        {shop.shopName}
+                                                    </MDTypography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <MDTypography
+                                                        variant="body2"
+                                                        sx={{
+                                                            fontSize: '0.9rem',
+                                                            minWidth: '100px',
+                                                        }}
+                                                        textAlign="right">
+                                                        {shop.tel}
+                                                    </MDTypography>
+                                                </Grid>
                                             </Grid>
-                                            <Grid item xs={6}>
-                                                <MDTypography variant="body2"
-                                                              sx={{
-                                                                  fontSize: '0.9rem',
-                                                                  minWidth: '100px',
-                                                              }}
-                                                              textAlign="right">
-                                                    {shop.tel}
-                                                </MDTypography>
+                                            <Grid container>
+                                                <Grid item xs={8.7}>
+                                                    <MDTypography
+                                                        variant="body2"
+                                                        sx={{
+                                                            fontSize: '0.9rem',
+                                                            minWidth: '100px',
+                                                        }}
+                                                    >
+                                                        {shop.sellerName}
+                                                    </MDTypography>
+                                                </Grid>
+                                                <Grid item xs={3.3}>
+                                                    <Button
+                                                        onClick={() => handleDetail(
+                                                            shop)}>
+                                                        Detail
+                                                    </Button>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                        <Grid container>
-                                            <Grid item xs={8.7}>
-                                                <MDTypography variant="body2"
-                                                              sx={{
-                                                                  fontSize: '0.9rem',
-                                                                  minWidth: '100px',
-                                                              }}
-                                                >
-                                                    {shop.sellerName}
-                                                </MDTypography>
-                                            </Grid>
-                                            <Grid item xs={3.3}>
-                                                <Button
-                                                    onClick={() => handleDetail(
-                                                        shop)}>
-                                                    Detail
-                                                </Button>
-                                            </Grid>
-                                        </Grid>
-                                        <div
-                                            className="w-full justify-center flex flex-col m-auto items-center">
-                                            {shop.imageList.map((imgUrl, i) => (
-                                                <img alt="product" key={i}
-                                                     width={250}
-                                                     src={`${imgUrl.imageUrl}`}/>
-                                            ))}
-                                        </div>
-                                    </MDBox>
-                                </Card>
-                            </MDBox>
-                        </Grid>
-                    ))
+                                            <div
+                                                className="w-full justify-center flex flex-col m-auto items-center">
+                                                {shop.imageList.map(
+                                                    (imgUrl, i) => (
+                                                        <img alt="product"
+                                                             key={i}
+                                                             width={250}
+                                                             src={`${imgUrl.imageUrl}`}/>
+                                                    ))}
+                                            </div>
+                                        </MDBox>
+                                    </Card>
+                                </MDBox>
+                            </Grid>
+                        ))
                 )}
             </Grid>
 
-           {shouldShowPagination && (
+            {shouldShowPagination && (
                 <MDPagination size={"small"}>
                     <MDPagination item>
                         <KeyboardArrowLeftIcon/>
