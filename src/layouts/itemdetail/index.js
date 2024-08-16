@@ -50,6 +50,9 @@ import FetchingModal from "../../components/common/FetchingModal";
 import ResultModal from "../../components/common/ResultModal";
 import {postOrder} from "../../api/orderApi";
 import IconButton from "@mui/material/IconButton";
+import {formatDistanceToNow} from "date-fns";
+import { ko } from 'date-fns/locale';
+
 
 function ItemDetail() {
     const {isAdmin, isAuthorization, userId} = useCustomLogin()
@@ -297,10 +300,9 @@ function ItemDetail() {
                 />
                 : <></>
             }
-
             <Grid container spacing={2}>
                 <Grid item xs={12} md={7}>
-                    <MDBox pt={3} pb={3}>
+                    <MDBox pt={0} pb={3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <Grid container>
@@ -429,7 +431,7 @@ function ItemDetail() {
 
                 {/*댓글*/}
                 <Grid item xs={5}>
-                    <MDBox pt={3} pb={3}>
+                    <MDBox pt={0} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
                                 <MDBox pt={3} pb={2} px={3}>
@@ -535,6 +537,18 @@ function ItemDetail() {
                                                             )}
                                                         </MDBox>
                                                     )}
+                                                <Grid item xs={1.3}>
+                                                    <MDTypography
+                                                        variant="body2"
+                                                        sx={{
+                                                            mt: -1.5,
+                                                            fontSize: '0.8rem'  // Adjust font size here
+                                                        }}
+                                                        textAlign="right">
+                                                        {formatDistanceToNow(new Date(comment.createTime), { addSuffix: true, locale: ko  })}
+                                                    </MDTypography>
+                                                </Grid>
+
                                             </Grid>
                                         </MDBox>
                                     ))}
