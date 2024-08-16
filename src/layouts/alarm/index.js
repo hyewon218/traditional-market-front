@@ -15,7 +15,7 @@
 
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {API_SERVER_HOST} from "../../api/marketApi";
+import {API_SERVER_HOST, getOne} from "../../api/marketApi";
 import {getCookie} from "../../util/cookieUtil";
 import {EventSourcePolyfill} from "event-source-polyfill";
 
@@ -38,6 +38,9 @@ import axios from 'axios';
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {useNavigate} from "react-router-dom";
 import {getChatRoom} from "../../api/chatApi";
+import {getInquiryAnswer} from "../../api/inquiryAnswerApi";
+import {getShopOne} from "../../api/shopApi";
+import {getItemOne} from "../../api/itemApi";
 
 const initState = {
     no: 0,
@@ -56,7 +59,8 @@ const notificationTypeMessages = {
     NEW_COMMENT_ON_ITEM: "상품에 댓글이 달렸어요!",
     NEW_PURCHASE_ON_SHOP: "판매 상품에 구매요청이 왔어요!",
     NEW_CHAT_ON_CHATROOM: "1:1 채팅 상담 답변이 왔습니다!",
-    NEW_CHAT_REQUEST_ON_CHATROOM: "1:1 채팅 상담 요청이 왔습니다!"
+    NEW_CHAT_REQUEST_ON_CHATROOM: "1:1 채팅 상담 요청이 왔습니다!",
+    NEW_INQUIRY_ANSWER: "문의사항 답변이 달렸어요!"
 };
 
 function Alarm() {
@@ -105,15 +109,73 @@ function Alarm() {
         getChatRoom(chatRoomNo)
         .then((data) => {
             setChatRoom(data);
-            navigate('/chat-detail', { state: data });
+            navigate('/chat-detail', {state: data});
         })
         .catch((error) => {
             console.error('채팅방 조회에 실패했습니다.', error);
         });
     };
 
-    const handleAlarmClick = (targetId) => {
-        fetchChatRoom(targetId);
+    const fetchInquiryAnswer = (inquiryAnswerNo) => {
+        getInquiryAnswer(inquiryAnswerNo)
+        .then((data) => {
+            navigate('/inquiry-detail', {state: data});
+        })
+        .catch((error) => {
+            console.error('채팅방 조회에 실패했습니다.', error);
+        });
+    };
+
+    const fetchMarket = (marketNo) => {
+        getOne(marketNo)
+        .then((data) => {
+            navigate('/market-detail', {state: data});
+        })
+        .catch((error) => {
+            console.error('시장 조회에 실패했습니다.', error);
+        });
+    };
+
+    const fetchShop = (shopNo) => {
+        getShopOne(shopNo)
+        .then((data) => {
+            navigate('/shop-detail', {state: data});
+        })
+        .catch((error) => {
+            console.error('상점 조회에 실패했습니다.', error);
+        });
+    };
+
+    const fetchItem = (itemNo) => {
+        getItemOne(itemNo)
+        .then((data) => {
+            navigate('/item-detail', {state: data});
+        })
+        .catch((error) => {
+            console.error('상품 조회에 실패했습니다.', error);
+        });
+    };
+
+    const handleAlarmClick = (alarm) => {
+        const {notificationType, args} = alarm;
+        const targetId = args.targetId;
+
+        if (notificationType === "NEW_CHAT_REQUEST_ON_CHATROOM"
+            || notificationType === "NEW_CHAT_ON_CHATROOM") {
+            fetchChatRoom(targetId);
+        } else if (notificationType === "NEW_INQUIRY_ANSWER") {
+            fetchInquiryAnswer(targetId);
+        } else if (notificationType === "NEW_LIKE_ON_MARKET" ||
+            notificationType === "NEW_COMMENT_ON_MARKET") {
+            fetchMarket(targetId);
+        } else if (notificationType === "NEW_LIKE_ON_SHOP" ||
+            notificationType === "NEW_COMMENT_ON_SHOP" ||
+            notificationType === "NEW_PURCHASE_ON_SHOP") {
+            fetchShop(targetId);
+        } else if (notificationType === "NEW_LIKE_ON_ITEM" ||
+            notificationType === "NEW_COMMENT_ON_ITEM") { /*seller 에게 알람*/
+            fetchItem(targetId);
+        }
     };
 
     useEffect(() => {
@@ -147,14 +209,14 @@ function Alarm() {
 
     }, []);
 
-    if(!isAuthorization){
+    if (!isAuthorization) {
         return moveToLoginReturn()
     }
 
     return (
         <DashboardLayout>
             <MDTypography fontWeight="bold"
-                          sx={{ml:4, mt:2, fontSize: '2rem'}}
+                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
                           variant="body2">
                 알람 목록
             </MDTypography>
@@ -167,10 +229,12 @@ function Alarm() {
                                     <Grid item xs={12}>
                                         <MDTypography fontWeight="bold"
                                                       variant="body2"
-                                                      onClick={() => handleAlarmClick(alarm.args.targetId)}
+                                                      onClick={() => handleAlarmClick(
+                                                          alarm)}
                                                       sx={{cursor: 'pointer'}}
                                         >
-                                            {notificationTypeMessages[alarm.notificationType] || "알림이 도착했습니다!"}
+                                            {notificationTypeMessages[alarm.notificationType]
+                                                || "알림이 도착했습니다!"}
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
@@ -183,15 +247,16 @@ function Alarm() {
             {alarms.length > 0 && totalPage > 1 && (
                 <MDPagination>
                     <MDPagination item>
-                        <KeyboardArrowLeftIcon />
+                        <KeyboardArrowLeftIcon/>
                     </MDPagination>
                     {[...Array(totalPage).keys()].map((i) => (
-                        <MDPagination item key={i} onClick={() => changePage(i)}>
+                        <MDPagination item key={i}
+                                      onClick={() => changePage(i)}>
                             {i + 1}
                         </MDPagination>
                     ))}
                     <MDPagination item>
-                        <KeyboardArrowRightIcon />
+                        <KeyboardArrowRightIcon/>
                     </MDPagination>
                 </MDPagination>
             )}
