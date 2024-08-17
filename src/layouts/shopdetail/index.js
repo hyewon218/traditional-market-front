@@ -26,7 +26,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
-import MDInput from '../../components/MD/MDInput';
 import MDButton from '../../components/MD/MDButton';
 import MDPagination from '../../components/MD/MDPagination';
 
@@ -294,6 +293,7 @@ function ShopDetail() {
         });
     };
 
+/*    /!*댓글*!/
     const handleEditComment = (commentId, text) => {
         setEditingCommentId(commentId);
         setEditingCommentText(text);
@@ -338,7 +338,7 @@ function ShopDetail() {
 
         setEditingCommentId(null);
         setEditingCommentText('');
-    };
+    };*/
 
     // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
     const shouldShowPagination = !isCategoryFiltered || filteredItems.length
@@ -370,7 +370,7 @@ function ShopDetail() {
                 <Grid item xs={6}>
                     <MDBox pt={0} pb={3}>
                         <Card>
-                            <MDBox pt={2} pb={3} px={3}>
+                            <MDBox pt={3} pb={3} px={3}>
                                 <Grid container>
                                     <Grid item xs={6}>
                                         <MDTypography fontWeight="bold"
@@ -385,65 +385,74 @@ function ShopDetail() {
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
-                                <div
-                                    className="w-full justify-center flex flex-col m-auto items-center">
-                                    {shop.imageList.map((imgUrl, i) =>
-                                        <img
-                                            alt="product" key={i}
-                                            width={230}
-                                            src={`${imgUrl.imageUrl}`}/>
-                                    )}
-                                </div>
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        <div
+                                            className="w-full justify-center flex flex-col m-auto items-center">
+                                            {shop.imageList.map((imgUrl, i) =>
+                                                <img
+                                                    alt="product" key={i}
+                                                    width={230}
+                                                    src={`${imgUrl.imageUrl}`}/>
+                                            )}
+                                        </div>
+                                    </Grid>
+                                </Grid>
                                 <MDTypography
                                     variant="body2"
                                     sx={{
                                         fontSize: '0.75rem',
                                         marginLeft: '8px'
-                                    }} // Adjust font size here
+                                    }}
                                 >{likes} LIKES</MDTypography>
 
                                 <Grid container>
-                                    <Grid item xs={1.4}>
-                                        <MDButton onClick={handlePostOrCancelLike}
-                                                  variant="gradient"
-                                                  sx={{fontFamily: 'JalnanGothic'}}
-                                                  color="info">
+                                    <Grid item xs={1.5}>
+                                        <MDButton
+                                            onClick={handlePostOrCancelLike}
+                                            variant="gradient"
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: '0.75rem',
+                                                padding: '4px 8px',
+                                            }}
+                                            color="info">
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
                                     {isAdmin && ( // 관리자일 때 버튼 생성
                                         <>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '10px 8px',   // Adjust padding (top-bottom left-right)
+                                                        padding: '4px 8px',
                                                     }}
                                                     onClick={() => handleModifyShop(
                                                         shop)}>상점 수정
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '10px 8px',   // Adjust padding (top-bottom left-right)
+                                                        padding: '4px 8px',
                                                     }}
                                                     onClick={() => handleDeleteShop(
                                                         shop.shopNo)}>상점 삭제
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.6}>
+                                            <Grid item xs={1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '8px 8px',   // Adjust padding (top-bottom left-right)
+                                                        padding: '4px 8px',
                                                     }}
                                                     onClick={() => handleAddItem(
                                                         shop)}>상품 추가
@@ -457,8 +466,22 @@ function ShopDetail() {
                     </MDBox>
                 </Grid>
 
-                {/*댓글*/}
+
+                {/* 지도 */}
                 <Grid item xs={6}>
+                    <Card style={{height: '285px'}}>
+                        <MDBox component="form" role="form">
+                            <ShopMapComponent
+                                containerId="shop-map" // 지도 컨테이너 ID
+                                locations={locations} // 위치 데이터
+                                title={shop.shopName} // 지도 제목
+                            />
+                        </MDBox>
+                    </Card>
+                </Grid>
+
+                {/*댓글*/}
+{/*                <Grid item xs={6}>
                     <MDBox pt={0} pb={3}>
                         <Card>
                             <MDBox component="form" role="form">
@@ -589,7 +612,7 @@ function ShopDetail() {
                                     <MDBox sx={{mt: 2, mb: 0.5}}>
                                         <Grid container spacing={2}>
                                             <Grid item
-                                                  xs={9}> {/* Adjust xs value to control the width */}
+                                                  xs={9}>  Adjust xs value to control the width
                                                 <MDInput
                                                     label="댓글"
                                                     value={comment}
@@ -599,7 +622,7 @@ function ShopDetail() {
                                                 />
                                             </Grid>
                                             <Grid item
-                                                  xs={3}> {/* Adjust xs value to control the width */}
+                                                  xs={3}>  Adjust xs value to control the width
                                                 <MDButton
                                                     variant="contained"
                                                     color="primary"
@@ -620,28 +643,13 @@ function ShopDetail() {
                             </MDBox>
                         </Card>
                     </MDBox>
-                </Grid>
-
-                {/* 지도 */}
-                <Grid item xs={6}>
-                    <MDBox pt={3} pb={3}>
-                        <Card>
-                            <MDBox component="form" role="form">
-                                <ShopMapComponent
-                                    containerId="shop-map" // 지도 컨테이너 ID
-                                    locations={locations} // 위치 데이터
-                                    title={shop.shopName} // 지도 제목
-                                />
-                            </MDBox>
-                        </Card>
-                    </MDBox>
-                </Grid>
+                </Grid>*/}
             </Grid>
 
             {/*카테고리*/}
             <Grid container spacing={0.1} justifyContent="center">
                 {Object.keys(categoryMapping).map((displayCategory) => (
-                    <Grid item xs={1.0}
+                    <Grid item xs={1.1}
                           key={displayCategory}>
                         <MDBox>
                             <MDButton
@@ -652,7 +660,7 @@ function ShopDetail() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1rem',
+                                    fontSize: '1.35rem',
                                     fontFamily: 'JalnanGothic',
                                     marginBottom: 1.5
                                 }}
