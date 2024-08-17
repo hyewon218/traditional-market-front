@@ -30,7 +30,7 @@ import MDButton from '../../components/MD/MDButton';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import {putShop, getShopOne} from "../../api/shopApi";
+import {putShop} from "../../api/shopApi";
 import {getOne} from "../../api/marketApi";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -69,7 +69,7 @@ function ModifyShop() {
     const [initialImages, setInitialImages] = useState(initShop.imageList || []); // 기존에 있던 이미지들
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
-    const [market, setMarket] = useState(''); // 소속 시장 매핑하기위한 상태
+    const [market, setMarket] = useState(''); // 소속 시장 매핑하기 위한 상태
 
     const navigate = useNavigate()
 
@@ -112,7 +112,7 @@ function ModifyShop() {
         };
     }, []);
 
-    // 좌표 찾기 서비스 새창으로 열기
+    // 좌표 찾기 서비스 새 창으로 열기
     const handleOpenMapPopup = () => {
         const width = 600;
         const height = 500;
