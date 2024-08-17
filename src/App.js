@@ -204,7 +204,7 @@ export default function App() {
                     <Route path="/order-complete" element={<OrderComplete />} />
                     <Route path="/top-five-item" element={<TopFiveItem />} />
 
-                    // admin 권한만 접근 가능
+                    {/*admin 권한만 접근 가능*/}
                     <Route
                         path="/post-market"
                         element={<ProtectedRoute><PostMarket /></ProtectedRoute>}

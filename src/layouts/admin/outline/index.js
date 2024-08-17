@@ -14,23 +14,30 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import {useEffect, useState} from 'react';
 
 // @mui material components
 import Card from '@mui/material/Card';
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 
 // Material Dashboard 2 React components
 import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
 
 // Material Dashboard 2 React example components
-import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
+import DashboardLayout
+    from '../../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { getCountMembers, getCountMarkets, getCountShops, getCountShopsByMarket, getTodayVisitor, getTotalVisitor } from "../../../api/adminApi";
-import { getList } from "../../../api/marketApi";
+import {
+    getCountMarkets,
+    getCountMembers,
+    getCountShops,
+    getCountShopsByMarket,
+    getTodayVisitor,
+    getTotalVisitor
+} from "../../../api/adminApi";
+import {getList} from "../../../api/marketApi";
 
 function Outline() {
     const [countMembers, setCountMembers] = useState(0);
@@ -121,12 +128,13 @@ function Outline() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
-                    홈페이지 현황
-                </MDTypography>
-
-                <MDBox pt={3} pb={3}>
+            <MDTypography fontWeight="bold"
+                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
+                          variant="body2">
+                홈페이지 현황
+            </MDTypography>
+            <MDBox pt={1} pb={2}>
+                <MDBox pt={1} pb={2} px={3}>
                     <Card>
                         <MDBox pt={2} pb={3} px={3}>
                             <div className="memberList-contents">

@@ -35,7 +35,7 @@ const DeliveryListModal = ({callbackFn}) => {
         const pageParam = {page: pageNum, size: 3};
         getDeliveryList(pageParam).then(data => {
             setDeliveries(data.content);
-            console.log(data.content)
+            //console.log(data.content)
             setTotalPage(data.totalPages);
         }).catch(error => {
             console.error("배송지 목록 조회에 실패했습니다.", error);

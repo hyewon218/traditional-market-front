@@ -14,17 +14,23 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
-import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
+import DashboardLayout
+    from '../../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { getAllInquiries, deleteAllInquiry, postCheckAdminPw } from "../../../api/adminApi";
-import { deleteInquiry } from "../../../api/inquiryApi";
+import {
+    getAllInquiries,
+    deleteAllInquiry,
+    postCheckAdminPw
+} from "../../../api/adminApi";
+import {deleteInquiry} from "../../../api/inquiryApi";
+import MDButton from "../../../components/MD/MDButton";
 
 function InquiryManage() {
     const [inquiries, setInquiries] = useState([]);
@@ -36,16 +42,16 @@ function InquiryManage() {
     const navigate = useNavigate();
 
     const handleGetInquiries = (page) => {
-        const params = { page, size: 3, sort: 'createTime,desc' };
+        const params = {page, size: 3, sort: 'createTime,desc'};
         console.log('params : ', params);
         getAllInquiries(params)
-            .then(data => {
-                setInquiries(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(error => {
-                console.error("문의사항 목록을 불러오는 데 실패했습니다.", error);
-            });
+        .then(data => {
+            setInquiries(data.content);
+            setTotalPages(data.totalPages);
+        })
+        .catch(error => {
+            console.error("문의사항 목록을 불러오는 데 실패했습니다.", error);
+        });
     };
 
     useEffect(() => {
@@ -53,11 +59,13 @@ function InquiryManage() {
     }, [currentPage]);
 
     const handleDetail = (inquiry) => {
-        navigate('/inquiry-detail', { state: inquiry });
+        navigate('/inquiry-detail', {state: inquiry});
     };
 
     const handleDeleteInquiry = async (inquiryNo) => {
-        if (!window.confirm('문의사항을 삭제하시겠습니까?')) return;
+        if (!window.confirm('문의사항을 삭제하시겠습니까?')) {
+            return;
+        }
 
         try {
             await deleteInquiry(inquiryNo);
@@ -116,19 +124,50 @@ function InquiryManage() {
     };
 
     const styles = {
-        table: { width: '1200px', borderCollapse: 'collapse' },
-        th: { fontWeight: 'bold', fontSize: '1.8rem', paddingBottom: '10px' },
-        td: { fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px' },
-        clickable: { cursor: 'pointer' },
-        card: { padding: '16px' },
-        button: { margin: '0 5px', padding: '8px 16px', border: 'none', borderRadius: '4px', backgroundColor: '#f0f0f0', cursor: 'pointer' },
-        deleteAllButton: { marginBottom: '20px', padding: '10px 20px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1.2rem' },
-        active: { backgroundColor: 'blue', color: 'white' },
-        pagination: { display: 'flex', justifyContent: 'center', marginTop: '20px' },
-        select: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc', marginBottom: '20px' },
-        modal: { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: '0', left: '0', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)' },
-        modalContent: { backgroundColor: 'white', padding: '20px', borderRadius: '8px', textAlign: 'center', width: '300px' },
-        errorMessage: { color: 'red', marginTop: '10px' },
+        table: {width: '1200px', borderCollapse: 'collapse'},
+        th: {fontWeight: 'bold', fontSize: '1.5rem', paddingBottom: '10px'},
+        td: {fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px'},
+        clickable: {cursor: 'pointer'},
+        card: {padding: '16px'},
+        button: {
+            margin: '0 5px',
+            padding: '8px 16px',
+            border: 'none',
+            borderRadius: '4px',
+            backgroundColor: '#f0f0f0',
+            cursor: 'pointer'
+        },
+        active: {backgroundColor: 'blue', color: 'white'},
+        pagination: {
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '20px'
+        },
+        select: {
+            padding: '8px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            marginBottom: '20px'
+        },
+        modal: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)'
+        },
+        modalContent: {
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            width: '300px'
+        },
+        errorMessage: {color: 'red', marginTop: '10px'},
     };
 
     const renderPagination = () => {
@@ -139,33 +178,43 @@ function InquiryManage() {
         const endPage = Math.min(startPage + groupSize - 1, totalPages - 1);
 
         pagination.push(
-            <button key="first-group" style={styles.button} onClick={() => handlePageClick(0)}>
+            <button key="first-group" style={styles.button}
+                    onClick={() => handlePageClick(0)}>
                 처음
             </button>
         );
 
         pagination.push(
-            <button key="prev" style={styles.button} disabled={currentPage === 0} onClick={() => handlePageClick(Math.max(currentPage - 1, 0))}>
+            <button key="prev" style={styles.button}
+                    disabled={currentPage === 0} onClick={() => handlePageClick(
+                Math.max(currentPage - 1, 0))}>
                 이전
             </button>
         );
 
         for (let i = startPage; i <= endPage; i++) {
             pagination.push(
-                <button key={i} style={{ ...styles.button, ...(i === currentPage ? styles.active : {}) }} onClick={() => handlePageClick(i)}>
+                <button key={i} style={{
+                    ...styles.button, ...(i === currentPage ? styles.active
+                        : {})
+                }} onClick={() => handlePageClick(i)}>
                     {i + 1}
                 </button>
             );
         }
 
         pagination.push(
-            <button key="next" style={styles.button} disabled={currentPage >= totalPages - 1} onClick={() => handlePageClick(Math.min(currentPage + 1, totalPages - 1))}>
+            <button key="next" style={styles.button}
+                    disabled={currentPage >= totalPages - 1}
+                    onClick={() => handlePageClick(
+                        Math.min(currentPage + 1, totalPages - 1))}>
                 다음
             </button>
         );
 
         pagination.push(
-            <button key="last-group" style={styles.button} onClick={() => handlePageClick(totalPages - 1)}>
+            <button key="last-group" style={styles.button}
+                    onClick={() => handlePageClick(totalPages - 1)}>
                 끝
             </button>
         );
@@ -175,76 +224,116 @@ function InquiryManage() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
-                    문의사항 관리
-                </MDTypography>
-                <MDBox pt={3} pb={3}>
-                <button style={styles.deleteAllButton} onClick={() => setShowModal(true)}>
-                    전체 삭제
-                </button>
-                    <Card style={styles.card}>
+            <MDTypography fontWeight="bold"
+                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
+                          variant="body2">
+                문의사항 관리
+            </MDTypography>
+            <MDButton
+                variant="gradient"
+                color="error"
+                sx={{
+                    fontFamily: 'JalnanGothic',
+                    fontSize: '1.1rem',
+                    padding: '4px 8px',
+                    marginLeft: '30px',
+                    marginTop: '10px'
+                }}
+                onClick={() => setShowModal(true)}>전체 삭제
+            </MDButton>
+            <MDBox pt={1} pb={2}>
+                <MDBox pt={1} pb={2} px={3}>
+                    <Card>
                         <MDBox pt={2} pb={3} px={3}>
                             <div className="inquiryList-contents">
                                 {inquiries.length > 0 ? (
                                     <table style={styles.table}>
                                         <thead>
-                                            <tr>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        문의 제목
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        작성자
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        작성일
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        답변 상태
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        삭제
-                                                    </MDTypography>
-                                                </th>
-                                            </tr>
+                                        <tr>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    문의 제목
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    작성자
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    작성일
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    답변 상태
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    삭제
+                                                </MDTypography>
+                                            </th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {inquiries.map((inquiry) => (
-                                                <tr key={inquiry.inquiryNo}>
-                                                    <td>
-                                                        <MDTypography onClick={() => handleDetail(inquiry)} sx={{ ...styles.clickable, ...styles.td }} variant="body2">
-                                                            {inquiry.inquiryTitle}
-                                                        </MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{inquiry.inquiryWriter}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{formatCreateTime(inquiry.createTime)}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{inquiry.inquiryState}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <button style={styles.button} onClick={() => handleDeleteInquiry(inquiry.inquiryNo)}>
-                                                            삭제
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                        {inquiries.map((inquiry) => (
+                                            <tr key={inquiry.inquiryNo}>
+                                                <td>
+                                                    <MDTypography
+                                                        onClick={() => handleDetail(
+                                                            inquiry)}
+                                                        sx={{...styles.clickable, ...styles.td}}
+                                                        variant="body2">
+                                                        {inquiry.inquiryTitle}
+                                                    </MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDTypography sx={styles.td}
+                                                                  variant="body2">{inquiry.inquiryWriter}</MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDTypography sx={styles.td}
+                                                                  variant="body2">{formatCreateTime(
+                                                        inquiry.createTime)}</MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDTypography sx={styles.td}
+                                                                  variant="body2">{inquiry.inquiryState}</MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDButton
+                                                        variant="gradient"
+                                                        color="light"
+                                                        sx={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            padding: '4px 8px',
+                                                            marginTop:'-6px',
+                                                            marginRight: '3px',
+                                                            fontSize: '1rem',
+                                                        }}
+                                                        onClick={() => handleDeleteInquiry(
+                                                            inquiry.inquiryNo)}>삭제
+                                                    </MDButton>
+                                                </td>
+                                            </tr>
+                                        ))}
                                         </tbody>
                                     </table>
                                 ) : (
-                                    <MDTypography variant="body2">문의사항이 없습니다.</MDTypography>
+                                    <MDTypography variant="body2">문의사항이
+                                        없습니다.</MDTypography>
                                 )}
                                 {inquiries.length > 0 && (
                                     <MDBox sx={styles.pagination}>
@@ -268,11 +357,13 @@ function InquiryManage() {
                             value={adminPw}
                             onChange={(e) => setAdminPw(e.target.value)}
                         />
-                        {errorMessage && <div style={styles.errorMessage}>{errorMessage}</div>}
+                        {errorMessage && <div
+                            style={styles.errorMessage}>{errorMessage}</div>}
                         <button style={styles.button} onClick={handleDeleteAll}>
                             삭제
                         </button>
-                        <button style={styles.button} onClick={handleCloseModal}>
+                        <button style={styles.button}
+                                onClick={handleCloseModal}>
                             취소
                         </button>
                     </div>
