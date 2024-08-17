@@ -215,7 +215,8 @@ const OrderComponent = () => {
                                             <MDBox
                                                 pb={2}
                                                 pt={2}
-                                                px={2}>
+                                                px={2}
+                                                pl={3}>
                                                 <Grid item xs={12} container alignItems="center">
                                                     <Grid item xs={9}>
                                                         <MDTypography
@@ -226,7 +227,7 @@ const OrderComponent = () => {
                                                             {deliveryAddressTitleMessage}
                                                         </MDTypography>
                                                     </Grid>
-                                                    <Grid item xs={3} container justifyContent="flex-end">
+                                                    <Grid item xs={3} container justifyContent="flex-end" style={{paddingRight: '5px'}}>
                                                         <MDButton
                                                             onClick={handleDeliveryModal}
                                                             variant="gradient"
@@ -260,7 +261,6 @@ const OrderComponent = () => {
                                                         {deliveryAddress}
                                                     </MDTypography>
                                                 </Grid>
-
                                             </MDBox>
                                         </div>
                                     </MDBox>
@@ -419,9 +419,8 @@ const OrderComponent = () => {
                         <Grid item xs={7}>
                             <MDBox pb={3}>
                                 <Card>
-                                    <MDBox pt={2} px={2} pb={2}>
+                                    <MDBox pt={2} px={2} pb={2} pl={3}>
                                         <FormControl component="fieldset">
-
                                             <RadioGroup
                                                 aria-label="payment method"
                                                 name="paymentMethod"

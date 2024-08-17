@@ -168,7 +168,7 @@ const CartComponent = () => {
                                                     return (
                                                         <li key={cartItem.cartItemNo}
                                                             className="border-2 rounded-2"
-                                                            style={{marginBottom: '16px'}}>
+                                                            style={{marginBottom: '16px', marginLeft:'-10px'}}>
                                                             <MDBox pt={2}
                                                                    px={2}
                                                                    pb={2}
@@ -182,7 +182,6 @@ const CartComponent = () => {
                                                                             variant="body2">
                                                                             <button
                                                                                 style={{
-                                                                                    margin: '4px',
                                                                                     padding: '2px 4px',
                                                                                     fontSize: '0.875rem',  // Smaller font size
                                                                                     color: 'white',
