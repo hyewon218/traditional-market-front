@@ -3,10 +3,9 @@ import useCustomLogin from "../../hooks/useCustomLogin";
 
 import Market from '../../layouts/market';
 import MyInfo from '../../layouts/myinfo';
-import SignIn from '../../layouts/authentication/sign-in';
-import SignUp from '../../layouts/authentication/sign-up';
+import SignIn from '../../layouts/authentication/signin';
+import SignUp from '../../layouts/authentication/signup';
 import PostInquiry from '../../layouts/postinquiry';
-import MyInquiries from '../../layouts/myinquiries';
 import Notice from '../../layouts/notice';
 import Chat from '../../layouts/chat';
 import Alarm from '../../layouts/alarm';
@@ -20,7 +19,7 @@ import InquiryManage from '../../layouts/admin/inquirymanage';
 import NoticeManage from '../../layouts/admin/noticemanage';
 
 const RoutesComponent = () => {
-    const {isAuthorization, isAdmin} = useCustomLogin();
+    const {isAuthorization, isAdmin, isMember} = useCustomLogin();
 
     const publicRoutes = [
         {
@@ -44,18 +43,17 @@ const RoutesComponent = () => {
             {
                 type: 'collapse',
                 name: '로그인',
-                key: 'sign-in',
-                route: '/authentication/sign-in',
+                key: 'authentication/signin',
+                route: '/authentication/signin',
                 component: <SignIn/>,
             },
             {
                 type: 'collapse',
                 name: '회원가입',
-                key: 'sign-up',
-                route: '/authentication/sign-up',
+                key: 'authentication/signup',
+                route: '/authentication/signup',
                 component: <SignUp/>,
             },
-
         ]
         : [
             {
@@ -79,23 +77,10 @@ const RoutesComponent = () => {
                 route: '/cart',
                 component: <Cart/>,
             },
+
             {
                 type: 'collapse',
-                name: '문의하기',
-                key: 'postinquiry',
-                route: '/inquiry',
-                component: <PostInquiry/>,
-            },
-            {
-                type: 'collapse',
-                name: '내 문의사항',
-                key: 'myInquiries',
-                route: '/myinquiries',
-                component: <MyInquiries/>,
-            },
-            {
-                type: 'collapse',
-                name: '채팅',
+                name: '1:1 채팅상담',
                 key: 'chat',
                 route: '/chat',
                 component: <Chat/>,
@@ -109,6 +94,16 @@ const RoutesComponent = () => {
             },
         ];
 
+    const memberRoutes = isMember ? [ // 회원 전용 메뉴 추가
+        {
+            type: 'collapse',
+            name: '문의하기',
+            key: 'postinquiry',
+            route: '/postinquiry',
+            component: <PostInquiry/>,
+        },
+    ] : [];
+
     const adminRoutes = isAdmin ? [ // 관리자 전용 메뉴 추가
         {
             type: 'collapse',
@@ -120,48 +115,48 @@ const RoutesComponent = () => {
         {
             type: 'collapse',
             name: '회원 관리',
-            key: 'member',
-            route: '/member-manage',
+            key: 'membermanage',
+            route: '/membermanage',
             component: <MemberManage />,
         },
         {
             type: 'collapse',
             name: '시장 관리',
-            key: 'marketManage',
-            route: '/market-manage',
+            key: 'marketmanage',
+            route: '/marketmanage',
             component: <MarketManage />,
         },
         {
             type: 'collapse',
             name: '상점 관리',
-            key: 'shopManage',
-            route: '/shop-manage',
+            key: 'shopmanage',
+            route: '/shopmanage',
             component: <ShopManage />,
         },
         {
             type: 'collapse',
             name: '상품 관리',
-            key: 'itemManage',
-            route: '/item-manage',
+            key: 'itemmanage',
+            route: '/itemmanage',
             component: <ItemManage />,
         },
         {
             type: 'collapse',
             name: '문의사항 관리',
-            key: 'inquiryManage',
-            route: '/inquiry-manage',
+            key: 'inquirymanage',
+            route: '/inquirymanage',
             component: <InquiryManage />,
         },
         {
             type: 'collapse',
             name: '공지사항 관리',
-            key: 'noticeManage',
-            route: '/notice-manage',
+            key: 'noticemanage',
+            route: '/noticemanage',
             component: <NoticeManage />,
         },
     ] : [];
 
-    return [...publicRoutes, ...authRoutes, ...adminRoutes];
+    return [...publicRoutes, ...authRoutes, ...memberRoutes, ...adminRoutes];
 };
 
 export default RoutesComponent;

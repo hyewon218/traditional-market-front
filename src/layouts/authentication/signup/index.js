@@ -20,7 +20,6 @@ import { Link } from 'react-router-dom';
 
 // @mui material components
 import Card from '@mui/material/Card';
-import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import { TransitionProps } from '@mui/material/transitions';
 
@@ -51,7 +50,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function Cover() {
+function SignUp() {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [open, setOpen] = React.useState(false);
@@ -177,4 +176,4 @@ function Cover() {
   );
 }
 
-export default Cover;
+export default SignUp;
