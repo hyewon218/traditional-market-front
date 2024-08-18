@@ -18,6 +18,7 @@ const useCustomLogin = () => {
     const isAuthorization = getCookie('Authorization')
 
     let isAdmin = false;
+    let isMember = false;
     let userId = null;
 
     if (isAuthorization) {
@@ -25,7 +26,9 @@ const useCustomLogin = () => {
             /*JWT 를 디코딩하고 해당 페이로드를 검사*/
             const decodedToken = jwtDecode(isAuthorization);
             isAdmin = decodedToken.role === 'ROLE_ADMIN';
+            isMember = decodedToken.role === 'ROLE_MEMBER';
             userId = decodedToken.sub || decodedToken.id;
+            //console.log("?!?!??!?"+ isMember)
         } catch (error) {
             console.error("Invalid token:", error);
         }
@@ -33,7 +36,7 @@ const useCustomLogin = () => {
 
     const doLogin = async (loginParam) => { //----------로그인 함수
         const action = await dispatch(loginPostAsync(loginParam))
-        console.log("doLogin 액션 페이로드: ", action.payload)
+        //console.log("doLogin 액션 페이로드: ", action.payload)
         return action.payload
     }
 
@@ -63,6 +66,7 @@ const useCustomLogin = () => {
         moveToLoginReturn,
         isAuthorization,
         isAdmin,
+        isMember,
         userId
     }
 
