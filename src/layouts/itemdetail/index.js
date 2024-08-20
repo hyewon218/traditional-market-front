@@ -51,8 +51,7 @@ import ResultModal from "../../components/common/ResultModal";
 import {postOrder} from "../../api/orderApi";
 import IconButton from "@mui/material/IconButton";
 import {formatDistanceToNow} from "date-fns";
-import { ko } from 'date-fns/locale';
-
+import {ko} from 'date-fns/locale';
 
 function ItemDetail() {
     const {isAdmin, isAuthorization, userId} = useCustomLogin()
@@ -72,8 +71,8 @@ function ItemDetail() {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0); // 이미지 인덱스 상태
 
-    const [editingCommentId, setEditingCommentId] = useState(null); // State to manage editing mode
-    const [editingCommentText, setEditingCommentText] = useState(''); // State to manage the current comment text being edited
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingCommentText, setEditingCommentText] = useState('');
 
     const navigate = useNavigate();
 
@@ -310,7 +309,7 @@ function ItemDetail() {
                                         <MDTypography fontWeight="bold"
                                                       sx={{
                                                           fontSize: '1.5rem',
-                                                      }} // Adjust font size here
+                                                      }}
                                                       variant="body2">
                                             {item.itemName}
                                         </MDTypography>
@@ -319,7 +318,7 @@ function ItemDetail() {
                                         <MDTypography variant="body2"
                                                       sx={{
                                                           fontSize: '1.5rem',
-                                                      }} // Adjust font size here
+                                                      }}
                                                       textAlign="right">
                                             {item.price}원
                                         </MDTypography>
@@ -365,14 +364,14 @@ function ItemDetail() {
                                     variant="body2"
                                     sx={{
                                         marginBottom: '10px'
-                                    }} // Adjust font size here
+                                    }}
                                 >{item.itemDetail}</MDTypography>
                                 <MDTypography
                                     variant="body2"
                                     sx={{
                                         fontSize: '0.75rem',
                                         marginLeft: '8px'
-                                    }} // Adjust font size here
+                                    }}
                                 >{likes} LIKES</MDTypography>
                                 <Grid container>
                                     <Grid item xs={1.4}>
@@ -381,9 +380,9 @@ function ItemDetail() {
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: '0.75rem',  // Adjust font size here
-                                                padding: '4px 8px',   // Adjust padding for smaller button
-                                                minWidth: 'auto'      // Adjust the minimum width to fit content
+                                                fontSize: '0.75rem',
+                                                padding: '4px 8px',
+                                                minWidth: 'auto'
                                             }}
                                             color="info"
                                         >
@@ -398,7 +397,6 @@ function ItemDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        //fontSize: '0.75rem',  // Adjust font size
                                                         padding: '4px 8px',   // Adjust padding (top-bottom left-right)
                                                     }}
                                                     onClick={() => handleModifyItem(
@@ -413,7 +411,7 @@ function ItemDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                        padding: '4px 8px',
                                                     }}
                                                     onClick={() => handleDeleteItem(
                                                         item.itemNo)}
@@ -443,7 +441,7 @@ function ItemDetail() {
                                                         fontWeight="bold"
                                                         sx={{
                                                             mt: -2,
-                                                            fontSize: '0.9rem'  // Adjust font size here
+                                                            fontSize: '0.9rem'
                                                         }}
                                                         variant="body2">
                                                         {editingCommentId
@@ -465,7 +463,7 @@ function ItemDetail() {
                                                         variant="body2"
                                                         sx={{
                                                             mt: -2,
-                                                            fontSize: '0.9rem'  // Adjust font size here
+                                                            fontSize: '0.9rem'
                                                         }}
                                                         textAlign="right">
                                                         {comment.username}
@@ -482,10 +480,9 @@ function ItemDetail() {
                                                                         variant="contained"
                                                                         sx={{
                                                                             fontFamily: 'JalnanGothic',
-                                                                            fontSize: '0.8rem',  // Adjust font size
+                                                                            fontSize: '0.8rem',
                                                                             mt: 1,
                                                                             ml: 1
-                                                                            //padding: '10px 8px',   // Adjust padding (top-bottom left-right)
                                                                         }}
                                                                         color="success"
                                                                         size="small"
@@ -499,9 +496,8 @@ function ItemDetail() {
                                                                         variant="contained"
                                                                         sx={{
                                                                             fontFamily: 'JalnanGothic',
-                                                                            fontSize: '0.8rem',  // Adjust font size
+                                                                            fontSize: '0.8rem',
                                                                             mt: 1,
-                                                                            //padding: '10px 8px',   // Adjust padding (top-bottom left-right)
                                                                         }}
                                                                         color="secondary"
                                                                         size="small"
@@ -542,10 +538,16 @@ function ItemDetail() {
                                                         variant="body2"
                                                         sx={{
                                                             mt: -1.5,
-                                                            fontSize: '0.8rem'  // Adjust font size here
+                                                            fontSize: '0.8rem'
                                                         }}
                                                         textAlign="right">
-                                                        {formatDistanceToNow(new Date(comment.createTime), { addSuffix: true, locale: ko  })}
+                                                        {formatDistanceToNow(
+                                                            new Date(
+                                                                comment.createTime),
+                                                            {
+                                                                addSuffix: true,
+                                                                locale: ko
+                                                            })}
                                                     </MDTypography>
                                                 </Grid>
 
@@ -573,7 +575,7 @@ function ItemDetail() {
                                     <MDBox sx={{mt: 2, mb: 0.5}}>
                                         <Grid container spacing={2}>
                                             <Grid item
-                                                  xs={9}> {/* Adjust xs value to control the width */}
+                                                  xs={9}>
                                                 <MDInput
                                                     label="댓글"
                                                     value={comment}
@@ -583,14 +585,14 @@ function ItemDetail() {
                                                 />
                                             </Grid>
                                             <Grid item
-                                                  xs={3}> {/* Adjust xs value to control the width */}
+                                                  xs={3}>
                                                 <MDButton
                                                     variant="contained"
                                                     color="primary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '0.9rem',  // Adjust font size
-                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                        fontSize: '0.9rem',
+                                                        padding: '4px 8px',
                                                     }}
                                                     onClick={handleWriteComment}
                                                     fullWidth
