@@ -84,7 +84,7 @@ export const cancelMarketLike = async (mno) => { // 좋아요 취소
     return res.data
 }
 
-export const getMarketLikeCount = async () => { // 좋아요 갯수 조회
-    const res = await axios.get(`${prefix}/likes`)
+export const getMarketLikeCount = async (mno) => { // 좋아요 갯수 조회
+    const res = await axios.get(`${prefix}/${mno}/likes-count`)
     return res.data
 }
