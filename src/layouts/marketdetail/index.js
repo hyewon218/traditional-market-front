@@ -187,7 +187,7 @@ function MarketDetail() {
     };
 
     const handleCountLikes = () => {
-        getMarketLikeCount().then(data => {
+        getMarketLikeCount(market.marketNo).then(data => {
             console.log('시장 댓글 조회 성공!!!');
             setLikes(data);
         }).catch(error => {

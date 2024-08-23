@@ -165,8 +165,8 @@ function ShopDetail() {
     };
 
     const handleCountLikes = () => {
-        getShopLikeCount().then(data => {
-            console.log('상점 댓글 조회 성공!!!');
+        getShopLikeCount(shop.shopNo).then(data => {
+            console.log('상점 댓글 수 조회 성공!!!');
             setLikes(data);
         }).catch(error => {
             console.error("상점 댓글 조회에 실패했습니다.", error);

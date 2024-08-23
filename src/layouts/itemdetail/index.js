@@ -174,7 +174,7 @@ function ItemDetail() {
     };
 
     const handleCountLikes = () => {
-        getItemLikeCount().then(data => {
+        getItemLikeCount(item.itemNo).then(data => {
             console.log('상품 댓글 조회 성공!!!');
             setLikes(data);
         }).catch(error => {
