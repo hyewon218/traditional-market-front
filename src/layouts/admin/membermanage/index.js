@@ -33,6 +33,7 @@ function MemberManage() {
     const [totalPages, setTotalPages] = useState(0);
     const [selectedRole, setSelectedRole] = useState('all');
     const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
+    const [searchType, setSearchType] = useState('id'); // 검색 타입 (ID 또는 닉네임)
     const navigate = useNavigate();
 
     const handleGetMembers = (page = 0, role = 'all') => {
@@ -40,7 +41,7 @@ function MemberManage() {
         let apiCall;
 
         if (searchQuery) {
-            apiCall = getMemberListSearch(params, searchQuery);
+            apiCall = getMemberListSearch(params, searchQuery, searchType);
         } else if (role && role !== 'all') {
             apiCall = getRole(role, params);
         } else {
@@ -59,11 +60,11 @@ function MemberManage() {
 
     useEffect(() => {
         handleGetMembers(currentPage, selectedRole);
-    }, [currentPage, selectedRole]);
+    }, [currentPage, selectedRole, searchQuery, searchType]);
 
     const handleDetail = (member) => {
         console.log('회원 상세 페이지로 이동 : ', member);
-        navigate('/member-detail-admin', {state: member});
+        navigate('/member-detail-admin', {state: member.memberNo});
     };
 
     const handlePageClick = (page) => {
@@ -81,10 +82,19 @@ function MemberManage() {
         setSearchQuery(e.target.value);
     };
 
+    // 검색 타입 변경 핸들러
+    const handleSearchTypeChange = (event) => {
+        setSearchType(event.target.value);
+    };
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         setCurrentPage(0);
         handleGetMembers(0, selectedRole);
+    };
+
+    const handleManageWithdrawMembers = () => {
+        navigate('/withdrawmember-manage');
     };
 
     const formatCreateTime = (dateString) => {
@@ -98,7 +108,6 @@ function MemberManage() {
         }).format(date);
     };
 
-    // Inline styles
     const styles = {
         table: {
             width: '1200px',
@@ -236,10 +245,37 @@ function MemberManage() {
             <MDBox pt={1} pb={2}>
                 <MDBox pt={1} pb={2} px={3}>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3}>
+                        <MDBox pt={2} pb={3} px={3} sx={{position: 'relative'}}> {/* 수정된 부분 */}
+                            {/* "탈퇴회원 관리" 버튼 추가 */}
+                            <MDButton
+                                onClick={handleManageWithdrawMembers}
+                                variant="gradient"
+                                color="warning" // 주황색 버튼을 위해 색상을 변경
+                                sx={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: '1rem',
+                                    padding: '8px 16px',
+                                    backgroundColor: '#FF5722', // 주황색 배경
+                                    color: '#FFFFFF' // 흰색 글자
+                                }}
+                            >
+                                탈퇴회원 관리
+                            </MDButton>
                             {/* 검색 폼 추가 */}
-                            <form onSubmit={handleSearchSubmit}
-                                  style={styles.searchForm}>
+                            <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+                                <select
+                                    id="searchType"
+                                    name="searchType"
+                                    style={styles.searchSelect}
+                                    value={searchType}
+                                    onChange={handleSearchTypeChange}
+                                >
+                                    <option value="id">아이디</option>
+                                    <option value="nickname">닉네임</option>
+                                </select>
                                 <MDInput
                                     type="text"
                                     value={searchQuery}
@@ -311,6 +347,20 @@ function MemberManage() {
                                                 <MDTypography fontWeight="bold"
                                                               variant="body2"
                                                               sx={styles.th}>
+                                                    제재여부
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
+                                                    가입경로
+                                                </MDTypography>
+                                            </th>
+                                            <th>
+                                                <MDTypography fontWeight="bold"
+                                                              variant="body2"
+                                                              sx={styles.th}>
                                                     권한
                                                 </MDTypography>
                                             </th>
@@ -348,6 +398,18 @@ function MemberManage() {
                                                     <MDTypography sx={styles.td}
                                                                   variant="body2">
                                                         {member.nicknameWithRandomTag}
+                                                    </MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDTypography sx={styles.td}
+                                                                  variant="body2">
+                                                        {member.warning ? "제재중" : ""}
+                                                    </MDTypography>
+                                                </td>
+                                                <td>
+                                                    <MDTypography sx={styles.td}
+                                                                  variant="body2">
+                                                        {member.providerType}
                                                     </MDTypography>
                                                 </td>
                                                 <td>
