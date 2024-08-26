@@ -25,11 +25,9 @@ import MDButton from "../../components/MD/MDButton";
 import MDInput from "../../components/MD/MDInput";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
-import {NotificationImportant} from "@mui/icons-material";
-import {getNotificationCount} from "../../api/notificationApi";
 
 function Market() {
-    const {isAuthorization} = useCustomLogin()
+    const {isAuthorization, isAdmin} = useCustomLogin()
     const {cartItems, refreshCart} = useCustomCart(); // Use the custom cart hook
 
     const [page, setPage] = useState(0);
@@ -45,15 +43,12 @@ function Market() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [categoryMarkets, setCategoryMarkets] = useState([]);
     const [categoryTotalPage, setCategoryTotalPage] = useState(0);
-    /*알람 아이콘에 알람 수 추가*/
-    const [notificationCount, setNotificationCount] = useState(0);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         if (isAuthorization) {
             refreshCart();
-            fetchNotifications();
         }
     }, []);
 
@@ -95,12 +90,6 @@ function Market() {
         }).catch(error => console.error("시장 카테고리 조회에 실패했습니다.", error));
     };
 
-    const fetchNotifications = () => {
-        getNotificationCount().then(data => {
-            setNotificationCount(data);
-        }).catch(error => console.error("알람 수 조회에 실패했습니다.", error));
-    };
-
     const resetFilters = () => {
         setFilteredMarkets([]);
         setCategoryMarkets([]);
@@ -138,6 +127,10 @@ function Market() {
 
     const handleNotificationIcon = () => {
         navigate('/alarms');
+    };
+
+    const handleAddMarket = () => {
+        navigate('/post-market');
     };
 
     const changePage = (pageNum) => {
@@ -179,24 +172,17 @@ function Market() {
                         sx={{
                             width: '93%',
                             height: '60px',
-                            padding: '8px',
+                            padding: '10px',
                             borderRadius: '8px',
                             marginRight: '50px',
-                            marginLeft: '8px',
+                            marginLeft: '0px',
                         }}
                     />
                     <IconButton onClick={handleSearchSubmit}
-                                sx={{position: 'absolute', right: '6px'}}>
+                                sx={{position: 'absolute', right: '15px'}}>
                         <SearchIcon/>
                     </IconButton>
                 </Card>
-                {/* 알람 아이콘 */}
-                <IconButton onClick={handleNotificationIcon}
-                            sx={{ position: 'absolute', right: '120px' }}>
-                    <Badge badgeContent={notificationCount} color="primary">
-                        <NotificationImportant />
-                    </Badge>
-                </IconButton>
                 {/* 장바구니 아이콘 + 장바구니에 담긴 상품 갯수*/}
                 <IconButton onClick={handleCartIcon}
                             sx={{position: 'absolute', right: '65px'}}>
@@ -306,7 +292,13 @@ function Market() {
                                 ? '검색한 시장이 존재하지 않습니다.'
                                 : selectedCategory
                                     ? '선택한 지역의 시장이 존재하지 않습니다.'
-                                    : '시장을 로딩 중입니다...'}
+                                    : (isAdmin
+                                        ? <Button onClick={handleAddMarket}
+                                            variant="contained"
+                                            color="error">
+                                            시장 추가
+                                        </Button>
+                                        : '시장을 로딩 중입니다...')}
                         </MDTypography>
                     </Grid>
                 )}
