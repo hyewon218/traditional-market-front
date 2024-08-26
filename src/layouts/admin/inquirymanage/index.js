@@ -19,6 +19,7 @@ import {useNavigate} from 'react-router-dom';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
+import MDInput from "../../../components/MD/MDInput";
 import MDTypography from '../../../components/MD/MDTypography';
 import DashboardLayout
     from '../../../examples/LayoutContainers/DashboardLayout';
@@ -27,9 +28,10 @@ import DashboardLayout
 import {
     getAllInquiries,
     deleteAllInquiry,
-    postCheckAdminPw
+    postCheckAdminPw,
+    getMemberOne
 } from "../../../api/adminApi";
-import {deleteInquiry} from "../../../api/inquiryApi";
+import {getInquiryListSearch, deleteInquiry} from "../../../api/inquiryApi";
 import MDButton from "../../../components/MD/MDButton";
 
 function InquiryManage() {
@@ -39,12 +41,21 @@ function InquiryManage() {
     const [showModal, setShowModal] = useState(false);
     const [adminPw, setAdminPw] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
+    const [searchType, setSearchType] = useState('id'); // 검색 타입 (ID 또는 닉네임)
     const navigate = useNavigate();
 
     const handleGetInquiries = (page) => {
         const params = {page, size: 3, sort: 'createTime,desc'};
-        console.log('params : ', params);
-        getAllInquiries(params)
+        let apiCall;
+
+        if (searchQuery) {
+            apiCall = getInquiryListSearch(params, searchQuery, searchType);
+        } else {
+            apiCall = getAllInquiries(params);
+        }
+
+        apiCall
         .then(data => {
             setInquiries(data.content);
             setTotalPages(data.totalPages);
@@ -60,6 +71,31 @@ function InquiryManage() {
 
     const handleDetail = (inquiry) => {
         navigate('/inquiry-detail', {state: inquiry});
+    };
+
+    const handleDetailMember = async (memberNo) => {
+        try {
+            const memberData = await getMemberOne(memberNo);
+            navigate('/member-detail-admin', {state : memberData.memberNo});
+        } catch (error) {
+            console.error('회원 정보를 불러오는 데 실패했습니다.', error);
+        }
+    };
+
+    // 검색 기능 추가
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    // 검색 타입 변경 핸들러
+    const handleSearchTypeChange = (event) => {
+        setSearchType(event.target.value);
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        setCurrentPage(0);
+        handleGetInquiries(0);
     };
 
     const handleDeleteInquiry = async (inquiryNo) => {
@@ -167,7 +203,20 @@ function InquiryManage() {
             textAlign: 'center',
             width: '300px'
         },
-        errorMessage: {color: 'red', marginTop: '10px'},
+        errorMessage: {
+            color: 'red',
+            marginTop: '10px'
+        },
+        searchForm: {
+            marginBottom: '20px',
+        },
+        searchInput: {
+            width: '33%',
+            padding: '4px',
+            borderRadius: '2px',
+            marginRight: '5px',
+            marginTop: '3px'
+        },
     };
 
     const renderPagination = () => {
@@ -244,6 +293,37 @@ function InquiryManage() {
             <MDBox pt={1} pb={2}>
                 <MDBox pt={1} pb={2} px={3}>
                     <Card>
+                    {/* 검색 폼 추가 */}
+                    <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+                        <select
+                            id="searchType"
+                            name="searchType"
+                            style={styles.searchSelect}
+                            value={searchType}
+                            onChange={handleSearchTypeChange}
+                        >
+                            <option value="id">아이디</option>
+                            <option value="title">제목</option>
+                        </select>
+                        <MDInput
+                            type="text"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            placeholder="검색어를 입력하세요"
+                            style={styles.searchInput}
+                        />
+                        <MDButton
+                            type="submit"
+                            variant="gradient"
+                            sx={{
+                                fontFamily: 'JalnanGothic',
+                                fontSize: '1.2rem',
+                                padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                mt:'8px'
+                            }}
+                            color="info">검색
+                        </MDButton>
+                    </form>
                         <MDBox pt={2} pb={3} px={3}>
                             <div className="inquiryList-contents">
                                 {inquiries.length > 0 ? (
@@ -300,8 +380,13 @@ function InquiryManage() {
                                                     </MDTypography>
                                                 </td>
                                                 <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">{inquiry.inquiryWriter}</MDTypography>
+                                                    <MDTypography
+                                                        onClick={() => handleDetailMember(
+                                                            inquiry.memberNo)}
+                                                        sx={{...styles.clickable, ...styles.td}}
+                                                        variant="body2">
+                                                        {inquiry.inquiryWriter}
+                                                    </MDTypography>
                                                 </td>
                                                 <td>
                                                     <MDTypography sx={styles.td}

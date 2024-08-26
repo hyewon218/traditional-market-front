@@ -137,8 +137,8 @@ function PostItem() {
         formData.append('stockNumber', item.stockNumber);
         formData.append('itemCategory', itemCategories[item.itemCategory]);
         formData.append('itemSellStatus', categories[item.itemSellStatus]);
-        for (let i = 0; i < item.imageFiles.length; i++) {
-            formData.append("imageFiles", item.imageFiles[i]);
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("imageFiles", imageFiles[i]);
         }
 
         console.log(formData)
