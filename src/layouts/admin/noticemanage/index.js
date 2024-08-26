@@ -66,7 +66,7 @@ function NoticeManage() {
 
     useEffect(() => {
         handleGetNotices(currentPage);
-    }, [currentPage]);
+    }, [currentPage, searchQuery]);
 
     const handleAddNotice = () => {
         console.log('handleAddNotice');
