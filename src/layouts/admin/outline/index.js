@@ -35,7 +35,10 @@ import {
     getCountShops,
     getCountShopsByMarket,
     getTodayVisitor,
-    getTotalVisitor
+    getTotalVisitor,
+    getCountMembersByProviderType,
+    getTotalSalesPrice,
+    getMarketSalesSum
 } from "../../../api/adminApi";
 import {getList} from "../../../api/marketApi";
 
@@ -48,6 +51,13 @@ function Outline() {
     const [markets, setMarkets] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState('');
     const [marketShopCount, setMarketShopCount] = useState('시장을 선택하세요');
+    const [selectedMarketSales, setSelectedMarketSales] = useState('시장을 선택하세요'); // 선택된 시장의 매출액
+    const [totalMarketSales, setTotalMarketSales] = useState(0); // 전체 시장의 총매출액
+    const [providerCounts, setProviderCounts] = useState({
+        NAVER: 0,
+        GOOGLE: 0,
+        KAKAO: 0,
+    });
 
     const fetchCountMembers = () => {
         getCountMembers().then(data => {
@@ -57,11 +67,34 @@ function Outline() {
         });
     }
 
+    // 가입경로 별 회원 수
+    const fetchCountProviderType = () => {
+        getCountMembersByProviderType().then(data => {
+            setProviderCounts({
+                NAVER: data.NAVER || 0,
+                GOOGLE: data.GOOGLE || 0,
+                KAKAO: data.KAKAO || 0,
+            });
+        }).catch(error => {
+            console.error("가입 경로별 회원 수를 불러오는 데 실패했습니다.", error);
+        });
+    }
+
+
     const fetchCountMarkets = () => {
         getCountMarkets().then(data => {
             setCountMarkets(data);
         }).catch(error => {
             console.error("총 시장 수를 불러오는 데 실패했습니다.", error);
+        });
+    }
+
+    // 전체 시장의 매출 합계
+    const fetchTotalMarketSales = () => {
+        getMarketSalesSum().then(data => {
+            setTotalMarketSales(data);
+        }).catch(error => {
+            console.error("전체 시장의 매출 합계를 불러오는 데 실패했습니다.", error);
         });
     }
 
@@ -106,6 +139,23 @@ function Outline() {
         });
     }
 
+    const handleMarketChange = (event) => {
+        const marketNo = event.target.value;
+        setSelectedMarket(marketNo);
+
+        if (marketNo) {
+            fetchMarketShopCount(marketNo);
+            getTotalSalesPrice(marketNo).then(data => {
+                setSelectedMarketSales(data);
+            }).catch(error => {
+                console.error("선택된 시장의 매출액을 불러오는 데 실패했습니다.", error);
+            });
+        } else {
+            setMarketShopCount('선택된 시장 없음');
+            setSelectedMarketSales('선택된 시장 없음');
+        }
+    };
+
     useEffect(() => {
         fetchCountMembers();
         fetchCountMarkets();
@@ -113,18 +163,9 @@ function Outline() {
         fetchMarkets();
         fetchCountTodayVisitors();
         fetchCountTotalVisitors();
+        fetchCountProviderType();
+        fetchTotalMarketSales();
     }, []);
-
-    const handleMarketChange = (event) => {
-        const marketNo = event.target.value;
-        setSelectedMarket(marketNo);
-
-        if (marketNo) {
-            fetchMarketShopCount(marketNo);
-        } else {
-            setMarketShopCount('선택된 시장 없음');
-        }
-    };
 
     return (
         <DashboardLayout>
@@ -142,10 +183,22 @@ function Outline() {
                                     총 회원 수 : {countMembers}
                                 </MDTypography>
                                 <MDTypography fontWeight="bold" variant="body2">
+                                    네이버 회원 수 : {providerCounts.NAVER}
+                                </MDTypography>
+                                <MDTypography fontWeight="bold" variant="body2">
+                                    구글 회원 수 : {providerCounts.GOOGLE}
+                                </MDTypography>
+                                <MDTypography fontWeight="bold" variant="body2">
+                                    카카오 회원 수 : {providerCounts.KAKAO}
+                                </MDTypography>
+                                <MDTypography fontWeight="bold" variant="body2">
                                     총 시장 수 : {countMarkets}
                                 </MDTypography>
                                 <MDTypography fontWeight="bold" variant="body2">
                                     총 상점 수 : {countShops}
+                                </MDTypography>
+                                <MDTypography fontWeight="bold" variant="body2">
+                                    전체 시장 매출액 : {totalMarketSales} 원
                                 </MDTypography>
                                 <MDTypography fontWeight="bold" variant="body2">
                                     오늘의 방문자 수 : {countTodayVisitors}
@@ -183,6 +236,9 @@ function Outline() {
                                 </MDBox>
                                 <MDTypography fontWeight="bold" variant="body2">
                                     선택한 시장의 상점 수 : {marketShopCount}
+                                </MDTypography>
+                                <MDTypography fontWeight="bold" variant="body2">
+                                    선택한 시장의 매출액 : {selectedMarketSales}
                                 </MDTypography>
                             </div>
                         </MDBox>

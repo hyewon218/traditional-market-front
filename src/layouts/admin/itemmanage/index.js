@@ -120,16 +120,24 @@ function ItemManage () {
               const marketData = await fetchMarketName(marketNo);
               const marketName = marketData.marketName;
 
-              return {
-                  ...item,
-                  shopName,
-                  marketName,
-                  shopData,
-                  marketData,
-              };
+          // shopData에 marketName과 marketData를 추가
+            const updatedShopData = {
+              ...shopData,
+              marketName,  // marketName 추가
+              marketData,  // marketData 추가
+            };
+
+            return {
+              ...item,
+              shopName,
+              marketName,
+              shopData: updatedShopData,  // 수정된 shopData를 사용
+              marketData,
+            };
           }));
 
           setItems(itemsWithShopAndMarketNames);
+          console.log('itemsWithShopAndMarketNames : ', itemsWithShopAndMarketNames);
           setTotalPages(data.totalPages);
 
       } catch (err) {
@@ -434,6 +442,8 @@ function ItemManage () {
       <div className="itemList-category">
         <button style={styles.button} onClick={handleViewAllItemsClick}>전체 보기(이름순)</button>
         <button style={styles.button} onClick={() => handleSortClick("viewCount,desc")}>조회수순</button>
+        <button style={styles.button} onClick={() => handleSortClick("countSales,desc")}>판매량순</button>
+        <button style={styles.button} onClick={() => handleSortClick("totalSalesPrice,desc")}>매출액순</button>
         {['과일', '채소', '육류', '생선'].map(category => (
           <button
             key={category}
@@ -461,6 +471,7 @@ function ItemManage () {
                   <th style={styles.th}>판매상태</th>
                   <th style={styles.th}>조회수</th>
                   <th style={styles.th}>좋아요 수</th>
+                  <th style={styles.th}>총매출액</th>
                   <th style={styles.th}>수정</th>
                   <th style={styles.th}>삭제</th>
                 </tr>
@@ -476,6 +487,7 @@ function ItemManage () {
                     <td style={styles.td}>{item.itemSellStatus}</td>
                     <td style={styles.td}>{item.viewCount}</td>
                     <td style={styles.td}>{item.likes}</td>
+                    <td style={styles.td}>{item.totalSalesPrice}</td>
                     <td style={styles.td}>
                       <button onClick={() => handleModifyItem(item)}>수정</button>
                     </td>

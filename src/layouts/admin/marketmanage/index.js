@@ -195,6 +195,11 @@ function MarketManage() {
     setCurrentPage(0);
   };
 
+  const handleTotalSalesPriceClick = () => {
+      setSortBy('totalSalesPrice,desc');
+      setCurrentPage(0);
+    };
+
   const handlePageClick = (page) => {
     setCurrentPage(page);
   };
@@ -283,6 +288,7 @@ function MarketManage() {
       <div>
         <button style={styles.button} onClick={() => handleCategoryClick('')}>전체보기</button>
         <button style={styles.button} onClick={handleViewCountClick}>조회수순</button>
+        <button style={styles.button} onClick={handleTotalSalesPriceClick}>매출액순</button>
         {categories.map(category => (
           <button
             key={category}
@@ -305,6 +311,7 @@ function MarketManage() {
                 <th style={styles.th}>시장 주소</th>
                 <th style={styles.th}>조회수</th>
                 <th style={styles.th}>좋아요 수</th>
+                <th style={styles.th}>총매출액</th>
                 <th style={styles.th}>도시명</th>
                 <th style={styles.th}>수정</th>
                 <th style={styles.th}>삭제</th>
@@ -317,6 +324,7 @@ function MarketManage() {
                   <td style={styles.td}>{market.marketAddr}</td>
                   <td style={styles.td}>{market.viewCount}</td>
                   <td style={styles.td}>{market.likes}</td>
+                  <td style={styles.td}>{market.totalSalesPrice}</td>
                   <td style={styles.td}>{market.category}</td>
                   <td style={styles.td}><button style={styles.button} onClick={() => handleModifyMarket(market)}>수정</button></td>
                   <td style={styles.td}><button style={styles.button} onClick={() => handleDeleteWithPassword(market)}>삭제</button></td>
