@@ -34,6 +34,7 @@ const initState = {
     orderStatusDisplayName: '',
     orderDate: '',
     deliveryAddr: '',
+    deliverMessage: '',
     total: '',
     orderItemList: []
 }
@@ -55,6 +56,7 @@ function OrderCompleteComponent() {
         console.log('handleGetOrderItems');
         getOrder().then(data => {
             setOrder(data);
+            console.log('data : ', data);
         }).catch(error => {
             console.error("주문 상품 목록 조회에 실패했습니다.", error);
         });
@@ -67,6 +69,9 @@ function OrderCompleteComponent() {
     return (
         <DashboardLayout>
             <MDBox pt={6} pb={3}>
+                <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
+                    주문 정보
+                </MDTypography>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
@@ -91,7 +96,25 @@ function OrderCompleteComponent() {
                             <MDBox mb={2}>
                                 <MDTypography fontWeight="bold"
                                               variant="body2">
+                                    받는 사람 : {order.receiver}
+                                </MDTypography>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDTypography fontWeight="bold"
+                                              variant="body2">
+                                    연락처 : {order.phone}
+                                </MDTypography>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDTypography fontWeight="bold"
+                                              variant="body2">
                                     배송지 정보 : {order.deliveryAddr}
+                                </MDTypography>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDTypography fontWeight="bold"
+                                              variant="body2">
+                                    배송 메시지 : {order.deliveryMessage}
                                 </MDTypography>
                             </MDBox>
                             <MDBox mb={2}>
@@ -158,7 +181,13 @@ function OrderCompleteComponent() {
                                                                                         <img
                                                                                             key={index}
                                                                                             src={imageUrl.imageUrl}
-                                                                                            alt={orderItem.itemName}/>
+                                                                                            alt={orderItem.itemName}
+                                                                                            style={{
+                                                                                                width: '200px', // 이미지 너비
+                                                                                                height: '200px', // 이미지 높이
+                                                                                                objectFit: 'contain', // 비율 유지
+                                                                                                marginBottom: '10px'
+                                                                                            }}/>
                                                                                     ))}
                                                                             </div>
                                                                         </Grid>

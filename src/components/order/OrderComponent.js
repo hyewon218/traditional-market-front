@@ -17,6 +17,7 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import DeliveryMessageModal from '../../components/deliverymessage/DeliveryMessageModal'; // 배송메시지 모달
 
 const OrderComponent = () => {
 
@@ -25,6 +26,7 @@ const OrderComponent = () => {
     const [result, setResult] = useState(null)
     const [selectedDelivery, setSelectedDelivery] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('KakaoPay'); // Default payment method
+    const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지 상태
 
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
@@ -72,11 +74,16 @@ const OrderComponent = () => {
         }
     }
 
-    const handleClickPay = (DeliveryAddr) => { // 결제하기
+    const handleClickPay = () => { // 결제하기
+        const DeliveryAddr = getDeliveryAddress();
+        const receiver = selectedDelivery?.receiver || primaryDelivery.receiver || '';
+        const phone = selectedDelivery?.phone || primaryDelivery.phone || '';
+        console.log('receiver : ', receiver);
+        console.log('phone : ', phone);
         postPay().then(data => {
             console.log('결제 요청!!!');
             // 결제 요청 성공 시 선택된 배송지를 서버에 저장
-            handleSaveDelivery(DeliveryAddr);
+            handleSaveDelivery(DeliveryAddr, selectedMessage, receiver, phone);
             console.log(data);
             window.location.href = data.next_redirect_pc_url;
         }).catch(error => {
@@ -84,21 +91,25 @@ const OrderComponent = () => {
         });
     }
 
-    const handleSaveDelivery = (DeliveryAddr) => {
-        putSelectedDelivery(DeliveryAddr).then(data => {
+    // 배송메시지 함께 저장
+    const handleSaveDelivery = (DeliveryAddr, selectedMessage, receiver, phone) => {
+        console.log('DeliveryAddr : ', DeliveryAddr);
+        console.log('selectedMessage : ', selectedMessage);
+        console.log('receiver : ', receiver);
+        console.log('phone : ', phone);
+        putSelectedDelivery(DeliveryAddr, selectedMessage, receiver, phone).then(data => {
             console.log('선택된 배송지 저장!!!');
-            console.log(data);
+            console.log('data : ', data);
         }).catch(error => {
             console.error("배송지 저장에 실패했습니다.", error);
         });
     }
 
     const getDeliveryAddressTitle = () => {
-        const receiver = selectedDelivery?.receiver || primaryDelivery.receiver
-            || '';
+        const receiver = selectedDelivery?.receiver || primaryDelivery.receiver || '';
         const title = selectedDelivery?.title || primaryDelivery.title || '';
-        const formattedTitle = title ? ` (${title})` : ""
-        const addressTitle = `${receiver}${formattedTitle}`
+        const formattedTitle = title ? `(${title})` : '';
+        const addressTitle = `${receiver}${formattedTitle}`;
         return addressTitle || null;
     };
 
@@ -107,17 +118,12 @@ const OrderComponent = () => {
         ? deliveryAddressTitle : '배송지를 등록해주세요';
 
     const getDeliveryAddress = () => {
-        const roadAddr = selectedDelivery?.roadAddr || primaryDelivery?.roadAddr
-            || '';
-        const detailAddr = selectedDelivery?.detailAddr
-            || primaryDelivery?.detailAddr || '';
-        const postCode = selectedDelivery?.postCode || primaryDelivery?.postCode
-            || '';
+        const roadAddr = selectedDelivery?.roadAddr || primaryDelivery?.roadAddr || '';
+        const detailAddr = selectedDelivery?.detailAddr || primaryDelivery?.detailAddr || '';
+        const postCode = selectedDelivery?.postCode || primaryDelivery?.postCode || '';
 
-        // Construct the address string with conditional parentheses for the post code
-        const formattedAddress = `${roadAddr} ${detailAddr}${postCode
-            ? ` (${postCode})` : ''}`.trim();
-        console.log(formattedAddress)
+        const formattedAddress = `${roadAddr} ${detailAddr}${postCode ? ` (${postCode})` : ''}`.trim();
+        console.log(formattedAddress);
 
         return formattedAddress || null;
     };
@@ -215,8 +221,7 @@ const OrderComponent = () => {
                                             <MDBox
                                                 pb={2}
                                                 pt={2}
-                                                px={2}
-                                                pl={3}>
+                                                px={2}>
                                                 <Grid item xs={12} container alignItems="center">
                                                     <Grid item xs={9}>
                                                         <MDTypography
@@ -227,7 +232,7 @@ const OrderComponent = () => {
                                                             {deliveryAddressTitleMessage}
                                                         </MDTypography>
                                                     </Grid>
-                                                    <Grid item xs={3} container justifyContent="flex-end" style={{paddingRight: '5px'}}>
+                                                    <Grid item xs={3} container justifyContent="flex-end">
                                                         <MDButton
                                                             onClick={handleDeliveryModal}
                                                             variant="gradient"
@@ -261,6 +266,11 @@ const OrderComponent = () => {
                                                         {deliveryAddress}
                                                     </MDTypography>
                                                 </Grid>
+                                                <DeliveryMessageModal
+                                                    open={result} // 모달 열기 상태
+                                                    onClose={() => setResult(false)} // 모달 닫기
+                                                    onSelectMessage={setSelectedMessage} // 선택된 메시지를 상태로 저장
+                                                />
                                             </MDBox>
                                         </div>
                                     </MDBox>
@@ -272,8 +282,7 @@ const OrderComponent = () => {
                                 display: 'flex',
                                 justifyContent: 'center'
                             }}>
-                                <MDButton onClick={() => handleClickPay(
-                                    deliveryAddress)}
+                                <MDButton onClick={() => handleClickPay ()}
                                           variant="gradient"
                                           size="large"
                                           sx={buttonStyle}
@@ -419,8 +428,9 @@ const OrderComponent = () => {
                         <Grid item xs={7}>
                             <MDBox pb={3}>
                                 <Card>
-                                    <MDBox pt={2} px={2} pb={2} pl={3}>
+                                    <MDBox pt={2} px={2} pb={2}>
                                         <FormControl component="fieldset">
+
                                             <RadioGroup
                                                 aria-label="payment method"
                                                 name="paymentMethod"
