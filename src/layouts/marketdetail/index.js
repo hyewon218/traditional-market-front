@@ -28,6 +28,11 @@ import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
 import MDButton from '../../components/MD/MDButton';
 import MDPagination from '../../components/MD/MDPagination';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
@@ -43,8 +48,6 @@ import {
     postMarketLike,
 } from "../../api/marketApi";
 import {getListCategory, getShopList} from "../../api/shopApi";
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
 import MapComponent from "../../components/map/MapComponent";
 import ParkingModal from '../../components/common/ParkingModal'; // 주차장 모달
 import TransportModal from '../../components/common/TransportModal'; // 대중교통 모달
@@ -89,15 +92,17 @@ function MarketDetail() {
     const [shops, setShops] = useState([]);
     const [shopTotalPage, setShopTotalPage] = useState(0);
 
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
-
     const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
     const [filteredShops, setFilteredShops] = useState([]); // 시장 카테고리 조회
     const [categoryTotalPage, setCategoryTotalPage] = useState(0); // 검색 시장 조회 페이지
     const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
     const [showParkingModal, setShowParkingModal] = useState(false); // 주차장 모달 상태
     const [showTransportModal, setShowTransportModal] = useState(false); // 대중교통 모달 상태
+    const [showDirectionsModal, setShowDirectionsModal] = useState(false); // 길찾기 모달 상태
+    const [showStartLocationModal, setShowStartLocationModal] = useState(false); // 출발지 입력 모달 상태
+    const [startLocation, setStartLocation] = useState(''); // 출발지 입력값
+    const [directionsType, setDirectionsType] = useState(''); // 도보, 대중교통, 자차 구분
+
 
     const navigate = useNavigate();
 
@@ -122,13 +127,9 @@ function MarketDetail() {
 
     const handleDeleteMarket = (mno) => {
         console.log('handleDelete');
-        setFetching(true)
         deleteMarket(mno).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
-            setResult(data)
         }).catch(error => {
             console.error("시장 삭제에 실패했습니다.", error);
-            setResult({success: false, message: "시장 삭제에 실패했습니다."});
         });
     };
 
@@ -241,10 +242,129 @@ function MarketDetail() {
         navigate('/top-five-item', {state: market});
     };
 
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market')
-    }
+    // 길찾기 시 주소를 좌표로 변환
+    const getCoordinates = async (address) => {
+        if (!window.naver || !window.naver.maps) {
+            console.error('Naver Maps API is not loaded');
+            return null;
+        }
+
+        try {
+            return new Promise((resolve, reject) => {
+                window.naver.maps.Service.geocode({ address }, (status, response) => {
+                    if (status === window.naver.maps.Service.Status.OK) {
+                        const { x, y } = response.result.items[0].point; // x는 경도, y는 위도
+                        console.log('x : ', x);
+                        console.log('y : ', y);
+                        resolve({ lat: y, lng: x });
+                    } else {
+                        reject(new Error('좌표를 가져오는 데 실패했습니다.'));
+                    }
+                });
+            });
+        } catch (error) {
+            console.error("좌표 변환 중 오류 발생:", error);
+            throw error;
+        }
+    };
+
+    // 모바일 길찾기
+//    const handleDirections = async (type) => {
+//        if (!startLocation) {
+//            alert("출발지를 입력해 주세요.");
+//            return;
+//        }
+//
+//        try {
+//            const destinationCoords = await getCoordinates(market.marketAddr);
+//            const departureCoords = await getCoordinates(startLocation);
+//
+//            if (!destinationCoords || !departureCoords) {
+//                throw new Error('좌표를 가져오는 데 실패했습니다.');
+//            }
+//
+//            // URL 생성
+//            const url = `https://m.search.naver.com/search.naver?query=%EB%B9%A0%EB%A5%B8%EA%B8%B8%EC%B0%BE%EA%B8%B0&nso_path=placeType%5Eplace%3Bname%5E${encodeURIComponent(startLocation)}%3Baddress%5E%3Blongitude%5E${departureCoords.lng}%3Blatitude%5E${departureCoords.lat}%3Bcode%5E%7Ctype%5Eplace%3Bname%5E${encodeURIComponent(market.marketAddr)}%3Baddress%5E%3Blongitude%5E${destinationCoords.lng}%3Blatitude%5E${destinationCoords.lat}%3Bcode%5E%7Cobjtype%5Epath%3Bby%5E${type}`;
+//
+//            // URL 로그 찍기
+//            console.log("길찾기 URL:", url);
+//
+//            window.open(url, '_blank'); // 새 탭에서 열기
+//            setShowDirectionsModal(false); // 모달 닫기
+//        } catch (error) {
+//            console.error("길찾기 URL 생성 중 오류 발생:", error);
+//        }
+//    };
+
+    // 시장 길찾기
+    const handleDirections = async (type) => {
+        if (!startLocation) {
+            alert("출발지를 입력해 주세요.");
+            setShowDirectionsModal(false);
+            setShowStartLocationModal(true);
+            return;
+        }
+
+        try {
+            const destinationCoords = await getCoordinates(market.marketAddr);
+            const departureCoords = await getCoordinates(startLocation);
+
+            if (!destinationCoords || !departureCoords) {
+                throw new Error('좌표를 가져오는 데 실패했습니다.');
+            }
+
+            // URL 생성
+            const departureName = encodeURIComponent(startLocation);
+            const destinationName = encodeURIComponent(market.marketAddr);
+            const departureX = departureCoords.lng;
+            const departureY = departureCoords.lat;
+            const destinationX = destinationCoords.lng;
+            const destinationY = destinationCoords.lat;
+            const scale = "15.00";  // 지도 스케일
+            const rotation = "0";   // 지도 회전
+            const centerX = "0";    // 지도 중심 X
+            const centerY = "0";    // 지도 중심 Y
+            const mapMode = "dh";   // 지도 모드
+
+            let url;
+            switch (type) {
+                case 'walk':
+                    // 도보 길찾기 URL
+                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/walk?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+                    break;
+                case 'transit':
+                    // 대중교통 길찾기 URL
+                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/transit?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+                    break;
+                case 'car':
+                    // 자동차 길찾기 URL
+                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/car?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+                    break;
+                default:
+                    // 교통수단이 유효하지 않은 경우 처리
+                    console.error('Invalid transportation type:', type);
+                    throw new Error('Invalid transportation type');
+            }
+
+            // URL 로그 찍기
+            console.log("길찾기 URL:", url);
+
+            window.open(url, '_blank'); // 새 탭에서 열기
+            setShowDirectionsModal(false); // 모달 닫기
+        } catch (error) {
+            console.error("길찾기 URL 생성 중 오류 발생:", error);
+        }
+    };
+
+    // 길찾기 모달
+    const openDirectionsModal = () => {
+        setShowStartLocationModal(true);
+//        setShowDirectionsModal(true);
+    };
+
+    const closeDirectionsModal = () => {
+        setShowDirectionsModal(false);
+    };
 
     const openParkingModal = () => {
         setShowParkingModal(true);
@@ -268,16 +388,6 @@ function MarketDetail() {
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'시장 삭제 결과'}
-                    content={`삭제 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
             {showParkingModal && <ParkingModal open={showParkingModal}
                                                onClose={closeParkingModal}
                                                marketNo={market.marketNo}/>}
@@ -412,6 +522,18 @@ function MarketDetail() {
                                                         </Grid>
                                                         <Grid item>
                                                             <MDButton
+                                                                variant="gradient"
+                                                                color="secondary"
+                                                                sx={{
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                }}
+                                                                onClick={openDirectionsModal}>
+                                                                길찾기
+                                                            </MDButton>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <MDButton
                                                                 onClick={handleGetTopFiveItemPage}
                                                                 variant="gradient"
                                                                 sx={{
@@ -477,6 +599,18 @@ function MarketDetail() {
                                                                 onClick={openTransportModal}
                                                             >
                                                                 대중교통
+                                                            </MDButton>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="secondary"
+                                                                sx={{
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                }}
+                                                                onClick={openDirectionsModal}>
+                                                                길찾기
                                                             </MDButton>
                                                         </Grid>
                                                         <Grid item>
@@ -652,6 +786,56 @@ function MarketDetail() {
                     </MDPagination>
                 </MDPagination>
             )}
+
+            {showStartLocationModal && (
+                <Dialog open={showStartLocationModal} onClose={() => setShowStartLocationModal(false)}>
+                    <DialogTitle>출발지 입력</DialogTitle>
+                    <DialogContent>
+                        <MDBox component="form" role="form">
+                            <MDTypography variant="body2">출발지:</MDTypography>
+                            <input
+                                type="text"
+                                value={startLocation}
+                                onChange={(e) => setStartLocation(e.target.value)}
+                                placeholder="출발지를 입력하세요"
+                                style={{ width: '100%', padding: '8px' }}
+                            />
+                        </MDBox>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => {
+                            setShowStartLocationModal(false);
+                            setShowDirectionsModal(true);
+                            setDirectionsType('walk');
+                        }}>확인</Button>
+                        <Button onClick={() => {
+                            setShowStartLocationModal(false);
+                            setDirectionsType('');
+                        }}>취소</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+
+            {showDirectionsModal && (
+                <Dialog open={showDirectionsModal} onClose={closeDirectionsModal}>
+                    <DialogTitle>길찾기</DialogTitle>
+                    <DialogContent>
+                        <Button onClick={() => handleDirections('walk')}>
+                            도보
+                        </Button>
+                        <Button onClick={() => handleDirections('transit')}>
+                            대중교통
+                        </Button>
+                        <Button onClick={() => handleDirections('car')}>
+                            자차
+                        </Button>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeDirectionsModal}>닫기</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+
         </DashboardLayout>
     );
 }
