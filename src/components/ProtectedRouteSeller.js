@@ -3,23 +3,23 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import useCustomLogin from '../hooks/useCustomLogin'; // useCustomLogin 훅 경로 맞추기
 
-const ProtectedRoute = ({ children  }) => {
-    const { isAuthorization, isAdmin, isSeller } = useCustomLogin();
+const ProtectedRouteSeller = ({ children  }) => {
+    const { isAuthorization, isSeller } = useCustomLogin();
 
-    console.log("ProtectedRoute- isAdmin:", isAdmin); // 로그 추가
-    console.log("ProtectedRoute- isAuthorization:", isAuthorization); // 로그 추가
-    console.log("ProtectedRoute - children :", children );
+    console.log("ProtectedRouteSeller- isSeller:", isSeller); // 로그 추가
+    console.log("ProtectedRouteSeller- isAuthorization:", isAuthorization); // 로그 추가
+    console.log("ProtectedRouteSeller - children :", children );
 
     if (!isAuthorization) {
         return <Navigate to="/authentication/sign-in" />;
     }
 
-    if (!isAdmin) {
+    if (!isSeller) {
         return <Navigate to="/market" />; // 권한 없을 경우 이동할 페이지 만들기
     }
 
-    console.log("ProtectedRoute - Rendering element");
+    console.log("ProtectedRouteSeller - Rendering element");
     return children ;
 };
 
-export default ProtectedRoute;
+export default ProtectedRouteSeller;

@@ -93,3 +93,12 @@ export const getShopLikeCount = async (sno) => { // 좋아요 수 조회
     const res = await axios.get(`${prefix}/${sno}/likes-count`)
     return res.data
 }
+
+export const getShopListBySellerNo = async (pageParam) => { // 판매자가 소유한 상점 목록 조회
+    const {page, size, sort} = pageParam
+    const res = await axios.get(`${prefix}/seller`, {
+        params:
+            {page: page, size: size, sort: sort}
+    })
+    return res.data
+}

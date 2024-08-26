@@ -43,8 +43,7 @@ import {
     postShopLike,
 } from "../../api/shopApi";
 import {getItemList, getListCategoryByShop} from "../../api/itemApi";
-import FetchingModal from "../../components/common/FetchingModal";
-import ResultModal from "../../components/common/ResultModal";
+import {getMember} from "../../api/memberApi";
 import ShopMapComponent from "../../components/map/ShopMapComponent"; // 상점 위치 출력
 
 const categoryMapping = {
@@ -56,7 +55,7 @@ const categoryMapping = {
 };
 
 function ShopDetail() {
-    const {isAdmin, isAuthorization} = useCustomLogin()
+    const {isAdmin, isSeller, isAuthorization} = useCustomLogin()
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
     console.log(state);
@@ -69,19 +68,41 @@ function ShopDetail() {
     const [items, setItems] = useState([]);
     const [itemTotalPage, setItemTotalPage] = useState(0);
 
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
-
     const [currentItemImageIndices, setCurrentItemImageIndices] = useState([]);
 
     const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
     const [filteredItems, setFilteredItems] = useState([]); // 시장 카테고리 조회
     const [categoryTotalPage, setCategoryTotalPage] = useState(0); // 검색 시장 조회 페이지
     const [isCategoryFiltered, setIsCategoryFiltered] = useState(false);// 카테고리 필터 활성화되었는지 확인
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showButtons, setShowButtons] = useState(false); // 관리자 또는 상점 소유자일 경우 활성화
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        // 현재 사용자 정보 가져오기
+        const fetchCurrentUser = async () => {
+            try {
+                const response = await getMember(); // 현재 사용자 정보 가져오기
+                const member = response;
+                console.log('member : ', member);
+                setCurrentUser(member);
+
+                // 사용자 권한과 상점의 sellerNo 비교
+                if (isAdmin || (isSeller && (member.memberNo === shop.sellerNo))) {
+                    console.log('memberNo :', member.memberNo);
+                    console.log('sellerNo :', shop.sellerNo);
+                    setShowButtons(true);
+                } else {
+                    setShowButtons(false);
+                }
+            } catch (error) {
+                console.error("사용자 정보 조회 오류:", error);
+                setShowButtons(false); // 오류 발생 시 버튼 숨김
+            }
+        };
+        fetchCurrentUser();
+
         handleCountLikes();
         handleCheckLike();
     }, []);
@@ -96,24 +117,28 @@ function ShopDetail() {
 
     const handleModifyShop = (shop) => {
         console.log('handleModify');
-        navigate('/modify-shop', {state: shop});
+        if (isAdmin) {
+            navigate('/modify-shop', {state: shop});
+        } else if (isSeller) {
+            navigate('/modify-shop-seller', {state: shop});
+        }
     };
 
     const handleDeleteShop = (sno) => {
         console.log('handleDelete');
-        setFetching(true)
         deleteShop(sno).then(data => {
-            setFetching(false) //데이터 가져온 후 화면에서 사라지도록
-            setResult(data)
         }).catch(error => {
             console.error("상점 삭제에 실패했습니다.", error);
-            setResult({success: false, message: "상점 삭제에 실패했습니다."});
         });
     };
 
     const handleAddItem = (shop) => {
         console.log('handleAddShop');
-        navigate('/post-item', {state: shop})
+        if (isAdmin) {
+            navigate('/post-item', {state: shop})
+        } else if (isSeller) {
+            navigate('/post-item-seller', {state: shop})
+        }
     };
 
     const changeItemsPage = (pageNum) => {
@@ -216,11 +241,6 @@ function ShopDetail() {
         });
     };
 
-    const closeModal = () => { //ResultModal 종료
-        setResult(null)
-        navigate('/market')
-    }
-
     const handleNextItemImage = (index) => {
         setCurrentItemImageIndices((prevIndices) => {
             const newIndices = [...prevIndices];
@@ -256,16 +276,6 @@ function ShopDetail() {
 
     return (
         <DashboardLayout>
-            {fetching ? <FetchingModal/> : <></>}
-
-            {result ?
-                <ResultModal
-                    title={'상점 삭제 결과'}
-                    content={`삭제 완료`}
-                    callbackFn={closeModal}
-                />
-                : <></>
-            }
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <MDBox pt={0} pb={3}>
@@ -320,7 +330,7 @@ function ShopDetail() {
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
-                                    {isAdmin && ( // 관리자일 때 버튼 생성
+                                    {showButtons && (
                                         <>
                                             <Grid item xs={1.5}>
                                                 <MDButton
@@ -330,20 +340,8 @@ function ShopDetail() {
                                                         fontFamily: 'JalnanGothic',
                                                         padding: '4px 8px',
                                                     }}
-                                                    onClick={() => handleModifyShop(
-                                                        shop)}>상점 수정
-                                                </MDButton>
-                                            </Grid>
-                                            <Grid item xs={1.5}>
-                                                <MDButton
-                                                    variant="gradient"
-                                                    color="light"
-                                                    sx={{
-                                                        fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                    }}
-                                                    onClick={() => handleDeleteShop(
-                                                        shop.shopNo)}>상점 삭제
+                                                    onClick={() => handleModifyShop(shop)}>
+                                                    상점 수정
                                                 </MDButton>
                                             </Grid>
                                             <Grid item xs={1.5}>
@@ -354,11 +352,26 @@ function ShopDetail() {
                                                         fontFamily: 'JalnanGothic',
                                                         padding: '4px 8px',
                                                     }}
-                                                    onClick={() => handleAddItem(
-                                                        shop)}>상품 추가
+                                                    onClick={() => handleAddItem(shop)}>
+                                                    상품 추가
                                                 </MDButton>
                                             </Grid>
                                         </>
+                                    )}
+
+                                    {isAdmin && ( // 관리자일 때만 상점 삭제 버튼 생성
+                                        <Grid item xs={1.5}>
+                                            <MDButton
+                                                variant="gradient"
+                                                color="light"
+                                                sx={{
+                                                    fontFamily: 'JalnanGothic',
+                                                    padding: '4px 8px',
+                                                }}
+                                                onClick={() => handleDeleteShop(shop.shopNo)}>
+                                                상점 삭제
+                                            </MDButton>
+                                        </Grid>
                                     )}
                                 </Grid>
                             </MDBox>
