@@ -14,6 +14,7 @@ import {
     postChatRoom,
     putIsRead
 } from "../../api/chatApi"
+import {getMember} from "../../api/memberApi"
 import MDPagination from "../../components/MD/MDPagination";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -27,11 +28,32 @@ function Chat() {
     const [chatRoom, setChatRoom] = useState(initState); // 채팅방 기록
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
+    const [member, setMember] = useState(null); // 회원 정보를 저장할 상태 추가
 
     const navigate = useNavigate()
     const {moveToLoginReturn, isAuthorization, isAdmin} = useCustomLogin() // 로그인이 필요한 페이지
 
+    // 회원 정보 가져오기
+    const fetchMemberInfo = () => {
+        getMember().then(data => {
+            setMember(data);
+            console.log("회원 정보:", data);
+        }).catch(error => {
+            console.error("회원 정보 가져오기에 실패했습니다.", error);
+        });
+    };
+
+    useEffect(() => {
+        fetchMemberInfo(); // 컴포넌트가 처음 렌더링될 때 회원 정보 가져오기
+    }, []);
+
     const handlePostChatRoom = () => {
+        console.log('member.isWarning : ', member.isWarning);
+        if (member.isWarning) {
+            alert('현재 운영 정책 위반으로 인해 30일간 채팅상담이 불가능합니다. 문의사항을 통해 문의바랍니다.');
+            return;
+        }
+
         postChatRoom().then(data => {
             console.log(data);
             const newChatRoom = data;

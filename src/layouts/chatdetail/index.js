@@ -30,6 +30,9 @@ import MDButton from "../../components/MD/MDButton";
 import {yellow} from "@mui/material/colors";
 import {getChatDetails, getIsRead, putIsRead} from '../../api/chatApi';
 
+import ProfanityFilterMDInput from '../../components/common/ProfanityFilter'; // 비속어 필터
+import { containsProfanity } from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
+
 function ChatDetail() {
     const {state} = useLocation();
     const charRoom = state; // 전달된 charRoom 데이터를 사용
@@ -130,6 +133,14 @@ function ChatDetail() {
         if (chat === "") {
             return;
         }
+
+        // 비속어 검증
+        if (containsProfanity(chat)) {
+            alert('비속어가 포함되어있습니다. 다른 단어를 사용해 주세요.');
+            setChat('');
+            return;
+        }
+
         const formattedDate = new Date().toLocaleTimeString(); // UTC 시간으로 포맷
         const newMessage = {
             sender: userId, /*로그인한 사용자*/
@@ -287,7 +298,7 @@ function ChatDetail() {
                         <MDBox pt={1} pb={1} px={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                             <Grid container justifyContent="center" alignItems="center">
                                 <Grid item xs={10.5}>
-                                    <MDInput label="메시지 보내기"
+                                    <ProfanityFilterMDInput label="메시지 보내기"
                                              type="text"
                                              id="msg"
                                              onChange={onChangeChat}
