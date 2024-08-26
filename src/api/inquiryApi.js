@@ -22,6 +22,15 @@ export const getInquiryOne = async (iqno) => { // 특정 문의사항 조회
     return res.data
 }
 
+export const getInquiryListSearch = async (pageParam, searchQuery, searchType) => {
+    const {page, size} = pageParam
+    const res = await axios.get(`${prefixApi}/search`, {
+        params:
+            {page: page, size: size, keyword: searchQuery, type: searchType}
+    })
+    return res.data
+}
+
 export const deleteInquiry = async (iqno) => { // 문의사항 삭제
     const res = await axios.delete(`${prefixApi}/${iqno}`)
     return res.data

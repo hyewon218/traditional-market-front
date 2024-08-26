@@ -27,7 +27,6 @@ import MDButton from '../../../components/MD/MDButton';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
-import FetchingModal from "../../../components/common/FetchingModal";
 import { useNavigate } from "react-router-dom";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
@@ -171,6 +170,10 @@ function PostShopAdmin() {
     }
 
     const formData = new FormData();
+
+    if (shop.sellerNo) {
+        formData.append('sellerNo', shop.sellerNo);
+    }
     formData.append('marketNo', shop.marketNo);
     formData.append('shopName', shop.shopName);
     formData.append('tel', shop.tel);
@@ -183,24 +186,18 @@ function PostShopAdmin() {
       formData.append("imageFiles", imageFiles[i]);
     }
 
-    setFetching(true);
-
     try {
       const data = await postShop(formData);
-      setFetching(false);
-
       const shopData = await fetchShop(data.shopNo);
       navigate(`/shop-detail`, { state: shopData });
 
     } catch (error) {
-      setFetching(false);
       console.error("상점 추가 오류: ", error);
     }
   };
 
   return (
     <DashboardLayout>
-      {fetching && <FetchingModal />}
       <MDBox pt={6} pb={3}>
         <Card>
           <MDBox pt={4} pb={3} px={3}>
@@ -223,6 +220,15 @@ function PostShopAdmin() {
                   </Select>
                 </FormControl>
               </MDBox>
+              <MDBox mb={2}>
+                  <MDInput
+                    name="sellerNo"
+                    label="판매자 고유번호"
+                    onChange={handleChangeShop}
+                    placeholder="판매자 계정이 있을 경우 입력하세요"
+                    fullWidth
+                  />
+                </MDBox>
               <MDBox mb={2}>
                 <MDInput
                   name="shopName"

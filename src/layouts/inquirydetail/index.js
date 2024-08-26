@@ -262,7 +262,7 @@ function InquiryDetail() {
                     }}>
                         <Button
                             variant="contained"
-                            color="primary"
+                            color="error"
                             onClick={handleAnswerClick}
                         >
                             답변하기
@@ -323,13 +323,13 @@ function InquiryDetail() {
                                     </Box>
                                 ))}
                             </Box>
-                            <Button variant="contained" color="primary"
+                            <Button variant="contained" color="error"
                                     type="submit">
                                 답변 등록
                             </Button>
                             <Button
-                                variant="outlined"
-                                color="secondary"
+                                variant="contained"
+                                color="error"
                                 sx={{ml: 2}}
                                 onClick={() => setShowAnswerForm(false)}
                             >
