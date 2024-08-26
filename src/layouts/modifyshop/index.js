@@ -26,11 +26,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import MDBox from '../../components/MD/MDBox';
 import MDInput from '../../components/MD/MDInput';
 import MDButton from '../../components/MD/MDButton';
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import {putShop} from "../../api/shopApi";
+import {putShop, getShopOne} from "../../api/shopApi";
 import {getOne} from "../../api/marketApi";
 import {FormControl, InputLabel, Select} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -53,13 +54,27 @@ const getCategoryKeyByValue = (value) => {
     return Object.keys(categories).find(key => categories[key] === value);
 };
 
+// 수정 후 해당 상점 상세 페이지로 가기 위해 해당 상점의 정보 조회
+const fetchShop = async (shopNo) => {
+
+  try {
+      // getShopOne 함수를 사용하여 API 호출
+      const data = await getShopOne(shopNo);
+      console.log("fetchShop data: ", data);
+      return data;
+
+  } catch (error) {
+      console.error("상점 정보 불러오기 오류:", error);
+  }
+};
+
 function ModifyShop() {
     const {state} = useLocation();
     const initShop = state || {}; // state 가 정의 되었는지 확인
+    const {isAdmin} = useCustomLogin();
     console.log(initShop);
 
     const uploadRef = useRef()
-    const [result, setResult] = useState(null)
 
     const [shop, setShop] = useState({...initShop,
         category: getCategoryKeyByValue(initShop.category) || '', // key 값 얻기
@@ -170,6 +185,7 @@ function ModifyShop() {
         console.log('shopName : ' + shop.shopName);
         console.log('shopAddr : ' + shop.shopAddr);
         console.log('shopNo : ' + shop.shopNo);
+        console.log('sellerNo : ' + shop.sellerNo);
 
         if (!window.confirm('상점을 수정하시겠습니까?')) {
             return;
@@ -192,6 +208,10 @@ function ModifyShop() {
 
         // FormData 생성
         const formData = new FormData();
+
+        if (shop.sellerNo) {
+            formData.append('sellerNo', shop.sellerNo);
+        }
         formData.append('shopName', shop.shopName);
         formData.append('tel', shop.tel); //상점 전화번호
         formData.append('sellerName', shop.sellerName); //상점 사장님 이름
@@ -217,17 +237,18 @@ function ModifyShop() {
 
         console.log(formData)
 
-        putShop(shop.shopNo, formData).then(data => {
-            console.log("result.shopName!!!!!!!!!!!!!"+data.shopName)
-            setResult(data)
-            navigate(`/shop-detail`, { state: result });
-        }).catch(error => {
-            console.error("상점 수정 오류:", error);
+        try {
+            const data = await putShop(shop.shopNo, formData);
+            const shopData = await fetchShop(data.shopNo);
+            navigate(`/shop-detail`, { state: shopData });
 
-        });
+        } catch (error) {
+            console.error("상점 수정 오류: ", error);
+        }
     };
 
     useEffect(() => {
+        console.log('shop : ', shop)
         // Clean up previews on component unmount
         return () => {
             filePreviews.forEach(preview => URL.revokeObjectURL(preview));
@@ -246,6 +267,14 @@ function ModifyShop() {
                                     label="소속 시장"
                                     value={market.marketName || ''}
                                     disabled={true}
+                                    fullWidth/>
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    name="sellerNo"
+                                    label="판매자 고유번호"
+                                    defaultValue={shop.sellerNo}
+                                    onChange={handleChangeShop}
                                     fullWidth/>
                             </MDBox>
                             <MDBox mb={2}>

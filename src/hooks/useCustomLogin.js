@@ -18,6 +18,7 @@ const useCustomLogin = () => {
     const isAuthorization = getCookie('Authorization')
 
     let isAdmin = false;
+    let isSeller = false;
     let isMember = false;
     let userId = null;
 
@@ -26,6 +27,7 @@ const useCustomLogin = () => {
             /*JWT 를 디코딩하고 해당 페이로드를 검사*/
             const decodedToken = jwtDecode(isAuthorization);
             isAdmin = decodedToken.role === 'ROLE_ADMIN';
+            isSeller = decodedToken.role === 'ROLE_SELLER';
             isMember = decodedToken.role === 'ROLE_MEMBER';
             userId = decodedToken.sub || decodedToken.id;
             //console.log("?!?!??!?"+ isMember)
@@ -66,6 +68,7 @@ const useCustomLogin = () => {
         moveToLoginReturn,
         isAuthorization,
         isAdmin,
+        isSeller,
         isMember,
         userId
     }

@@ -159,6 +159,10 @@ function PostShop() {
 
         // FormData 생성
         const formData = new FormData();
+
+        if (shop.sellerNo) {
+            formData.append('sellerNo', shop.sellerNo);
+        }
         formData.append('marketNo', market.marketNo);
         formData.append('shopName', shop.shopName);
         formData.append('tel', shop.tel); //상점 전화번호
@@ -189,6 +193,14 @@ function PostShop() {
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
+                            <MDBox mb={2}>
+                                <MDInput
+                                    name="sellerNo"
+                                    label="판매자 고유번호"
+                                    onChange={handleChangeShop}
+                                    placeholder="판매자 계정이 있을 경우 입력하세요"
+                                    fullWidth/>
+                            </MDBox>
                             <MDBox mb={2}>
                                 <MDInput
                                     name="shopName"
