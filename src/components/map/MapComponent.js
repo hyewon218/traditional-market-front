@@ -232,7 +232,6 @@ const MapComponent = ({marketAddr, marketName}) => {
                 })
                 .catch(error => {
                     console.error('날씨 정보를 가져오는 중 오류가 발생했습니다.', error);
-                    alert('날씨 정보를 가져오는 중 오류가 발생했습니다.');
                 });
             } else {
                 console.log('주소에 대한 검색 결과가 없습니다.');
