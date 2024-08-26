@@ -30,6 +30,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 // Material Dashboard 2 React components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 // Data
 import { deleteNotice } from "../../api/noticeApi";
@@ -66,13 +67,14 @@ const styles = {
 };
 
 function NoticeDetail() {
-  const { state } = useLocation();
+  const {state} = useLocation();
   const notice = state; // 전달된 notice 데이터를 사용
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [noticeToDelete, setNoticeToDelete] = useState(null);
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("")
+  const {isAdmin} = useCustomLogin();
 
   const navigate = useNavigate();
 
@@ -169,22 +171,25 @@ function NoticeDetail() {
                 <strong>공지사항 내용</strong> : {notice.noticeContent}
               </Typography>
 
-              <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleModifyNotice(notice)}
-                >
-                  공지사항 수정
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleDeleteWithPassword(notice.noticeNo)}
-                >
-                  공지사항 삭제
-                </Button>
-              </Box>
+              {/* 관리자만 수정 및 삭제 버튼 보이기 */}
+                {isAdmin && (
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleModifyNotice(notice)}
+                    >
+                      공지사항 수정
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDeleteWithPassword(notice.noticeNo)}
+                    >
+                      공지사항 삭제
+                    </Button>
+                  </Box>
+                )}
             </Grid>
             <Grid item xs={12} md={4}>
               {/* 이미지 갤러리 */}

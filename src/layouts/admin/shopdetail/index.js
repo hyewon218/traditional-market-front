@@ -32,9 +32,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 
 // Components
-import MapComponent from '../../../components/map/MapComponent';
-import ParkingModal from '../../../components/common/ParkingModal'; // 주차장 모달
-import TransportModal from '../../../components/common/TransportModal'; // 대중교통 모달
+//import MapComponent from '../../../components/map/MapComponent';
 import ShopMapComponent from "../../../components/map/ShopMapComponent"; // 상점 위치 출력
 
 // Data
@@ -86,7 +84,8 @@ const getCategoryName = (category) => {
 
 function ShopDetailAdmin() {
   const { state } = useLocation();
-  const shop = state; // 전달된 shop 데이터를 사용
+  const shop = state || {}; // state가 없을 경우 빈 객체를 기본값으로 설정
+  console.log('shop : ', shop);
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [shopToDelete, setShopToDelete] = useState(null);
@@ -124,10 +123,15 @@ function ShopDetailAdmin() {
       shopData: {
         shopNo: shop.shopNo,
         shopName: shop.shopName,
+        sellerNo: shop.sellerNo,
+        sellerName: shop.sellerName,
         shopLat: shop.shopLat,
         shopLng: shop.shopLng,
         tel: shop.tel,
         shopAddr: shop.shopAddr,
+        likes: shop.likes,
+        viewCount: shop.viewCount,
+        category: shop.category,
         imageList: shop.imageList,
         itemList: shop.itemList,
         shopCommentList: shop.shopCommentList,
@@ -206,6 +210,12 @@ function ShopDetailAdmin() {
     console.log('시장 상세페이지로 이동 :', market);
     navigate('/market-detail-admin', { state: market });
   };
+
+  // 판매자 상세 페이지로 이동
+    const handleSellerDetail = (memberNo) => {
+      console.log('판매자 상세페이지로 이동 :', memberNo);
+      navigate('/member-detail-admin', { state: memberNo });
+    };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -292,11 +302,24 @@ function ShopDetailAdmin() {
                 전화번호 : {shop.tel}
               </Typography>
               <Typography variant="body1" paragraph>
+                판매자 고유번호 (회원 no) :
+                {shop.sellerNo ? (
+                  <Button onClick={() => handleSellerDetail(shop.sellerNo)}>
+                    {shop.sellerNo}
+                  </Button>
+                ) : (
+                  "연결된 판매자 계정이 없습니다."
+                )}
+              </Typography>
+              <Typography variant="body1" paragraph>
                 판매자 : {shop.sellerName}
               </Typography>
               <Typography variant="body1" paragraph>
                 주소 : {shop.shopAddr}
               </Typography>
+              <Typography variant="body1" paragraph>
+                  총 매출액 : {shop.totalSalesPrice}원
+                </Typography>
               <Typography variant="body1" paragraph>
                 위도 : {shop.shopLat} | 경도 : {shop.shopLng}
               </Typography>
@@ -335,6 +358,46 @@ function ShopDetailAdmin() {
               </Box>
             </Grid>
           </Grid>
+        </Card>
+
+        {/* 상품 목록 */}
+        <Card sx={{ p: 3, mb: 2 }}>
+          <Typography variant="h6" component="div" gutterBottom>
+            상품 목록
+          </Typography>
+          <Grid container spacing={2}>
+            {currentItems.length > 0 ? (
+              currentItems.map((item) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={item.itemNo}>
+                  <Card sx={{ p: 2 }}>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ cursor: 'pointer' }} // 커서 스타일을 포인터로 변경
+                      onClick={() => handleDetail(item)}
+                    >
+                      {item.itemName}
+                    </Typography>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Typography variant="body1">상품이 없습니다.</Typography>
+            )}
+          </Grid>
+
+          {/* 상품 페이징 네비게이션 */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <IconButton onClick={handlePrevPage} disabled={currentPage === 1}>
+              <KeyboardArrowLeftIcon />
+            </IconButton>
+            <Typography variant="body1" sx={{ mx: 2 }}>
+              {currentPage} / {totalPages}
+            </Typography>
+            <IconButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </Box>
         </Card>
 
         {/* 댓글 목록 */}
@@ -412,46 +475,6 @@ function ShopDetailAdmin() {
               {currentCommentPage} / {totalCommentPages}
             </Typography>
             <IconButton onClick={handleNextCommentPage} disabled={currentCommentPage === totalCommentPages}>
-              <KeyboardArrowRightIcon />
-            </IconButton>
-          </Box>
-        </Card>
-
-        {/* 상품 목록 */}
-        <Card sx={{ p: 3, mb: 2 }}>
-          <Typography variant="h6" component="div" gutterBottom>
-            상품 목록
-          </Typography>
-          <Grid container spacing={2}>
-            {currentItems.length > 0 ? (
-              currentItems.map((item) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={item.itemNo}>
-                  <Card sx={{ p: 2 }}>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ cursor: 'pointer' }} // 커서 스타일을 포인터로 변경
-                      onClick={() => handleDetail(item)}
-                    >
-                      {item.itemName}
-                    </Typography>
-                  </Card>
-                </Grid>
-              ))
-            ) : (
-              <Typography variant="body1">상품이 없습니다.</Typography>
-            )}
-          </Grid>
-
-          {/* 상품 페이징 네비게이션 */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <IconButton onClick={handlePrevPage} disabled={currentPage === 1}>
-              <KeyboardArrowLeftIcon />
-            </IconButton>
-            <Typography variant="body1" sx={{ mx: 2 }}>
-              {currentPage} / {totalPages}
-            </Typography>
-            <IconButton onClick={handleNextPage} disabled={currentPage === totalPages}>
               <KeyboardArrowRightIcon />
             </IconButton>
           </Box>
