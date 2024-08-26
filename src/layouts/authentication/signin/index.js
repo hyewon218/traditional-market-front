@@ -1,22 +1,8 @@
-/**
- =========================================================
- * Material Dashboard 2 React - v2.1.0
- =========================================================
-
- * Product Page: https://www.creative-tim.com/product/material-dashboard-react
- * Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
- Coded by www.creative-tim.com
-
- =========================================================
-
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- */
 import * as React from 'react';
-import {useState} from 'react';
+import { useState } from 'react';
 
 // react-router-dom components
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // @mui material components
 import Card from '@mui/material/Card';
@@ -27,11 +13,15 @@ import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
 import MDInput from '../../../components/MD/MDInput';
 import MDButton from '../../../components/MD/MDButton';
+import FindIdModal from '../../../components/common/FindIdModal';  // 아이디 찾기 모달 컴포넌트 import
+import TempPwModal from '../../../components/common/TempPwModal';  // 임시비밀번호 발급 모달 컴포넌트 import
 
 // Authentication layout components
-import DashboardLayout
-    from '../../../examples/LayoutContainers/DashboardLayout';
+import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 import useCustomLogin from "../../../hooks/useCustomLogin";
+
+// Data
+import { loginPost, logoutPost } from "../../../api/memberApi";
 
 const initState = {
     memberId: '',
@@ -39,17 +29,18 @@ const initState = {
 }
 
 function SignIn() {
-    const [loginParam, setLoginParam] = useState({...initState})
+    const [loginParam, setLoginParam] = useState({ ...initState })
+    const [openIdModal, setOpenIdModal] = useState(false);
+    const [openPwModal, setOpenPwModal] = useState(false);
 
     const {
-        doLogin,
-        doLogout,
         moveToPath,
         isAuthorization
     } = useCustomLogin()
 
+    // 로그아웃
     const handleClickLogout = () => {
-        doLogout().then(() => {
+        logoutPost().then(() => {
             alert("로그아웃 되었습니다.");
             moveToPath("/");
         });
@@ -57,23 +48,40 @@ function SignIn() {
 
     const handleChange = (e) => {
         loginParam[e.target.name] = e.target.value
-        setLoginParam({...loginParam})
+        setLoginParam({ ...loginParam })
     }
 
+    // 로그인
     const handleSignIn = () => {
-        // 비동기 호출
-        doLogin(loginParam) // loginSlice 의 비동기 호출
-        .then(data => {
-            console.log(data)
+        if (!loginParam.memberId.trim() || !loginParam.memberPw.trim()) {
+            alert("아이디와 비밀번호를 입력해 주세요.");
+            return;
+        }
 
-            if (data.error) {
-                alert("이메일과 패스워드를 다시 확인하세요")
-            } else {
-                alert("로그인 성공")
-                moveToPath('/')
-            }
-        })
+        loginPost(loginParam)
+            .then((data) => {
+                // 로그인 성공 처리
+                alert("로그인 성공");
+                console.log('data : ', data);
+                moveToPath('/');
+            })
+            .catch((error) => {
+                // 예외 처리
+                console.error("로그인 오류:", error);
+                alert("아이디 또는 비밀번호가 틀렸습니다.");
+            });
     }
+
+    // 엔터 키로 폼 제출을 처리하는 핸들러
+    const handleSubmit = (e) => {
+        e.preventDefault(); // 기본 폼 제출 방지
+        handleSignIn(); // 로그인 함수 호출
+    }
+
+    const handleOpenIdModal = () => setOpenIdModal(true);
+    const handleCloseIdModal = () => setOpenIdModal(false);
+    const handleOpenPwModal = () => setOpenPwModal(true);
+    const handleClosePwModal = () => setOpenPwModal(false);
 
     if (!isAuthorization) {
         return (
@@ -94,13 +102,13 @@ function SignIn() {
                                     textAlign="center"
                                 >
                                     <MDTypography variant="h4"
-                                                  fontWeight="medium"
-                                                  color="white" mt={1}>
+                                        fontWeight="medium"
+                                        color="white" mt={1}>
                                         로그인
                                     </MDTypography>
                                 </MDBox>
                                 <MDBox pt={4} pb={3} px={3}>
-                                    <MDBox component="form" role="form">
+                                    <MDBox component="form" role="form" onSubmit={handleSubmit}>
                                         <MDBox mb={2}>
                                             <MDInput
                                                 type={'text'}
@@ -122,15 +130,48 @@ function SignIn() {
                                             />
                                         </MDBox>
                                         <MDBox mt={4} mb={1}>
-                                            <MDButton onClick={handleSignIn}
-                                                      variant="gradient"
-                                                      color="info" fullWidth>
+                                            <MDButton type="submit"
+                                                variant="gradient"
+                                                color="info" fullWidth>
                                                 로그인
                                             </MDButton>
                                         </MDBox>
                                         <MDBox mt={3} mb={1} textAlign="center">
+                                            <MDTypography variant="button" color="text">
+                                                <MDBox display="flex" justifyContent="center" spacing={2}>
+                                                    <MDButton
+                                                        component="a"
+                                                        href="http://localhost:8080/oauth2/authorization/google"
+                                                        variant="outlined"
+                                                        color="info"
+                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                    >
+                                                        구글
+                                                    </MDButton>
+                                                    <MDButton
+                                                        component="a"
+                                                        href="http://localhost:8080/oauth2/authorization/naver"
+                                                        variant="outlined"
+                                                        color="info"
+                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                    >
+                                                        네이버
+                                                    </MDButton>
+                                                    <MDButton
+                                                        component="a"
+                                                        href="http://localhost:8080/oauth2/authorization/kakao"
+                                                        variant="outlined"
+                                                        color="info"
+                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                    >
+                                                        카카오
+                                                    </MDButton>
+                                                </MDBox>
+                                            </MDTypography>
+                                        </MDBox>
+                                        <MDBox mt={3} mb={1} textAlign="center">
                                             <MDTypography variant="button"
-                                                          color="text">
+                                                color="text">
                                                 계정이 없으신가요?{' '}
                                                 <MDTypography
                                                     component={Link}
@@ -143,6 +184,15 @@ function SignIn() {
                                                     회원가입
                                                 </MDTypography>
                                             </MDTypography>
+                                            <MDBox mt={2}>
+                                                <MDButton variant="text" color="info" onClick={handleOpenIdModal}>
+                                                    아이디 찾기
+                                                </MDButton>
+                                                {' | '}
+                                                <MDButton variant="text" color="info" onClick={handleOpenPwModal}>
+                                                    비밀번호 찾기
+                                                </MDButton>
+                                            </MDBox>
                                         </MDBox>
                                     </MDBox>
                                 </MDBox>
@@ -151,6 +201,13 @@ function SignIn() {
                         </Grid>
                     </Grid>
                 </MDBox>
+
+                {/* 아이디 찾기 모달 */}
+                <FindIdModal open={openIdModal} handleClose={handleCloseIdModal} />
+
+                {/* 비밀번호 찾기 모달 */}
+                <TempPwModal open={openPwModal} handleClose={handleClosePwModal} />
+
             </DashboardLayout>
         );
     } else {
@@ -172,9 +229,9 @@ function SignIn() {
                                     textAlign="center"
                                 >
                                     <MDTypography variant="h4"
-                                                  fontWeight="medium"
-                                                  color="white" mt={1}>
-                                        Already login
+                                        fontWeight="medium"
+                                        color="white" mt={1}>
+                                        로그아웃 하시겠습니까?
                                     </MDTypography>
                                 </MDBox>
                                 <MDBox pt={4} pb={3} px={3}>
