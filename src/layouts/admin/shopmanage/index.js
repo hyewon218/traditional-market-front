@@ -184,7 +184,7 @@ function ShopManage () {
 
   // 상점 상세보기
   const handleDetail = (shop) => {
-      console.log('Navigating to shop detail with:', shop);
+      console.log('상점으로 이동', shop);
       navigate('/shop-detail-admin', { state: shop });
   };
 
@@ -348,6 +348,7 @@ function ShopManage () {
       <div className="shopList-category">
         <button style={styles.button} onClick={handleViewAllShopsClick}>전체 보기(이름순)</button>
         <button style={styles.button} onClick={() => handleSortClick("viewCount,desc")}>조회수순</button>
+        <button style={styles.button} onClick={() => handleSortClick("totalSalesPrice,desc")}>매출액순</button>
         {['AGRI', 'MARINE', 'LIVESTOCK', 'FRUITS', 'PROCESSED', 'RICE', 'RESTAURANT', 'SIDEDISH', 'STUFF', 'ETC'].map(category => (
           <button
             key={category}
@@ -369,10 +370,12 @@ function ShopManage () {
                 <tr>
                   <th style={styles.th}>상점 이름</th>
                   <th style={styles.th}>소속 시장</th>
+                  <th style={styles.th}>판매자</th>
                   <th style={styles.th}>전화번호</th>
                   <th style={styles.th}>분류</th>
                   <th style={styles.th}>조회수</th>
                   <th style={styles.th}>좋아요 수</th>
+                  <th style={styles.th}>총매출액</th>
                   <th style={styles.th}>수정</th>
                   <th style={styles.th}>삭제</th>
                 </tr>
@@ -382,10 +385,12 @@ function ShopManage () {
                   <tr key={shop.shopNo}>
                     <td style={styles.td}><Button onClick={() => handleDetail(shop)} className="shop-title">{shop.shopName}</Button></td>
                     <td style={styles.td}><Button onClick={() => handleMarketDetail(shop.marketData)} className="shop-title">{shop.marketName}</Button></td>
+                    <td style={styles.td}>{shop.sellerName}</td>
                     <td style={styles.td}>{shop.tel}</td>
                     <td style={styles.td}>{categoryTranslations[shop.category] || shop.category}</td>
                     <td style={styles.td}>{shop.viewCount}</td>
                     <td style={styles.td}>{shop.likes}</td>
+                    <td style={styles.td}>{shop.totalSalesPrice}</td>
                     <td style={styles.td}>
                       <button onClick={() => handleModifyShop(shop)}>수정</button>
                     </td>

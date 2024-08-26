@@ -76,6 +76,7 @@ function ItemDetailAdmin() {
       marketData: item.marketData // Add marketData to shopData
     }
   };
+  console.log('itemWithMarketData : ', itemWithMarketData);
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -189,6 +190,10 @@ function ItemDetailAdmin() {
     return new Intl.DateTimeFormat('en-GB', options).format(date);
   };
 
+  const handleShowDatePicker = () => {
+    navigate('/daily-sales-item', {state: item});
+  };
+
   return (
     <DashboardLayout>
       <Box sx={{ p: 3 }}>
@@ -196,7 +201,11 @@ function ItemDetailAdmin() {
             <Button variant="contained" color="error" onClick={handleBack} startIcon={<KeyboardArrowLeftIcon />}>
               돌아가기
             </Button>
+            <Button variant="contained" color="error" onClick={handleShowDatePicker}>
+              날짜별 매출액
+            </Button>
         </Box>
+
         {/* 상품 기본 정보 */}
         <Card sx={{ p: 3, mb: 2 }}>
           <Grid container spacing={2}>
@@ -225,6 +234,12 @@ function ItemDetailAdmin() {
               </Typography>
               <Typography variant="body1" paragraph>
                 상세 : {item.itemDetail}
+              </Typography>
+              <Typography variant="body1" paragraph>
+                  판매량 : {item.countSales}
+                </Typography>
+              <Typography variant="body1" paragraph>
+                총 매출액 : {item.totalSalesPrice}
               </Typography>
               <Typography variant="body1">
                 좋아요 : {item.likes} | 조회수 : {item.viewCount}

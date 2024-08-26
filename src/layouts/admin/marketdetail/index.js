@@ -187,6 +187,7 @@ function MarketDetailAdmin() {
   const indexOfLastShop = currentPage * shopsPerPage;
   const indexOfFirstShop = indexOfLastShop - shopsPerPage;
   const currentShops = market.shopList.slice(indexOfFirstShop, indexOfLastShop);
+  console.log('currentShops', currentShops);
 
   const indexOfLastComment = currentCommentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
@@ -251,6 +252,9 @@ function MarketDetailAdmin() {
               <Typography variant="body1" paragraph>
                 상세설명 : {market.marketDetail}
               </Typography>
+              <Typography variant="body1" paragraph>
+                  총 매출액 : {market.totalSalesPrice}
+                </Typography>
               <Typography variant="body1">
                 좋아요: {market.likes} | 조회수: {market.viewCount}
               </Typography>
@@ -286,6 +290,46 @@ function MarketDetailAdmin() {
               </Box>
             </Grid>
           </Grid>
+        </Card>
+
+        {/* 상점 목록 */}
+        <Card sx={{ p: 3, mb: 2 }}>
+          <Typography variant="h6" component="div" gutterBottom>
+            상점 목록
+          </Typography>
+          <Grid container spacing={2}>
+            {currentShops.length > 0 ? (
+              currentShops.map((shop) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={shop.shopNo}>
+                  <Card sx={{ p: 2 }}>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ cursor: 'pointer' }} // 커서 스타일을 포인터로 변경
+                      onClick={() => handleDetail(shop)}
+                    >
+                      {shop.shopName}
+                    </Typography>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Typography variant="body1">상점이 없습니다.</Typography>
+            )}
+          </Grid>
+
+          {/* 상점 목록 페이징 네비게이션 */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <IconButton onClick={handlePrevPage} disabled={currentPage === 1}>
+              <KeyboardArrowLeftIcon />
+            </IconButton>
+            <Typography variant="body1" sx={{ mx: 2 }}>
+              {currentPage} / {totalPages}
+            </Typography>
+            <IconButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </Box>
         </Card>
 
         {/* 댓글 목록 */}
@@ -363,45 +407,6 @@ function MarketDetailAdmin() {
               {currentCommentPage} / {totalCommentPages}
             </Typography>
             <IconButton onClick={handleNextCommentPage} disabled={currentCommentPage === totalCommentPages}>
-              <KeyboardArrowRightIcon />
-            </IconButton>
-          </Box>
-        </Card>
-
-        {/* 상점 목록 */}
-        <Card sx={{ p: 3, mb: 2 }}>
-          <Typography variant="h6" component="div" gutterBottom>
-            상점 목록
-          </Typography>
-          <Grid container spacing={2}>
-            {currentShops.length > 0 ? (
-              currentShops.map((shop) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={shop.shopNo}>
-                  <Card sx={{ p: 2 }}>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ cursor: 'pointer' }} // 커서 스타일을 포인터로 변경
-                      onClick={() => handleDetail(shop)}
-                    >
-                      {shop.shopName}
-                    </Typography>
-                  </Card>
-                </Grid>
-              ))
-            ) : (
-              <Typography variant="body1">상점이 없습니다.</Typography>
-            )}
-          </Grid>
-          {/* 페이징 네비게이션 */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <IconButton onClick={handlePrevPage} disabled={currentPage === 1}>
-              <KeyboardArrowLeftIcon />
-            </IconButton>
-            <Typography variant="body1" sx={{ mx: 2 }}>
-              {currentPage} / {totalPages}
-            </Typography>
-            <IconButton onClick={handleNextPage} disabled={currentPage === totalPages}>
               <KeyboardArrowRightIcon />
             </IconButton>
           </Box>
