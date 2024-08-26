@@ -17,9 +17,12 @@ import ShopManage from '../../layouts/admin/shopmanage';
 import ItemManage from '../../layouts/admin/itemmanage';
 import InquiryManage from '../../layouts/admin/inquirymanage';
 import NoticeManage from '../../layouts/admin/noticemanage';
+import OrderManage from '../../layouts/admin/ordermanage';
+import OrderManageSeller from '../../layouts/seller/order-manage-seller';
+import ShopManageSeller from '../../layouts/seller/shop-manage-seller';
 
 const RoutesComponent = () => {
-    const {isAuthorization, isAdmin, isMember} = useCustomLogin();
+    const {isAuthorization, isAdmin, isSeller, isMember} = useCustomLogin();
 
     const publicRoutes = [
         {
@@ -104,6 +107,23 @@ const RoutesComponent = () => {
         },
     ] : [];
 
+    const sellerRoutes = isSeller ? [ // 판매자 전용 메뉴 추가
+        {
+            type: 'collapse',
+            name: '상점 관리',
+            key: 'shop-manage-seller',
+            route: '/shop-manage-seller',
+            component: <ShopManageSeller />,
+        },
+        {
+            type: 'collapse',
+            name: '주문 관리',
+            key: 'order-manage-seller',
+            route: '/order-manage-seller',
+            component: <OrderManageSeller />,
+        },
+    ] : [];
+
     const adminRoutes = isAdmin ? [ // 관리자 전용 메뉴 추가
         {
             type: 'collapse',
@@ -118,6 +138,13 @@ const RoutesComponent = () => {
             key: 'membermanage',
             route: '/membermanage',
             component: <MemberManage />,
+        },
+        {
+            type: 'collapse',
+            name: '주문 관리',
+            key: 'order-manage',
+            route: '/order-manage',
+            component: <OrderManage />,
         },
         {
             type: 'collapse',
@@ -156,7 +183,7 @@ const RoutesComponent = () => {
         },
     ] : [];
 
-    return [...publicRoutes, ...authRoutes, ...memberRoutes, ...adminRoutes];
+    return [...publicRoutes, ...authRoutes, ...memberRoutes, ...sellerRoutes, ...adminRoutes];
 };
 
 export default RoutesComponent;

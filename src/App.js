@@ -11,6 +11,7 @@ import Icon from '@mui/material/Icon';
 // Material Dashboard 2 React components
 import MDBox from './components/MD/MDBox';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRouteSeller from './components/ProtectedRouteSeller';
 import Sidenav from './examples/Sidenav';
 //import Sidenav from './examples/Navbars/DashboardNavbar';
 import Configurator from './examples/Configurator';
@@ -64,7 +65,24 @@ import PostItemAdmin from './layouts/admin/postitem';
 import PostNoticeAdmin from './layouts/admin/postnotice';
 import NoticeDetail from './layouts/noticedetail';
 import ModifyNotice from './layouts/admin/modifynotice';
-import CoordinatePopupPage from './pages/CoordinatePopupPage';
+import MyInfoDetail from './layouts/myinfodetail'; // 내 정보 페이지
+import CheckPw from './layouts/checkpw'; // 내 정보 진입 시 미인증인 경우, 비밀번호 확인 페이지
+import MyInquiries from './layouts/myinquiries'; // 내 문의사항 목록
+import DeliveryManage from './layouts/deliverymanage'; // 배송지 관리
+import OrderList from './layouts/orderlist'; // complete 주문 목록
+import OrderDetail from './layouts/orderdetail'; // complete 주문 상세
+import ModifyOAuthInfo from './layouts/modifyoauthinfo'; // OAuth2.0 가입 회원 최초 로그인 시 닉네임 없을 경우 입력하는 페이지
+import WithdrawMemberManage from './layouts/admin/withdrawmembermanage'; // 탈퇴회원 관리
+import WithdrawMemberDetail from './layouts/admin/withdrawmemberdetail'; // 탈퇴회원 상세 조회
+import ShopDetailSeller from './layouts/seller/shop-detail-seller'; // 상점 상세정보 조회 (판매자 권한)
+import PostItemSeller from './layouts/seller/post-item-seller'; // 상품 추가 (판매자 전용)
+import ModifyItemSeller from './layouts/seller/modify-item-seller'; // 상품 수정 (판매자 전용)
+import ModifyShopSeller from './layouts/seller/modify-shop-seller'; // 상점 수정 (판매자 전용)
+import ItemDetailSeller from './layouts/seller/item-detail-seller'; // 상품 상세정보 조회 (판매자 전용)
+import OrderDetailSeller from './layouts/seller/order-detail-seller'; // 주문 상세정보 조회 (판매자 전용)
+import DailySalesItem from './layouts/admin/daily-sales-item'; // 상품 날짜별 매출액 (관리자 전용)
+
+import CoordinatePopupPage from './pages/CoordinatePopupPage'; // 좌표찾기 새창
 
 export default function App() {
     const routes = RoutesComponent();
@@ -203,6 +221,39 @@ export default function App() {
                     <Route path="/order" element={<Order />} />
                     <Route path="/order-complete" element={<OrderComplete />} />
                     <Route path="/top-five-item" element={<TopFiveItem />} />
+                    <Route path="/myinfo-detail" element={<MyInfoDetail />} />
+                    <Route path="/check-pw" element={<CheckPw />} />
+                    <Route path="/myinquiries" element={<MyInquiries />} />
+                    <Route path="/deliverymanage" element={<DeliveryManage />} />
+                    <Route path="/order-list" element={<OrderList />} />
+                    <Route path="/order-detail" element={<OrderDetail />} />
+                    <Route path="/add-info" element={<ModifyOAuthInfo />} />
+
+                    // seller 권한만 접근 가능
+                    <Route
+                        path="/shop-detail-seller"
+                        element={<ProtectedRouteSeller><ShopDetailSeller /></ProtectedRouteSeller>}
+                    />
+                    <Route
+                        path="/post-item-seller"
+                        element={<ProtectedRouteSeller><PostItemSeller /></ProtectedRouteSeller>}
+                    />
+                    <Route
+                        path="/modify-item-seller"
+                        element={<ProtectedRouteSeller><ModifyItemSeller /></ProtectedRouteSeller>}
+                    />
+                    <Route
+                        path="/modify-shop-seller"
+                        element={<ProtectedRouteSeller><ModifyShopSeller /></ProtectedRouteSeller>}
+                    />
+                    <Route
+                        path="/item-detail-seller"
+                        element={<ProtectedRouteSeller><ItemDetailSeller /></ProtectedRouteSeller>}
+                    />
+                    <Route
+                        path="/order-detail-seller"
+                        element={<ProtectedRouteSeller><OrderDetailSeller /></ProtectedRouteSeller>}
+                    />
 
                     {/*admin 권한만 접근 가능*/}
                     <Route
@@ -261,6 +312,18 @@ export default function App() {
                         path="/modify-notice"
                         element={<ProtectedRoute><ModifyNotice /></ProtectedRoute>}
                     />
+                    <Route
+                        path="/withdrawmember-manage"
+                        element={<ProtectedRoute><WithdrawMemberManage /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/withdrawmember-detail"
+                        element={<ProtectedRoute><WithdrawMemberDetail /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/daily-sales-item"
+                        element={<ProtectedRoute><DailySalesItem /></ProtectedRoute>}
+                    />
                 </Routes>
             </ThemeProvider>
         </CacheProvider>
@@ -296,6 +359,40 @@ export default function App() {
                 <Route path="/order" element={<Order />} />
                 <Route path="/order-complete" element={<OrderComplete />} />
                 <Route path="/top-five-item" element={<TopFiveItem />} />
+                <Route path="/myinfo-detail" element={<MyInfoDetail />} />
+                <Route path="/check-pw" element={<CheckPw />} />
+                <Route path="/myinquiries" element={<MyInquiries />} />
+                <Route path="/deliverymanage" element={<DeliveryManage />} />
+                <Route path="/order-list" element={<OrderList />} />
+                <Route path="/order-detail" element={<OrderDetail />} />
+                <Route path="/add-info" element={<ModifyOAuthInfo />} />
+
+                // seller 권한만 접근 가능
+                <Route
+                    path="/shop-detail-seller"
+                    element={<ProtectedRouteSeller><ShopDetailSeller /></ProtectedRouteSeller>}
+                />
+                <Route
+                    path="/post-item-seller"
+                    element={<ProtectedRouteSeller><PostItemSeller /></ProtectedRouteSeller>}
+                />
+                <Route
+                    path="/modify-item-seller"
+                    element={<ProtectedRouteSeller><ModifyItemSeller /></ProtectedRouteSeller>}
+                />
+                <Route
+                    path="/modify-shop-seller"
+                    element={<ProtectedRouteSeller><ModifyShopSeller /></ProtectedRouteSeller>}
+                />
+                <Route
+                    path="/item-detail-seller"
+                    element={<ProtectedRouteSeller><ItemDetailSeller /></ProtectedRouteSeller>}
+                />
+                <Route
+                    path="/order-detail-seller"
+                    element={<ProtectedRouteSeller><OrderDetailSeller /></ProtectedRouteSeller>}
+                />
+
 
                 // admin 권한만 접근 가능
                 <Route
@@ -353,6 +450,18 @@ export default function App() {
                 <Route
                     path="/modify-notice"
                     element={<ProtectedRoute><ModifyNotice /></ProtectedRoute>}
+                />
+                <Route
+                    path="/withdrawmember-manage"
+                    element={<ProtectedRoute><WithdrawMemberManage /></ProtectedRoute>}
+                />
+                <Route
+                    path="/withdrawmember-detail"
+                    element={<ProtectedRoute><WithdrawMemberDetail /></ProtectedRoute>}
+                />
+                <Route
+                    path="/daily-sales-item"
+                    element={<ProtectedRoute><DailySalesItem /></ProtectedRoute>}
                 />
             </Routes>
         </ThemeProvider>
