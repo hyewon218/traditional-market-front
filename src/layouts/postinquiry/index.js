@@ -15,6 +15,8 @@
 
 import * as React from 'react';
 import { useRef, useEffect, useState } from 'react';
+import ProfanityFilterMDInput from '../../components/common/ProfanityFilter'; // 비속어 필터
+import { containsProfanity } from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
 
 // @mui material components
 import Card from '@mui/material/Card';
@@ -79,6 +81,12 @@ function PostInquiry() {
   const handleAddInquiry = async (event) => {
     event.preventDefault();
 
+    // 비속어 검증
+      if (containsProfanity(inquiry.inquiryTitle) || containsProfanity(inquiry.inquiryContent)) {
+        alert('비속어가 포함된 제목이나 내용이 있습니다. 다른 단어를 사용해 주세요.');
+        return;
+      }
+
     if (!window.confirm('작성 후 수정은 불가능합니다. 문의사항을 추가하시겠습니까?')) {
       return;
     }
@@ -114,6 +122,7 @@ function PostInquiry() {
       }
 
     } catch (error) {
+      alert("오늘의 문의사항 생성 개수 제한을 초과하였습니다.")
       console.error("문의사항 추가 오류: ", error);
     }
   };
@@ -125,7 +134,7 @@ function PostInquiry() {
           <MDBox pt={4} pb={3} px={3}>
             <MDBox component="form" role="form">
               <MDBox mb={2}>
-                <MDInput
+                <ProfanityFilterMDInput
                   name="inquiryTitle"
                   label="문의사항 제목"
                   onChange={handleChangeInquiry}
@@ -133,7 +142,7 @@ function PostInquiry() {
                 />
               </MDBox>
               <MDBox mb={2}>
-                <MDInput
+                <ProfanityFilterMDInput
                   name="inquiryContent"
                   label="문의사항 내용"
                   onChange={handleChangeInquiry}
@@ -194,4 +203,3 @@ function PostInquiry() {
 }
 
 export default PostInquiry;
-
