@@ -169,7 +169,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                 variant="button"
                 fontWeight="medium"
                 color={textColor}
-                sx={{ fontSize: '1.2rem' }} // Adjust the font size as needed
+                sx={{ fontSize: '1.1rem' }}
             >
               {brandName}
             </MDTypography>

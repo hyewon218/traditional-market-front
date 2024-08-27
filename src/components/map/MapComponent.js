@@ -247,7 +247,7 @@ const MapComponent = ({marketAddr, marketName}) => {
         <div>
             <Grid container>
                 <Grid item xs={9.1}>
-                    <div style={{borderRadius: '15px'}} id="map" className="map"></div>
+                    <div style={{borderRadius: '12px'}} id="map" className="map"></div>
                 </Grid>
                 <Grid item xs={2.9}>
                     <MDTypography
