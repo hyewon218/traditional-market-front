@@ -38,6 +38,7 @@ import axios from 'axios';
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {useNavigate} from "react-router-dom";
 import {getChatRoom} from "../../api/chatApi";
+import {getIsRead, putIsRead} from "../../api/notificationApi";
 import {getInquiryAnswer} from "../../api/inquiryAnswerApi";
 import {getShopOne} from "../../api/shopApi";
 import {getItemOne} from "../../api/itemApi";
@@ -75,7 +76,6 @@ function Alarm() {
     const {moveToLoginReturn, isAuthorization} = useCustomLogin() // 로그인이 필요한 페이지
 
     const host = `${API_SERVER_HOST}/api/notifications`
-    const accessToken = getCookie('Authorization')
 
     const navigate = useNavigate();
 
@@ -104,6 +104,24 @@ function Alarm() {
             //navigate('/authentication/sign-in');
         });
     };
+
+    const handleGetIsRead = (notificationNo) => {
+        getIsRead(notificationNo).then(data => {
+            console.log('알람 읽음 상태 조회!!!');
+            console.log(data);
+        }).catch(error => {
+            console.error("알람 읽음 상태 조회에 실패했습니다.", error);
+        });
+    }
+
+    const handlePutRead = (notificationNo) => {
+        putIsRead(notificationNo).then(data => {
+            console.log('알람 읽음 상태로 변경!!!');
+            handleGetIsRead(notificationNo);
+        }).catch(error => {
+            console.error("알람 읽음 상태로 변경에 실패했습니다.", error);
+        });
+    }
 
     const fetchChatRoom = (chatRoomNo) => {
         getChatRoom(chatRoomNo)
@@ -156,8 +174,12 @@ function Alarm() {
         });
     };
 
-    const handleAlarmClick = (alarm) => {
-        const {notificationType, args} = alarm;
+    const handleAlarmClick = (notification) => {
+        if (!notification.read) {
+            handlePutRead(notification.no);
+        }
+
+        const {notificationType, args} = notification;
         const targetId = args.targetId;
 
         if (notificationType === "NEW_CHAT_REQUEST_ON_CHATROOM"
@@ -179,35 +201,59 @@ function Alarm() {
     };
 
     useEffect(() => {
-        handleGetAlarm();
-        //console.log("accessToken ==== " + accessToken)
-        eventSource = new EventSourcePolyfill(`${host}/subscribe`, { // 알람 구독
-            headers: {
-                Authorization: `${accessToken}`
+        // 초기 알람을 가져오는 함수
+        handleGetAlarm(page);
+
+        // 백오프 전략을 사용하여 EventSource 연결을 설정하는 함수
+        const connect = (retryCount = 0) => {
+            eventSource = new EventSourcePolyfill(`${host}/subscribe`, {
+                headers: {
+                    Authorization: `${getCookie('Authorization')}`
+                }
+            });
+
+            eventSource.addEventListener("open", function (event) {
+                console.log("Connection opened");
+                retryCount = 0; // 연결이 성공하면 retryCount 를 0으로 재설정
+            });
+
+            eventSource.addEventListener("alarm", function (event) {
+                console.log(event.data);
+                handleGetAlarm();
+            });
+
+            eventSource.addEventListener("error", function (event) {
+                console.log("Error occurred:", event);
+                if (event.target.readyState === EventSource.CLOSED) {
+                    console.log(
+                        "Connection closed, attempting to reconnect...");
+
+                    // 지수형 백오프 전략
+                    const maxRetries = 5; // 최대 재시도 횟수
+                    const baseDelay = 3000; // 기본 지연 시간(밀리초)
+                    const backoffDelay = Math.min(
+                        baseDelay * Math.pow(2, retryCount), 60000); // 최대 60초까지 지연
+
+                    if (retryCount < maxRetries) {
+                        setTimeout(() => connect(retryCount + 1), backoffDelay);
+                    } else {
+                        console.log("최대 재시도 횟수에 도달했습니다. 재연결 시도를 중지합니다.");
+                    }
+                }
+            });
+
+            setAlarmEvent(eventSource);
+        };
+
+        connect(); // 초기 retryCount 0으로 연결 설정
+
+        // 컴포넌트 언마운트 시 정리 작업
+        return () => {
+            if (eventSource) {
+                eventSource.close();
             }
-        });
-
-        setAlarmEvent(eventSource);
-
-        eventSource.addEventListener("open", function (event) {
-            console.log("connection opened");
-        });
-
-        eventSource.addEventListener("alarm", function (event) {
-            console.log(event.data);
-            handleGetAlarm();
-        });
-
-        eventSource.addEventListener("error", function (event) {
-            console.log(event.target.readyState);
-            if (event.target.readyState === EventSource.CLOSED) {
-                console.log(
-                    "eventsource closed (" + event.target.readyState + ")");
-            }
-            eventSource.close();
-        });
-
-    }, []);
+        };
+    }, [page]); // 의존성 배열
 
     if (!isAuthorization) {
         return moveToLoginReturn()
@@ -221,27 +267,44 @@ function Alarm() {
                 알람 목록
             </MDTypography>
             <MDBox pt={1} pb={2}>
-                {alarms.map((alarm) => (
-                    <MDBox pt={2} pb={2} px={3}>
-                        <Card>
-                            <MDBox pt={2} pb={2} px={3}>
-                                <Grid container>
-                                    <Grid item xs={12}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2"
-                                                      onClick={() => handleAlarmClick(
-                                                          alarm)}
-                                                      sx={{cursor: 'pointer'}}
-                                        >
-                                            {notificationTypeMessages[alarm.notificationType]
-                                                || "알림이 도착했습니다!"}
-                                        </MDTypography>
+                {alarms.length > 0 ? (
+                    alarms.map((notification) => (
+                        <MDBox pt={2} pb={2} px={3} key={notification.id}>
+                            <Card sx={{
+                                backgroundColor: notification.read
+                                    ? '#ffffff' : '#fff8b0', cursor: 'pointer'
+                            }}
+                                  onClick={() => handleAlarmClick(notification)}
+                            >
+                                <MDBox pt={2} pb={2} px={3}>
+                                    <Grid container>
+                                        <Grid item xs={8}>
+                                            <MDTypography fontWeight="bold"
+                                                          variant="body2"
+                                            >
+                                                {notificationTypeMessages[notification.notificationType]
+                                                    || "알림이 도착했습니다!"}
+                                            </MDTypography>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <MDTypography fontWeight="bold"
+                                                          variant="body2"
+                                            >
+                                                {notification.createTime}
+                                            </MDTypography>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </MDBox>
-                        </Card>
-                    </MDBox>
-                ))}
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    ))
+                ) : (
+                    <MDTypography fontWeight="bold"
+                                  sx={{ml: 4, mt: 2, fontSize: '1.5rem'}}
+                                  variant="body2">
+                        알람이 없습니다
+                    </MDTypography>
+                )}
             </MDBox>
 
             {alarms.length > 0 && totalPage > 1 && (
