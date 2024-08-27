@@ -137,8 +137,6 @@ function SignUp() {
   // 회원가입 실행
   const handleSignUp = async (event) => {
     event.preventDefault();
-    console.log('memberPw : ', memberPw);
-    console.log('confirmPw : ', confirmPw);
 
     if (!isEmailChecked || !isIdChecked || !isEmailCodeSent || !isVerified) {
       alert('모든 확인 절차를 완료해야 합니다.');
@@ -176,15 +174,11 @@ function SignUp() {
       navigate('/authentication/sign-in');
 
     } catch (error) {
-      if (error.response) {
-          const errors = error.response.data;
-          setIdCheckError(errors.memberId || '');
-          setPwError(errors.memberPw || '');
-          setConfirmPwError(errors.confirmPw || '');
-        } else {
-          console.error("회원가입 오류:", error);
-          alert('회원가입에 실패했습니다. 서버 오류가 발생했습니다.');
-        }
+      const errors = error.response.data;
+      alert(errors);
+      setIdCheckError(errors.memberId || '');
+      setPwError(errors.memberPw || '');
+      setConfirmPwError(errors.confirmPw || '');
     }
   };
 
@@ -230,7 +224,7 @@ function SignUp() {
         setEmailCheckError('');
       }
     } catch (error) {
-//      alert('이미 존재하는 이메일입니다');
+      alert(error.response.data);
       setIsEmailChecked(false);
       setEmailCheckError('이미 존재하는 이메일입니다.');
       setEmailCheckSuccess('');

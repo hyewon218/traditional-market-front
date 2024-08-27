@@ -152,7 +152,7 @@ function ItemDetail() {
         }
 
         // 비속어 검증
-        if (containsProfanity(item.comment)) {
+        if (containsProfanity(comment)) {
           alert('비속어가 포함된 댓글은 작성하실수 없습니다');
           return;
         }
@@ -166,6 +166,7 @@ function ItemDetail() {
             handleGetComments();
         }).catch(error => {
             console.error(error.response.data);
+            alert(error.response.data);
         });
     };
 
@@ -217,10 +218,10 @@ function ItemDetail() {
 
     const handleCountLikes = () => {
         getItemLikeCount(item.itemNo).then(data => {
-            console.log('상품 댓글 조회 성공!!!');
+            console.log('상품 좋아요 개수 조회 성공!!!');
             setLikes(data);
         }).catch(error => {
-            console.error("상점 댓글 조회에 실패했습니다.", error);
+            console.error("상품 좋아요 개수 조회에 실패했습니다.", error);
         });
     };
 
@@ -279,6 +280,7 @@ function ItemDetail() {
             );
         }).catch(error => {
             console.error("상품 댓글 수정에 실패했습니다.", error);
+            alert(error.response.data);
         });
 
         setEditingCommentId(null);
@@ -318,7 +320,7 @@ function ItemDetail() {
                 alert('신고가 완료되었습니다.');
             }).catch(error => {
                 console.error('신고 실패:', error.response.data);
-                alert('신고에 실패했습니다.');
+                alert(error.response.data);
             });
         } else {
             console.log('신고가 취소되었습니다.');
@@ -513,7 +515,7 @@ function ItemDetail() {
                                                     </MDTypography>
                                                 </Grid>
 
-                                                {comment.username === userId && (
+                                                {(comment.username === userId || comment.adminId === userId) ? (
                                                     <MDBox mt={-3}>
                                                         {editingCommentId === comment.id ? (
                                                             <div>
@@ -566,21 +568,18 @@ function ItemDetail() {
                                                             </>
                                                         )}
                                                     </MDBox>
-                                                )}
-                                                <Grid item xs={1.3}>
-                                                    <MDTypography
-                                                        variant="body2"
-                                                        sx={{
-                                                            mt: -1.5,
-                                                            fontSize: '0.8rem'
-                                                        }}
-                                                        textAlign="right">
-                                                        {formatDistanceToNow(new Date(comment.createTime), {
-                                                            addSuffix: true,
-                                                            locale: ko
-                                                        })}
-                                                    </MDTypography>
-                                                    {comment.username !== userId && (
+                                                ) : (
+                                                    <Grid item xs={1.3}>
+                                                        <MDTypography
+                                                            variant="body2"
+                                                            sx={{ mt: -1.5, fontSize: '0.8rem' }}
+                                                            textAlign="right"
+                                                        >
+                                                            {formatDistanceToNow(new Date(comment.createTime), {
+                                                                addSuffix: true,
+                                                                locale: ko
+                                                            })}
+                                                        </MDTypography>
                                                         <MDButton
                                                             variant="contained"
                                                             color="error"
@@ -593,8 +592,8 @@ function ItemDetail() {
                                                         >
                                                             신고
                                                         </MDButton>
-                                                    )}
-                                                </Grid>
+                                                    </Grid>
+                                                )}
                                             </Grid>
                                         </MDBox>
                                     ))}
