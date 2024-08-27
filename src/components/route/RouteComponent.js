@@ -97,7 +97,7 @@ const RoutesComponent = () => {
             },
         ];
 
-    const memberRoutes = isMember ? [ // 회원 전용 메뉴 추가
+    const memberRoutes = isMember || isSeller ? [ // 회원, 판매자 전용 메뉴 추가
         {
             type: 'collapse',
             name: '문의하기',
