@@ -75,7 +75,7 @@ const ShopMapComponent = ({ containerId, locations, title }) => {
     return (
         <div
             id={containerId}
-            style={{ width: '100%', height: '285px', borderRadius: '15px'}}
+            style={{ width: '100%', height: '270px', borderRadius: '13px'}}
 
         ></div>
     );
