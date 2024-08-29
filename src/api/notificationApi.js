@@ -3,9 +3,12 @@ import {API_SERVER_HOST} from "./marketApi"
 const prefixApi = `${API_SERVER_HOST}/api/notifications`
 
 
-export const getNotificationList = async () => { // 알람 목록 조회
+export const getNotificationList = async (pageParam) => { // 알람 목록 조회
+    const {page, size} = pageParam
     const res = await axios.get(`${prefixApi}`, {
-    })
+        params:
+            {page: page, size: size}
+    });
     return res.data
 }
 
