@@ -14,7 +14,7 @@
  */
 
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {getCookie} from "../../util/cookieUtil";
 import * as StompJs from "@stomp/stompjs";
@@ -25,13 +25,12 @@ import MDBox from "../../components/MD/MDBox";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import MDTypography from "../../components/MD/MDTypography";
-import MDInput from "../../components/MD/MDInput";
 import MDButton from "../../components/MD/MDButton";
 import {yellow} from "@mui/material/colors";
 import {getChatDetails, getIsRead, putIsRead} from '../../api/chatApi';
 
 import ProfanityFilterMDInput from '../../components/common/ProfanityFilter'; // 비속어 필터
-import { containsProfanity } from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
+import {containsProfanity} from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
 
 function ChatDetail() {
     const {state} = useLocation();
@@ -46,6 +45,8 @@ function ChatDetail() {
         userId,
         isAdmin
     } = useCustomLogin()
+
+    const chatContainerRef = useRef(null);
 
     useEffect(() => {
         // 최초 렌더링 시 , 웹소켓에 연결
@@ -62,6 +63,13 @@ function ChatDetail() {
             handlePutRead(charRoom.no); // 채팅방 읽음 상태로 변경
         }
     }, []);
+
+    useEffect(() => {
+        // 새로운 채팅 메세지가 추가되면 아래쪽으로 스크롤하여 바로 보여줌
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [chatList]);
 
     const handleGetChatDetails = () => {
         getChatDetails(charRoom.no).then(data => {
@@ -136,7 +144,7 @@ function ChatDetail() {
 
         // 비속어 검증
         if (containsProfanity(chat)) {
-            alert('비속어가 포함되어있습니다. 다른 단어를 사용해 주세요.');
+            alert('비속어가 포함되어 있습니다. 다른 단어를 사용해 주세요.');
             setChat('');
             return;
         }
@@ -176,9 +184,9 @@ function ChatDetail() {
         }
     }
 
-    const msgBox = chatList.map((chat, index) => {
+   /* const msgBox = chatList.map((chat, index) => {
         //console.log("로그인 사용자 ID = " + userId + "/sender =" + chat.sender)
-        const sender = isAdmin ? chat.sender : '관리자' /*else 에서 사용,*/
+        //const sender = isAdmin ? chat.sender : '관리자' /!*else 에서 사용, - 관리자 1명일 때*!/
         if (chat.sender === userId) {
             return (
                 <MDBox key={index} pt={2} pb={2} px={3}>
@@ -196,7 +204,7 @@ function ChatDetail() {
                                         <Grid item xs={3}>
                                             <MDTypography fontWeight="bold"
                                                           variant="body2">
-                                                {/* {chat.sender}*/}
+                                                {/!* {chat.sender}*!/}
                                             </MDTypography>
                                         </Grid>
                                         <Grid item xs={3}>
@@ -246,7 +254,140 @@ function ChatDetail() {
                 </MDBox>
             );
         }
-    })
+    })*/
+
+    const msgBox = chatList.map((chat, index) => {
+        /*TODO : 관리자 ID 수정*/
+        const adminIds = ['esc0218', 'esc0220']; // 관리자 ID 배열
+        const isSenderAdmin = adminIds.includes(chat.sender); // 메시지 보낸 사람이 관리자라면 true
+        const senderName = isSenderAdmin ? '관리자' : chat.sender; // 일반 사용자 입장에서 관리자는 '관리자'로 표시
+
+        if (isAdmin) { // 현재 사용자가 관리자일 경우
+            if (isSenderAdmin) { // 관리자가 보낸 메시지 (현재 사용자와 동일한 관리자)
+                return (
+                    <MDBox key={index} pt={2} pb={2} px={3}>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item xs={8} sm={6} md={8}>
+                                <Card sx={{ backgroundColor: yellow[500] }}>
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {chat.message}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                     {chat.sender}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="" variant="body2">
+                                                    {chat.createdAt}
+                                                </MDTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </MDBox>
+                );
+            } else { // 일반 사용자가 보낸 메시지
+                return (
+                    <MDBox key={index} pt={2} pb={2} px={3}>
+                        <Grid container justifyContent="flex-start">
+                            <Grid item xs={8} sm={6} md={8}>
+                                <Card>
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {chat.message}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {senderName}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="" variant="body2">
+                                                    {chat.createdAt}
+                                                </MDTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </MDBox>
+                );
+            }
+        } else { // 현재 사용자가 일반 사용자일 경우
+            if (chat.sender === userId) { // 사용자가 보낸 메시지
+                return (
+                    <MDBox key={index} pt={2} pb={2} px={3}>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item xs={8} sm={6} md={8}>
+                                <Card sx={{ backgroundColor: yellow[500] }}>
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {chat.message}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {/* {chat.sender} */}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="" variant="body2">
+                                                    {chat.createdAt}
+                                                </MDTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </MDBox>
+                );
+            } else if (isSenderAdmin) { // 관리자가 보낸 메시지
+                return (
+                    <MDBox key={index} pt={2} pb={2} px={3}>
+                        <Grid container justifyContent="flex-start"> {/* 왼쪽에 배치 */}
+                            <Grid item xs={8} sm={6} md={8}>
+                                <Card>
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={6}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {chat.message}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="bold" variant="body2">
+                                                    {senderName}
+                                                </MDTypography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <MDTypography fontWeight="" variant="body2">
+                                                    {chat.createdAt}
+                                                </MDTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </MDBox>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </MDBox>
+                );
+            }
+        }
+    });
 
     return (
         <DashboardLayout>
@@ -255,9 +396,8 @@ function ChatDetail() {
                 margin: '0 auto',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100vh'
             }}>
-                <MDBox pt={5} pb={3}
+                <MDBox pt={1} pb={1}
                        sx={{display: 'flex', justifyContent: 'center'}}>
                     <Card sx={{
                         width: '50%',
@@ -266,17 +406,27 @@ function ChatDetail() {
                         alignItems: 'center'
                     }}>
                         <MDTypography fontWeight="bold"
-                                      sx={{fontSize: '2rem', pb: 3, pt: 3}}
+                                      sx={{fontSize: '1.7rem', pb: 2, pt: 2}}
                                       variant="body2">
                             무엇을 도와드릴까요?
                         </MDTypography>
                     </Card>
                 </MDBox>
+                <MDTypography fontWeight="bold"
+                              sx={{
+                                  fontSize: '0.9rem',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  color: 'blue'
+                              }}
+                              variant="body2">
+                    답변까지 시간이 걸릴 수 있습니다. 알람함을 확인해주세요.
+                </MDTypography>
 
-                <MDBox sx={{
+                <MDBox ref={chatContainerRef} sx={{
                     flexGrow: 1,
+                    maxHeight: '500px',
                     overflowY: 'auto',
-                    paddingBottom: '72px'
                 }}>
                     {msgBox}
                 </MDBox>
@@ -284,30 +434,39 @@ function ChatDetail() {
                 <MDBox sx={{
                     position: 'fixed',
                     bottom: 30,
-                    left: 450,
                     width: '100%',
                     backgroundColor: 'white',
-                    //boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
                     padding: '16px',
                     maxWidth: '800px',
                     margin: '0 auto',
                     display: 'flex',
-                    justifyContent: 'center', /* Centering the content */
+                    justifyContent: 'center',
+                    zIndex: 1000, // 다른 요소들보다 위에 오도록 설정
                 }}>
-                    <Card sx={{width: '100%'}}>
-                        <MDBox pt={1} pb={1} px={1} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <Grid container justifyContent="center" alignItems="center">
+                    <Card sx={{
+                        width: '100%',
+                    }}>
+                        <MDBox pt={1} pb={1} px={1} sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Grid container justifyContent="center"
+                                  alignItems="center">
                                 <Grid item xs={10.5}>
                                     <ProfanityFilterMDInput label="메시지 보내기"
-                                             type="text"
-                                             id="msg"
-                                             onChange={onChangeChat}
-                                             onKeyDown={handleKeyDown}
-                                             value={chat}
-                                             fullWidth/>
+                                                            type="text"
+                                                            id="msg"
+                                                            onChange={onChangeChat}
+                                                            onKeyDown={handleKeyDown}
+                                                            value={chat}
+                                                            fullWidth/>
                                 </Grid>
                                 <Grid item xs={1.5}>
-                                    <MDBox sx={{display: 'flex', justifyContent: 'center'}}>
+                                    <MDBox sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center'
+                                    }}>
                                         <MDButton onClick={sendChat}
                                                   variant="gradient"
                                                   color="info"

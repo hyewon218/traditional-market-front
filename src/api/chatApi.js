@@ -49,7 +49,7 @@ export const putIsRead = async (rno) => {
     return res.data
 }
 
-/*채팅방 읾음 여부 조회*/
+/*채팅방 읽음 여부 조회*/
 export const getIsRead = async (rno) => {
     const res = await axios.get(`${prefix}/${rno}/read`)
     return res.data
