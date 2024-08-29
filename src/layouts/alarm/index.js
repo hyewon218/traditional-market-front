@@ -34,22 +34,17 @@ import MDPagination from '../../components/MD/MDPagination';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import axios from 'axios';
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {useNavigate} from "react-router-dom";
 import {getChatRoom} from "../../api/chatApi";
-import {getIsRead, putIsRead} from "../../api/notificationApi";
-import {getInquiryAnswer} from "../../api/inquiryAnswerApi";
+import {
+    getIsRead,
+    getNotificationList,
+    putIsRead
+} from "../../api/notificationApi";
 import {getShopOne} from "../../api/shopApi";
 import {getItemOne} from "../../api/itemApi";
-
-const initState = {
-    no: 0,
-    title: '',
-    username: '',
-    createTime: null,
-    isRead: false
-}
+import {getInquiryOne} from "../../api/inquiryApi";
 
 const notificationTypeMessages = {
     NEW_LIKE_ON_MARKET: "시장에 좋아요가 눌렸어요!",
@@ -61,7 +56,8 @@ const notificationTypeMessages = {
     NEW_PURCHASE_ON_SHOP: "판매 상품에 구매요청이 왔어요!",
     NEW_CHAT_ON_CHATROOM: "1:1 채팅 상담 답변이 왔습니다!",
     NEW_CHAT_REQUEST_ON_CHATROOM: "1:1 채팅 상담 요청이 왔습니다!",
-    NEW_INQUIRY_ANSWER: "문의사항 답변이 달렸어요!"
+    NEW_INQUIRY_ANSWER: "문의사항 답변이 달렸어요!",
+    NEW_INQUIRY: "문의사항이 도착했어요!"
 };
 
 function Alarm() {
@@ -69,7 +65,6 @@ function Alarm() {
     const [alarms, setAlarms] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [alarmEvent, setAlarmEvent] = useState(undefined);
-    const [charRoom, setChatRoom] = useState({...initState});
 
     let eventSource = undefined;
 
@@ -87,21 +82,15 @@ function Alarm() {
         handleGetAlarm(pageNum);
     };
 
-    const handleGetAlarm = (pageNum) => {
-        console.log('handleGetAlarm');
-        axios({
-            url: `${host}?size=10&sort=no,desc&page=` + pageNum,
-            method: 'GET'
-        })
-        .then((res) => {
-            console.log('success');
-            console.log(res);
-            setAlarms(res.data.content);
-            setTotalPage(res.data.totalPages);
-        })
-        .catch((error) => {
-            console.log(error);
-            //navigate('/authentication/sign-in');
+    const handleGetAlarm = (pageNum = 0) => {
+        const pageParam = { page: pageNum, size: 10 };
+        getNotificationList(pageParam).then(data => {
+            console.log('알람 목록 조회!!!');
+            console.log(data);
+            setAlarms(data.content);
+            setTotalPage(data.totalPages);
+        }).catch(error => {
+            console.error("알람 목록 조회에 실패했습니다.", error);
         });
     };
 
@@ -126,7 +115,6 @@ function Alarm() {
     const fetchChatRoom = (chatRoomNo) => {
         getChatRoom(chatRoomNo)
         .then((data) => {
-            setChatRoom(data);
             navigate('/chat-detail', {state: data});
         })
         .catch((error) => {
@@ -134,8 +122,8 @@ function Alarm() {
         });
     };
 
-    const fetchInquiryAnswer = (inquiryAnswerNo) => {
-        getInquiryAnswer(inquiryAnswerNo)
+    const fetchInquiryAnswer = (inquiryNo) => {
+        getInquiryOne(inquiryNo)
         .then((data) => {
             navigate('/inquiry-detail', {state: data});
         })
@@ -185,7 +173,8 @@ function Alarm() {
         if (notificationType === "NEW_CHAT_REQUEST_ON_CHATROOM"
             || notificationType === "NEW_CHAT_ON_CHATROOM") {
             fetchChatRoom(targetId);
-        } else if (notificationType === "NEW_INQUIRY_ANSWER") {
+        } else if (notificationType === "NEW_INQUIRY_ANSWER"
+            || notificationType ===  "NEW_INQUIRY") {
             fetchInquiryAnswer(targetId);
         } else if (notificationType === "NEW_LIKE_ON_MARKET" ||
             notificationType === "NEW_COMMENT_ON_MARKET") {
@@ -201,11 +190,9 @@ function Alarm() {
     };
 
     useEffect(() => {
-        // 초기 알람을 가져오는 함수
         handleGetAlarm(page);
 
-        // 백오프 전략을 사용하여 EventSource 연결을 설정하는 함수
-        const connect = (retryCount = 0) => {
+        const connect = () => {
             eventSource = new EventSourcePolyfill(`${host}/subscribe`, {
                 headers: {
                     Authorization: `${getCookie('Authorization')}`
@@ -214,46 +201,33 @@ function Alarm() {
 
             eventSource.addEventListener("open", function (event) {
                 console.log("Connection opened");
-                retryCount = 0; // 연결이 성공하면 retryCount 를 0으로 재설정
             });
 
+            // 서버로부터 "alarm" 이벤트가 수신될 때 발생
             eventSource.addEventListener("alarm", function (event) {
                 console.log(event.data);
-                handleGetAlarm();
+                handleGetAlarm(); // 알람을 업데이트
             });
 
             eventSource.addEventListener("error", function (event) {
                 console.log("Error occurred:", event);
-                if (event.target.readyState === EventSource.CLOSED) {
-                    console.log(
-                        "Connection closed, attempting to reconnect...");
-
-                    // 지수형 백오프 전략
-                    const maxRetries = 5; // 최대 재시도 횟수
-                    const baseDelay = 3000; // 기본 지연 시간(밀리초)
-                    const backoffDelay = Math.min(
-                        baseDelay * Math.pow(2, retryCount), 60000); // 최대 60초까지 지연
-
-                    if (retryCount < maxRetries) {
-                        setTimeout(() => connect(retryCount + 1), backoffDelay);
-                    } else {
-                        console.log("최대 재시도 횟수에 도달했습니다. 재연결 시도를 중지합니다.");
-                    }
+                if (event.target.readyState === EventSource.CLOSED) { // 연결이 닫힌 경우
+                    console.log("Connection closed, attempting to reconnect...");
+                    // 3초 후 connect() 함수를 사용하여 다시 연결을 시도
+                    setTimeout(() => connect(), 3000);
                 }
             });
-
             setAlarmEvent(eventSource);
         };
 
-        connect(); // 초기 retryCount 0으로 연결 설정
+        connect();
 
-        // 컴포넌트 언마운트 시 정리 작업
         return () => {
             if (eventSource) {
                 eventSource.close();
             }
         };
-    }, [page]); // 의존성 배열
+    }, [page]);
 
     if (!isAuthorization) {
         return moveToLoginReturn()
