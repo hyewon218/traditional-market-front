@@ -19,6 +19,7 @@ import DeliveryPutModal from "./DeliveryPutModal";
 import MDPagination from "../MD/MDPagination";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import {useMediaQuery} from "@mui/material";
 
 const DeliveryListModal = ({callbackFn}) => {
 
@@ -29,6 +30,8 @@ const DeliveryListModal = ({callbackFn}) => {
 
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetDeliveries = (pageNum) => {
         console.log('handleGetDeliveries');
@@ -205,37 +208,27 @@ const DeliveryListModal = ({callbackFn}) => {
                                     + 배송지 추가
                                 </MDButton>
                             </div>
-                            <Grid container spacing={4}>
+                            <Grid container>
                                 <Grid item xs={12}>
                                     <MDBox
                                         pb={1}
                                         style={{
-                                            maxHeight: '400px', // Adjust the height as needed
-                                            overflowY: 'auto'  // Enable vertical scrolling
+                                            maxHeight: '400px',
+                                            overflowY: 'auto'
                                         }}
                                     >
-
                                         <div>
                                             <ul>
-                                                {Array.isArray(
-                                                        deliveries)
+                                                {Array.isArray(deliveries)
                                                     && deliveries.map(
                                                         delivery =>
-                                                            <li key={delivery.deliveryNo}
-                                                                style={{marginBottom: '16px'}}>
-                                                                <MDBox
-                                                                    pt={2}
-                                                                    px={2}>
-                                                                    <Grid
-                                                                        container
-                                                                        spacing={2}>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={9}
-                                                                            sx={{mt: 1}}>
+                                                            <li key={delivery.deliveryNo}>
+                                                                <MDBox pt={3} sx={{ml: isSmallScreen? -3 : 0}}>
+                                                                    <Grid container>
+                                                                        <Grid item xs={9} md={9.5}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
-                                                                                sx={{fontSize: '1.5rem'}}
+                                                                                sx={{fontSize: '1.2rem'}}
                                                                                 variant="body2">
                                                                                 {delivery.receiver
                                                                                     + ' '
@@ -254,27 +247,26 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                     </span>
                                                                                     )}
                                                                             </MDTypography>
-
                                                                         </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={3}
-                                                                            sx={{mt: 1}}>
+
+                                                                        <Grid item xs={3} md={2.5}>
                                                                             <MDButton
-                                                                                onClick={() => handleSelectDelivery(
-                                                                                    delivery)}
+                                                                                onClick={() => handleSelectDelivery(delivery)}
                                                                                 variant="gradient"
-                                                                                color="success">
+                                                                                color="success"
+                                                                                sx={{
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: '1rem',
+                                                                                    padding: '4px 8px',
+                                                                                }}
+                                                                            >
                                                                                 선택
                                                                             </MDButton>
                                                                         </Grid>
                                                                     </Grid>
-                                                                    <Grid
-                                                                        container>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={5}
-                                                                            sx={{mt: 1}}>
+
+                                                                    <Grid container>
+                                                                        <Grid item xs={12} md={5} sx={{mt: -1}}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
@@ -282,12 +274,8 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                             </MDTypography>
                                                                         </Grid>
                                                                     </Grid>
-                                                                    <Grid
-                                                                        container>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={12}
-                                                                            sx={{mt: 1}}>
+                                                                    <Grid container>
+                                                                        <Grid item xs={12} md={12} >
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
@@ -301,42 +289,50 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                             </MDTypography>
                                                                         </Grid>
                                                                     </Grid>
-                                                                    <Grid
-                                                                        container
-                                                                    >
-                                                                        <Grid
-                                                                            item
-                                                                            xs={2}
-                                                                            sx={{mt: 1}}>
+
+                                                                    <Grid container spacing={-10}>
+                                                                        <Grid item xs={3} md={2}>
                                                                             <MDButton
                                                                                 onClick={() => handleDeliveryPutModal(
                                                                                     delivery)}
                                                                                 variant="gradient"
-                                                                                color="light">
+                                                                                color="light"
+                                                                                sx={{
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: '0.8rem',
+                                                                                    padding: '4px 8px',
+                                                                                }}
+                                                                            >
                                                                                 수정
                                                                             </MDButton>
                                                                         </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={2}
-                                                                            sx={{mt: 1}}>
+                                                                        <Grid item xs={3} md={2}>
                                                                             <MDButton
                                                                                 onClick={() => handleDeleteDelivery(
                                                                                     delivery.deliveryNo)}
                                                                                 variant="gradient"
-                                                                                color="light">
+                                                                                color="light"
+                                                                                sx={{
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: '0.8rem',
+                                                                                    padding: '4px 8px',
+                                                                                }}
+                                                                            >
                                                                                 삭제
                                                                             </MDButton>
                                                                         </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={4}
-                                                                            sx={{mt: 1}}>
+                                                                        <Grid item xs={6} md={4}>
                                                                             <MDButton
                                                                                 onClick={() => handlePrimaryDelivery(
                                                                                     delivery.deliveryNo)}
                                                                                 variant="gradient"
-                                                                                color="warning">
+                                                                                color="warning"
+                                                                                sx={{
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: '0.8rem',
+                                                                                    padding: '4px 8px',
+                                                                                }}
+                                                                            >
                                                                                 기본배송지
                                                                                 설정
                                                                             </MDButton>
@@ -351,34 +347,37 @@ const DeliveryListModal = ({callbackFn}) => {
                                 </Grid>
                             </Grid>
                         </MDBox>
-                        <MDBox
-                            style={{
-                                flex: "0 0 auto",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginTop: "0rem",
-                                marginBottom: "1.5rem"
-                            }}
-                        >
-                            <MDPagination>
-                                <MDPagination item>
-                                    <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
-                                </MDPagination>
-                                {[...Array(totalPage).keys()].map((i) => (
-                                    <MDPagination
-                                        item
-                                        key={i}
-                                        onClick={() => changePage(i)}
-                                    >
-                                        {i + 1}
+
+                        {deliveries.length > 0 && (
+                            <MDBox
+                                style={{
+                                    flex: "0 0 auto",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: "0rem",
+                                    marginBottom: "1.5rem"
+                                }}
+                            >
+                                <MDPagination size={"small"}>
+                                    <MDPagination item>
+                                        <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
                                     </MDPagination>
-                                ))}
-                                <MDPagination item>
-                                    <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                                    {[...Array(totalPage).keys()].map((i) => (
+                                        <MDPagination
+                                            item
+                                            key={i}
+                                            onClick={() => changePage(i)}
+                                        >
+                                            {i + 1}
+                                        </MDPagination>
+                                    ))}
+                                    <MDPagination item>
+                                        <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                                    </MDPagination>
                                 </MDPagination>
-                            </MDPagination>
-                        </MDBox>
+                            </MDBox>
+                        )}
                     </Card>
                 </MDBox>
             </div>

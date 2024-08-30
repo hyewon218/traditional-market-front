@@ -10,6 +10,7 @@ import MDInput from "../MD/MDInput";
 import MDButton from "../MD/MDButton";
 import MDTypography from "../MD/MDTypography";
 import { putDelivery } from "../../api/deliveryApi";
+import {useMediaQuery} from "@mui/material";
 
 const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
     const defaultDelivery = {
@@ -25,6 +26,8 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
 
     const [deliveries, setDeliveries] = useState({ ...defaultDelivery, ...delivery });
     const [isOpen, setIsOpen] = useState(false);
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         setDeliveries({ ...defaultDelivery, ...delivery });
@@ -86,9 +89,13 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
     return ReactDOM.createPortal(
         <DashboardLayout>
             <div className={`fixed top-0 left-0 z-[1100] flex h-full w-full justify-center bg-gray-600 bg-opacity-75`}>
-                <MDBox pt={6} pb={3} style={{ width: '80%', maxWidth: '900px', marginTop: '50px' }}>
+                <MDBox pt={3} pb={3}
+                       style={{
+                            width: isSmallScreen ? '80%' : '50%',
+                            maxWidth: '900px',
+                            marginTop: '10px' }}>
                     <Card>
-                        <MDBox pt={4} pb={3} px={3}>
+                        <MDBox pt={2} pb={3} px={3}>
                             <div>
                                 <MDTypography fontWeight="bold" variant="body2" fontSize="25px">
                                     배송지 수정
@@ -133,7 +140,16 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
                                     />
                                 </MDBox>
                                 <MDBox mb={2}>
-                                    <MDButton onClick={toggleHandler} variant="gradient" color="dark">
+                                    <MDButton
+                                        onClick={toggleHandler}
+                                        variant="gradient"
+                                        color="dark"
+                                        sx={{
+                                            fontFamily: 'JalnanGothic',
+                                            fontSize: '0.8rem',
+                                            padding: '4px 8px',
+                                        }}
+                                    >
                                         주소 검색
                                     </MDButton>
                                 </MDBox>
@@ -185,10 +201,29 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
                                 </MDBox>
 
                                 <MDBox mt={4} mb={1} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <MDButton onClick={handlePutDelivery} variant="gradient" color="info" style={{ marginRight: '10px' }}>
+                                    <MDButton
+                                        onClick={handlePutDelivery}
+                                        variant="gradient"
+                                        color="info"
+                                        style={{ marginRight: '10px' }}
+                                        sx={{
+                                            fontFamily: 'JalnanGothic',
+                                            fontSize: '0.8rem',
+                                            padding: '4px 8px',
+                                        }}
+                                    >
                                         수정
                                     </MDButton>
-                                    <MDButton onClick={() => { if (callbackFn) callbackFn() }} variant="gradient" color="info">
+                                    <MDButton
+                                        onClick={() => { if (callbackFn) callbackFn() }}
+                                        variant="gradient"
+                                        color="info"
+                                        sx={{
+                                            fontFamily: 'JalnanGothic',
+                                            fontSize: '0.8rem',
+                                            padding: '4px 8px',
+                                        }}
+                                    >
                                         취소
                                     </MDButton>
                                 </MDBox>

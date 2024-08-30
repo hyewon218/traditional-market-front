@@ -12,6 +12,7 @@ import MDTypography from "../MD/MDTypography";
 
 import {useState} from "react";
 import {postDelivery} from "../../api/deliveryApi";
+import {useMediaQuery} from "@mui/material";
 
 const initState = {
     title: '',
@@ -29,6 +30,7 @@ const DeliveryPostModal = ({callbackFn}) => {
     const [deliveries, setDeliveries] = useState({...initState})
     const [isOpen, setIsOpen] = useState(true);
 
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleChangeDelivery = (e) => {
         const {name, value} = e.target;
@@ -102,14 +104,14 @@ const DeliveryPostModal = ({callbackFn}) => {
         <DashboardLayout>
             <div
                 className={`fixed top-0 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
-                <MDBox pt={6} pb={3}
+                <MDBox pt={3} pb={3}
                        style={{
-                           width: '80%',
+                           width: isSmallScreen ? '80%' : '50%',
                            maxWidth: '900px',
-                           marginTop: '50px'
+                           marginTop: '10px'
                        }}>
                     <Card>
-                        <MDBox pt={4} pb={3} px={3}>
+                        <MDBox pt={2} pb={3} px={3}>
                             <div>
                                 <MDTypography
                                     fontWeight="bold"
@@ -156,7 +158,13 @@ const DeliveryPostModal = ({callbackFn}) => {
                                 <MDBox mb={2}>
                                     <MDButton onClick={toggleHandler}
                                               variant="gradient"
-                                              color="dark">
+                                              color="dark"
+                                              sx={{
+                                                  fontFamily: 'JalnanGothic',
+                                                  fontSize: '0.8rem',
+                                                  padding: '4px 8px',
+                                              }}
+                                    >
                                         주소 검색
                                     </MDButton>
                                 </MDBox>
@@ -205,7 +213,13 @@ const DeliveryPostModal = ({callbackFn}) => {
                                     <MDButton onClick={handlePostDelivery}
                                               variant="gradient"
                                               style={{ marginRight: '10px' }}
-                                              color="info">
+                                              color="info"
+                                              sx={{
+                                                  fontFamily: 'JalnanGothic',
+                                                  fontSize: '0.8rem',
+                                                  padding: '4px 8px',
+                                              }}
+                                    >
                                         배송지 추가
                                     </MDButton>
                                     <MDButton onClick={() => {
@@ -214,7 +228,13 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         }
                                     }}
                                               variant="gradient"
-                                              color="info">
+                                              color="info"
+                                              sx={{
+                                                  fontFamily: 'JalnanGothic',
+                                                  fontSize: '0.8rem',
+                                                  padding: '4px 8px',
+                                              }}
+                                    >
                                         취소
                                     </MDButton>
                                 </MDBox>

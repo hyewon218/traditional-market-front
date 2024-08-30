@@ -15,6 +15,7 @@ import {useNavigate} from "react-router";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import {useMediaQuery} from "@mui/material";
 
 const CartComponent = () => {
     const navigate = useNavigate();
@@ -22,6 +23,8 @@ const CartComponent = () => {
     const {refreshCart, cartItems, changeCart} = useCustomCart()
     const [counts, setCounts] = useState({}); // 각 장바구니 항목의 수량을 관리하기 위해
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const total = useMemo(() => {
         let total = 0
@@ -126,7 +129,7 @@ const CartComponent = () => {
         <DashboardLayout>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <MDBox pt={3} pb={3}>
+                    <MDBox pb={3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <Grid container>
@@ -153,6 +156,7 @@ const CartComponent = () => {
                     </MDBox>
                 </Grid>
             </Grid>
+
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     {cartItems.length > 0 && (
@@ -160,7 +164,7 @@ const CartComponent = () => {
                             <Card>
                                 <MDBox pt={2}>
                                     <Grid container spacing={2}>
-                                        <Grid item xs={7}>
+                                        <Grid item xs={12} md={7}>
                                             <ul>
                                                 {cartItems.map(cartItem => {
                                                     const currentImageIndex = currentImageIndexes[cartItem.cartItemNo]
@@ -168,15 +172,14 @@ const CartComponent = () => {
                                                     return (
                                                         <li key={cartItem.cartItemNo}
                                                             className="border-2 rounded-2"
-                                                            style={{marginBottom: '16px', marginLeft:'-10px'}}>
+                                                            style={{marginBottom: '16px', marginLeft:'-10px', marginRight: isSmallScreen ? '23px': '0'}}>
                                                             <MDBox pt={2}
                                                                    px={2}
                                                                    pb={2}
                                                             >
                                                                 <Grid container
                                                                       spacing={2} >
-                                                                    <Grid item
-                                                                          xs={2}>
+                                                                    <Grid item xs={12} sm={2}>
                                                                         <MDTypography
                                                                             fontWeight="bold"
                                                                             variant="body2">
@@ -200,8 +203,7 @@ const CartComponent = () => {
                                                                             </button>
                                                                         </MDTypography>
                                                                     </Grid>
-                                                                    <Grid item
-                                                                          xs={5}>
+                                                                    <Grid item xs={7} sm={5}>
                                                                         <div
                                                                             style={{
                                                                                 position: 'relative',
@@ -209,8 +211,7 @@ const CartComponent = () => {
                                                                                 justifyContent: 'center',
                                                                                 alignItems: 'center'
                                                                             }}>
-                                                                            {cartItem.imageList.length
-                                                                                > 1
+                                                                            {cartItem.imageList.length > 1
                                                                                 && (
                                                                                     <IconButton
                                                                                         onClick={() => handlePreviousImage(
@@ -219,8 +220,7 @@ const CartComponent = () => {
                                                                                             position: 'absolute',
                                                                                             left: '50px'
                                                                                         }}
-                                                                                        disabled={cartItem.imageList.length
-                                                                                            <= 1}
+                                                                                        disabled={cartItem.imageList.length <= 1}
                                                                                     >
                                                                                         <KeyboardArrowLeftIcon/>
                                                                                     </IconButton>
@@ -233,8 +233,7 @@ const CartComponent = () => {
                                                                                     maxHeight: '150px'
                                                                                 }}
                                                                             />
-                                                                            {cartItem.imageList.length
-                                                                                > 1
+                                                                            {cartItem.imageList.length > 1
                                                                                 && (
                                                                                     <IconButton
                                                                                         onClick={() => handleNextImage(
@@ -243,8 +242,7 @@ const CartComponent = () => {
                                                                                             position: 'absolute',
                                                                                             right: '50px'
                                                                                         }}
-                                                                                        disabled={cartItem.imageList.length
-                                                                                            <= 1}
+                                                                                        disabled={cartItem.imageList.length <= 1}
                                                                                     >
                                                                                         <KeyboardArrowRightIcon/>
                                                                                     </IconButton>
@@ -271,9 +269,7 @@ const CartComponent = () => {
                                                                         <Grid
                                                                             container
                                                                             sx={{mt: 2}}>
-                                                                            <Grid
-                                                                                item
-                                                                                xs={2}>
+                                                                            <Grid item xs={isSmallScreen ? 3 : 2}>
                                                                                 <MDTypography
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
@@ -299,9 +295,7 @@ const CartComponent = () => {
                                                                                         || cartItem.initialCount}
                                                                                 </MDTypography>
                                                                             </Grid>
-                                                                            <Grid
-                                                                                item
-                                                                                xs={2}>
+                                                                            <Grid item xs={isSmallScreen ? 3 : 2}>
                                                                                 <MDTypography
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
@@ -325,15 +319,16 @@ const CartComponent = () => {
                                                 })}
                                             </ul>
                                         </Grid>
-                                        <Grid item xs={5}
-                                              sx={{paddingRight: '26px'}}>
+
+                                        <Grid item xs={12} md={5}
+                                              sx={{paddingRight: isSmallScreen? '0px' : '26px'}}>
                                             <div className="w-full"
                                                  style={{marginBottom: '20px'}}>
                                                 <MDTypography fontWeight="bold"
                                                               sx={{
                                                                   fontSize: '2rem',
                                                                   paddingTop: '9px',
-                                                                  paddingLeft: '13px'
+                                                                  paddingLeft: isSmallScreen ? '30px' : '13px'
                                                               }}
                                                               variant="body2">
                                                     총 가격 : {total}

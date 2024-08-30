@@ -12,12 +12,19 @@ import {getPrimaryDelivery} from "../../api/deliveryApi";
 import {getOrderItemList, putSelectedDelivery} from "../../api/orderApi";
 import {postPay} from "../../api/payApi";
 import DeliveryListModal from "../delivery/DeliveryListModal";
-import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material";
+import {
+    FormControl,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
+    useMediaQuery
+} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import DeliveryMessageModal from '../../components/deliverymessage/DeliveryMessageModal'; // 배송메시지 모달
+import DeliveryMessageModal from '../../components/deliverymessage/DeliveryMessageModal';
+import {is} from "date-fns/locale"; // 배송메시지 모달
 
 const OrderComponent = () => {
 
@@ -29,6 +36,8 @@ const OrderComponent = () => {
     const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지 상태
 
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const total = useMemo(() => {
         let total = 0
@@ -130,9 +139,9 @@ const OrderComponent = () => {
 
     const deliveryAddress = getDeliveryAddress();
 
-    const buttonText = primaryDelivery
+    const buttonText = primaryDelivery.isPrimary
         ? '변경'
-        : '배송지 추가';
+        : '배송지 추가'; // 기본 배송지가 false 이면
 
 
     const buttonStyle = {
@@ -141,7 +150,7 @@ const OrderComponent = () => {
         fontSize: '2rem',
         fontFamily: 'JalnanGothic',
         padding: '20px 40px',
-        width: '660px',
+        width: '600px',
     };
 
     const handlePreviousImage = (orderItemNo) => {
@@ -186,7 +195,7 @@ const OrderComponent = () => {
             }
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <MDBox pt={3} pb={3}>
+                    <MDBox pb={3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <Grid container>
@@ -203,7 +212,7 @@ const OrderComponent = () => {
                     </MDBox>
                 </Grid>
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container>
                 <Grid item xs={12}>
                     <MDTypography
                         fontWeight="bold"
@@ -212,8 +221,8 @@ const OrderComponent = () => {
                     >
                         배송지
                     </MDTypography>
-                    <Grid container spacing={4}>
-                        <Grid item xs={7}>
+                    <Grid container>
+                        <Grid item xs={12} md={6.9}>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox>
@@ -222,17 +231,17 @@ const OrderComponent = () => {
                                                 pb={2}
                                                 pt={2}
                                                 px={2}>
-                                                <Grid item xs={12} container alignItems="center">
-                                                    <Grid item xs={9}>
+                                                <Grid container alignItems="center" sx={{ ml:1 }}>
+                                                    <Grid item xs={isSmallScreen ? 8 : 8.5} >
                                                         <MDTypography
                                                             fontWeight="bold"
-                                                            sx={{ fontSize: '1.3rem' }}
+                                                            sx={{ fontSize: '1.3rem'}}
                                                             variant="body2"
                                                         >
                                                             {deliveryAddressTitleMessage}
                                                         </MDTypography>
                                                     </Grid>
-                                                    <Grid item xs={3} container justifyContent="flex-end">
+                                                    <Grid item xs={isSmallScreen ? 4 : 3.5} container justifyContent="flex-end" >
                                                         <MDButton
                                                             onClick={handleDeliveryModal}
                                                             variant="gradient"
@@ -241,16 +250,15 @@ const OrderComponent = () => {
                                                                 backgroundColor: '#50bcdf',
                                                                 color: '#ffffff',
                                                                 fontFamily: 'JalnanGothic',
-                                                                width: '80px',
-                                                                height: '40px', // Adjust height as needed
-                                                                fontSize: '0.875rem', // Adjust font size as needed
+                                                                height: '40px',
+                                                                fontSize: '0.875rem',
+                                                                mr:2
                                                             }}
-                                                        >
-                                                            {buttonText}
+                                                        >{buttonText}
                                                         </MDButton>
                                                     </Grid>
                                                 </Grid>
-                                                <Grid item xs={12}>
+                                                <Grid item xs={12} sx={{ ml:1 }}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         variant="body2"
@@ -258,7 +266,7 @@ const OrderComponent = () => {
                                                         {selectedDelivery?.phone || primaryDelivery.phone}
                                                     </MDTypography>
                                                 </Grid>
-                                                <Grid item xs={12}>
+                                                <Grid item xs={12} sx={{ ml:1 }}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         variant="body2"
@@ -277,7 +285,10 @@ const OrderComponent = () => {
                                 </Card>
                             </MDBox>
                         </Grid>
-                        <Grid item xs={5} sx={{paddingRight: '26px'}}>
+
+                        <Grid item xs={12} md={4.5} sx={{marginLeft: isSmallScreen? '0px' : '35px',
+                        marginBottom: isSmallScreen? '15px' : '0'
+                        }}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -300,8 +311,8 @@ const OrderComponent = () => {
                                   fontSize="25px">
                         주문상품
                     </MDTypography>
-                    <Grid container spacing={4}>
-                        <Grid item xs={7}>
+                    <Grid container>
+                        <Grid item xs={12} md={6.9}>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={1}>
@@ -315,20 +326,16 @@ const OrderComponent = () => {
                                                         <li key={orderItem.orderItemNo}
                                                             style={{ marginBottom: '16px' }}>
                                                             <MDBox px={2}>
-                                                                <Grid container
-                                                                      spacing={2}>
-                                                                    <Grid item
-                                                                          xs={7}>
+                                                                <Grid container spacing={2}>
+                                                                    <Grid item xs={7} md={6}>
                                                                         {/* Image Navigation */}
                                                                         <div
                                                                             style={{
                                                                                 position: 'relative',
                                                                                 display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                width: '300px',  // Adjust the width as needed
-                                                                                height: '150px', // Adjust the height as needed
-                                                                                margin: '0 auto' // Center the entire image container
+                                                                                width: isSmallScreen ? '200px' : '280px',
+                                                                                height: isSmallScreen ? '120px' : '160px',
+                                                                                marginTop: isSmallScreen ? '13px' : '10px'
                                                                             }}
                                                                         >
                                                                             {hasImages && (
@@ -336,10 +343,10 @@ const OrderComponent = () => {
                                                                                     onClick={() => handlePreviousImage(orderItem.orderItemNo)}
                                                                                     style={{
                                                                                         position: 'absolute',
-                                                                                        left: '-30px',  // Adjusted to align with the image's new position
+                                                                                        left: '-30px',
                                                                                         top: '50%',
                                                                                         transform: 'translateY(-50%)',
-                                                                                        zIndex: 1  // Ensure the button is on top of the image
+                                                                                        zIndex: 1
                                                                                     }}
                                                                                 >
                                                                                     <KeyboardArrowLeftIcon />
@@ -350,10 +357,10 @@ const OrderComponent = () => {
                                                                                 src={imageList[currentImageIndex]?.imageUrl}
                                                                                 alt={orderItem.itemName}
                                                                                 style={{
-                                                                                    maxWidth: '100%', // Scale the image to fit the container
+                                                                                    maxWidth: '100%',
                                                                                     maxHeight: '100%',
-                                                                                    objectFit: 'contain', // Ensure the image maintains its aspect ratio
-                                                                                    marginRight: '50px'  // Adjust this to move the image slightly to the left
+                                                                                    objectFit: 'contain',
+                                                                                    marginRight: isSmallScreen? '0px':'50px'
                                                                                 }}
                                                                             />
 
@@ -362,10 +369,10 @@ const OrderComponent = () => {
                                                                                     onClick={() => handleNextImage(orderItem.orderItemNo)}
                                                                                     style={{
                                                                                         position: 'absolute',
-                                                                                        right: '10px', // Align this with the image's new position
+                                                                                        right: isSmallScreen? '-15px':'0',
                                                                                         top: '50%',
                                                                                         transform: 'translateY(-50%)',
-                                                                                        zIndex: 1 // Ensure the button is on top of the image
+                                                                                        zIndex: 1
                                                                                     }}
                                                                                 >
                                                                                     <KeyboardArrowRightIcon />
@@ -373,8 +380,8 @@ const OrderComponent = () => {
                                                                             )}
                                                                         </div>
                                                                     </Grid>
-                                                                    <Grid item
-                                                                          xs={4}  sx={{ mt: 3 }}>
+
+                                                                    <Grid item xs={5} md={6}  sx={{ mt: isSmallScreen? 2:4 }}>
                                                                         <MDTypography
                                                                             fontWeight="bold"
                                                                             sx={{ fontSize: '1.5rem' }}
@@ -424,8 +431,8 @@ const OrderComponent = () => {
                     >
                         결제수단
                     </MDTypography>
-                    <Grid container spacing={4}>
-                        <Grid item xs={7}>
+                    <Grid container spacing={1}>
+                        <Grid item xs={12} md={7}>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={2} px={2} pb={2}>
