@@ -84,8 +84,8 @@ function ModifyItem() {
         initItem.imageList || []); // 기존에 있던 이미지들
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
-    const [market, setMarket] = useState(''); // 소속 시장 매핑하기위한 상태
-    const [shop, setShop] = useState(''); // 소속 상점 매핑하기위한 상태
+    const [market, setMarket] = useState(''); // 소속 시장 매핑하기 위한 상태
+    const [shop, setShop] = useState(''); // 소속 상점 매핑하기 위한 상태
 
     const navigate = useNavigate()
 
@@ -192,8 +192,8 @@ function ModifyItem() {
 
         // 기존 이미지 중 삭제되지 않은(남은) 이미지만 추가
         if (initialImages != null) {
-            const remainingInitialImages = initialImages.filter(
-                img => !removedImages.includes(img.imageUrl));
+            const remainingInitialImages = initialImages.filter(img =>
+                !removedImages.includes(img.imageUrl));
             remainingInitialImages.forEach(img => {
                 formData.append('imageUrls', img.imageUrl);
             });
@@ -206,7 +206,6 @@ function ModifyItem() {
             const data = await putItem(item.itemNo, formData);
             const itemData = await fetchItem(data.itemNo);
             navigate(`/item-detail`, { state: itemData });
-
         } catch (error) {
             console.error("상품 수정 오류: ", error);
         }
@@ -221,9 +220,9 @@ function ModifyItem() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3}>
+            <MDBox pb={3}>
                 <Card>
-                    <MDBox pt={4} pb={3} px={3}>
+                    <MDBox pt={3} pb={3} px={3}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
                                 <MDInput
@@ -286,7 +285,7 @@ function ModifyItem() {
                                         name="itemCategory"
                                         value={item.itemCategory}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{minHeight: 45}}
                                     >
                                         {Object.keys(itemCategories).map(
                                             (category) => (
@@ -308,7 +307,7 @@ function ModifyItem() {
                                         name="itemSellStatus"
                                         value={item.itemSellStatus}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{minHeight: 45}}
                                     >
                                         {Object.keys(itemSellStatusOptions).map(
                                             (key) => (
@@ -352,7 +351,7 @@ function ModifyItem() {
                                     </MDBox>
                                 ))}
                             </MDBox>
-                            <MDBox mb={2} display="flex" flexWrap="wrap">
+                            <MDBox display="flex" flexWrap="wrap">
                                 {filePreviews.map((preview, index) => (
                                     <MDBox key={index} position="relative"
                                            mr={2} mb={2}>
@@ -376,9 +375,15 @@ function ModifyItem() {
                                     </MDBox>
                                 ))}
                             </MDBox>
-                            <MDBox mt={4} mb={1} right>
+                            <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <MDButton onClick={handleModifyItem}
-                                          variant="gradient" color="info">
+                                          variant="gradient" color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: '0.8rem',
+                                              padding: '4px 8px',
+                                          }}
+                                >
                                     수정하기
                                 </MDButton>
                             </MDBox>

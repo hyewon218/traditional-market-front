@@ -233,9 +233,9 @@ function ModifyMarket() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3} px={3}>
+            <MDBox pb={3}>
                 <Card>
-                    <MDBox pt={3} px={3} lineHeight={1.5}>
+                    <MDBox pt={3} pb={3} px={3} lineHeight={1.5}>
                         <MDBox mb={2}>
                             <MDInput
                                 fullWidth
@@ -261,6 +261,7 @@ function ModifyMarket() {
                                     name="category"
                                     value={market.category || ''}
                                     onChange={handleChangeMarket}
+                                    sx={{minHeight: 45}}
                                     fullWidth
                                 >
                                     {Object.keys(categories).map(categoryKey => (
@@ -391,8 +392,16 @@ function ModifyMarket() {
                                 ))}
                             </div>
                         </MDBox>
-                        <MDBox mb={2}>
-                            <MDButton variant="contained" color="primary" onClick={handleModifyMarket}>
+                        <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <MDButton variant="contained"
+                                      color="info"
+                                      onClick={handleModifyMarket}
+                                      sx={{
+                                          fontFamily: 'JalnanGothic',
+                                          fontSize: '0.8rem',
+                                          padding: '4px 8px',
+                                      }}
+                            >
                                 수정 완료
                             </MDButton>
                         </MDBox>

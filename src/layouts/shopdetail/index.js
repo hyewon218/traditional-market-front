@@ -44,7 +44,8 @@ import {
 } from "../../api/shopApi";
 import {getItemList, getListCategoryByShop} from "../../api/itemApi";
 import {getMember} from "../../api/memberApi";
-import ShopMapComponent from "../../components/map/ShopMapComponent"; // 상점 위치 출력
+import ShopMapComponent from "../../components/map/ShopMapComponent";
+import {useMediaQuery} from "@mui/material"; // 상점 위치 출력
 
 const categoryMapping = {
     "전체": '전체',
@@ -78,13 +79,14 @@ function ShopDetail() {
     const [showButtons, setShowButtons] = useState(false); // 관리자 또는 상점 소유자일 경우 활성화
 
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         // 현재 사용자 정보 가져오기
         const fetchCurrentUser = async () => {
             try {
-                const response = await getMember(); // 현재 사용자 정보 가져오기
-                const member = response;
+                 // 현재 사용자 정보 가져오기
+                const member = await getMember();
                 console.log('member : ', member);
                 setCurrentUser(member);
 
@@ -276,104 +278,118 @@ function ShopDetail() {
 
     return (
         <DashboardLayout>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
+            <Grid container spacing={isSmallScreen ? 0 : 2}>
+                <Grid item xs={12} md={6}>
                     <MDBox pt={0} pb={3}>
                         <Card>
-                            <MDBox pt={3} pb={3} px={3}>
-                                <Grid container>
-                                    <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
+                            <MDBox pt={isSmallScreen ? 1 : 2} pb={isSmallScreen ? 1 : 2} px={isSmallScreen ? 1 : 2.5}>
+                                <Grid container spacing={isSmallScreen ? 1 : 2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <MDTypography fontWeight="bold" variant="body2" sx={{ fontSize: isSmallScreen ? '0.875rem' : '1rem' }}>
                                             {shop.shopName}
                                         </MDTypography>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <MDTypography variant="body2"
-                                                      textAlign="right">
+                                    <Grid item xs={12} sm={6}>
+                                        <MDTypography variant="body2" textAlign={isSmallScreen ? 'center' : 'right'} sx={{ fontSize: isSmallScreen ? '0.875rem' : '1rem' }}>
                                             {shop.shopAddr}
                                         </MDTypography>
                                     </Grid>
                                 </Grid>
-                                <Grid container>
+                                <Grid container spacing={1} justifyContent="center">
                                     <Grid item xs={12}>
-                                        <div
-                                            className="w-full justify-center flex flex-col m-auto items-center">
-                                            {shop.imageList.map((imgUrl, i) =>
+                                        <div className="w-full flex flex-col items-center">
+                                            {shop.imageList.map((imgUrl, i) => (
                                                 <img
-                                                    alt="product" key={i}
-                                                    width={230}
-                                                    src={`${imgUrl.imageUrl}`}/>
-                                            )}
+                                                    alt="product"
+                                                    key={i}
+                                                    width={isSmallScreen ? 150 : 230}
+                                                    src={`${imgUrl.imageUrl}`}
+                                                    style={{ marginBottom: '8px' }}
+                                                />
+                                            ))}
                                         </div>
                                     </Grid>
                                 </Grid>
                                 <MDTypography
                                     variant="body2"
                                     sx={{
-                                        fontSize: '0.75rem',
-                                        marginLeft: '8px'
+                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                        marginLeft: '8px',
+                                        textAlign: isSmallScreen ? 'center' : 'left'
                                     }}
-                                >{likes} LIKES</MDTypography>
+                                >
+                                    {likes} LIKES
+                                </MDTypography>
 
-                                <Grid container>
-                                    <Grid item xs={1.5}>
+                                <Grid container spacing={isSmallScreen ? 1 : 0.5} justifyContent={isSmallScreen ? 'center' : 'flex-start'}>
+                                    <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: '0.75rem',
-                                                padding: '4px 8px',
+                                                fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                                padding: isSmallScreen ? '2px 4px' : '4px 8px',
+                                                width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
                                             }}
-                                            color="info">
+                                            color="info"
+                                        >
                                             좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
                                     {showButtons && (
                                         <>
-                                            <Grid item xs={1.5}>
+                                            <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
+                                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                                        padding: isSmallScreen ? '2px 4px' : '4px 8px',
+                                                        width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
                                                     }}
-                                                    onClick={() => handleModifyShop(shop)}>
+                                                    onClick={() => handleModifyShop(shop)}
+                                                >
                                                     상점 수정
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={1.5}>
+                                            <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
+                                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                                        padding: isSmallScreen ? '2px 4px' : '4px 8px',
+                                                        width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
                                                     }}
-                                                    onClick={() => handleAddItem(shop)}>
+                                                    onClick={() => handleAddItem(shop)}
+                                                >
                                                     상품 추가
                                                 </MDButton>
                                             </Grid>
                                         </>
                                     )}
-
-                                    {isAdmin && ( // 관리자일 때만 상점 삭제 버튼 생성
-                                        <Grid item xs={1.5}>
+                                    {isAdmin && (
+                                        <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    padding: '4px 8px',
+                                                    fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                                    padding: isSmallScreen ? '2px 4px' : '4px 8px',
+                                                    width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
                                                 }}
-                                                onClick={() => handleDeleteShop(shop.shopNo)}>
+                                                onClick={() => handleDeleteShop(shop.shopNo)}
+                                            >
                                                 상점 삭제
                                             </MDButton>
                                         </Grid>
                                     )}
                                 </Grid>
+
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -381,8 +397,8 @@ function ShopDetail() {
 
 
                 {/* 지도 */}
-                <Grid item xs={6}>
-                    <Card style={{height: '285px'}}>
+                <Grid item xs={12} md={6} mb={isSmallScreen ? 3 : 0}>
+                    <Card style={{height: '278px'}}>
                         <MDBox component="form" role="form">
                             <ShopMapComponent
                                 containerId="shop-map" // 지도 컨테이너 ID
@@ -395,14 +411,12 @@ function ShopDetail() {
             </Grid>
 
             {/*카테고리*/}
-            <Grid container spacing={0.1} justifyContent="center">
+            <Grid container spacing={isSmallScreen ? 1 : 2} justifyContent="center" >
                 {Object.keys(categoryMapping).map((displayCategory) => (
-                    <Grid item xs={1.1}
-                          key={displayCategory}>
+                    <Grid item xs={isSmallScreen ? 2 : 3} sm={2} md={1.5} key={displayCategory}>
                         <MDBox>
                             <MDButton
-                                onClick={() => handleCategorySelect(
-                                    displayCategory)}
+                                onClick={() => handleCategorySelect(displayCategory)}
                                 variant="gradient"
                                 size="large"
                                 sx={{
@@ -410,7 +424,8 @@ function ShopDetail() {
                                     color: '#ffffff',
                                     fontSize: '1.35rem',
                                     fontFamily: 'JalnanGothic',
-                                    marginBottom: 1.5
+                                    marginBottom: 1.5,
+                                    width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
                                 }}
                             >
                                 {displayCategory}
@@ -436,7 +451,7 @@ function ShopDetail() {
                         <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                             <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
                                 <Card>
-                                    <MDBox pt={2} pb={2} px={2}>
+                                    <MDBox pt={2} pb={2} px={3}>
                                         <Grid container>
                                             <Grid item xs={6}>
                                                 <MDTypography
@@ -458,16 +473,16 @@ function ShopDetail() {
                                                 <MDTypography
                                                     variant="body2">{item.itemDetail}</MDTypography>
                                             </Grid>
-                                            <Grid item xs={6}
-                                                  sx={{textAlign: 'right'}}>
+                                            <Grid item xs={6} sx={{textAlign: 'right'}}>
                                                 <Button
-                                                    onClick={() => handleDetail(
-                                                        item)}
+                                                    onClick={() => handleDetail(item)}
                                                     sx={{
-                                                        padding: '4px 8px',
-                                                        mr: '-10px'
+                                                        padding: '0px 8px',
+                                                        mr: '-10px',
+                                                        mt: '-8px',
+                                                        fontFamily: 'JalnanGothic',
                                                     }}
-                                                >Detail</Button>
+                                                >상세보기</Button>
                                             </Grid>
                                         </Grid>
                                         <div
@@ -482,8 +497,13 @@ function ShopDetail() {
                                                               alignItems="center"
                                                               justifyContent="center">
                                                             <MDButton
-                                                                onClick={() => handlePreviousItemImage(
-                                                                    index)}>
+                                                                onClick={() => handlePreviousItemImage(index)}
+                                                                sx={{
+                                                                    padding: '4px',
+                                                                    minWidth: '32px',
+                                                                    minHeight: '32px',
+                                                                    fontSize: '16px',
+                                                                }}>
                                                                 <KeyboardArrowLeftIcon/>
                                                             </MDButton>
                                                         </Grid>
@@ -509,8 +529,13 @@ function ShopDetail() {
                                                               alignItems="center"
                                                               justifyContent="center">
                                                             <MDButton
-                                                                onClick={() => handleNextItemImage(
-                                                                    index)}>
+                                                                onClick={() => handleNextItemImage(index)}
+                                                                sx={{
+                                                                    padding: '4px', // Reduce padding
+                                                                    minWidth: '32px', // Set minimum width to make it smaller
+                                                                    minHeight: '32px', // Set minimum height to make it smaller
+                                                                    fontSize: '16px', // Adjust font size for smaller text
+                                                                }}>
                                                                 <KeyboardArrowRightIcon/>
                                                             </MDButton>
                                                         </Grid>
