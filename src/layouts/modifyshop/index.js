@@ -241,7 +241,6 @@ function ModifyShop() {
             const data = await putShop(shop.shopNo, formData);
             const shopData = await fetchShop(data.shopNo);
             navigate(`/shop-detail`, { state: shopData });
-
         } catch (error) {
             console.error("상점 수정 오류: ", error);
         }
@@ -257,9 +256,9 @@ function ModifyShop() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3}>
+            <MDBox pb={3}>
                 <Card>
-                    <MDBox pt={4} pb={3} px={3}>
+                    <MDBox pt={3} pb={3} px={3}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
                                 <MDInput
@@ -312,6 +311,25 @@ function ModifyShop() {
                                 />
                             </MDBox>
                             <MDBox mb={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel
+                                        id="category-label">카테고리</InputLabel>
+                                    <Select
+                                        labelId="category-label"
+                                        name="category"
+                                        value={shop.category}
+                                        onChange={handleChangeShop}
+                                        sx={{ minHeight: 45 }}
+                                    >
+                                        {Object.keys(categories).map((category) => (
+                                            <MenuItem key={category} value={category}>
+                                                {category}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox mb={2}>
                                 <MDInput
                                     fullWidth
                                     label="상점 X(위도, lat)"
@@ -328,25 +346,6 @@ function ModifyShop() {
                                     value={shop.shopLng}
                                     onChange={handleChangeShop}
                                 />
-                            </MDBox>
-                            <MDBox mb={2}>
-                                <FormControl fullWidth>
-                                    <InputLabel
-                                        id="category-label">카테고리</InputLabel>
-                                    <Select
-                                        labelId="category-label"
-                                        name="category"
-                                        value={shop.category}
-                                        onChange={handleChangeShop}
-                                        sx={{ minHeight: 56 }}
-                                    >
-                                        {Object.keys(categories).map((category) => (
-                                            <MenuItem key={category} value={category}>
-                                                {category}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
                             </MDBox>
                             <MDBox mb={2}>
                                 <MDButton onClick={handleOpenMapPopup}>
@@ -386,7 +385,7 @@ function ModifyShop() {
                                     </MDBox>
                                 ))}
                             </MDBox>
-                            <MDBox mb={2} display="flex" flexWrap="wrap">
+                            <MDBox display="flex" flexWrap="wrap">
                                 {filePreviews.map((preview, index) => (
                                     <MDBox key={index} position="relative"
                                            mr={2} mb={2}>
@@ -410,9 +409,16 @@ function ModifyShop() {
                                     </MDBox>
                                 ))}
                             </MDBox>
-                            <MDBox mt={4} mb={1} right>
+                            <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <MDButton onClick={handleModifyShop}
-                                          variant="gradient" color="info">
+                                          variant="gradient"
+                                          color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: '0.8rem',
+                                              padding: '4px 8px',
+                                          }}
+                                >
                                     수정하기
                                 </MDButton>
                             </MDBox>
