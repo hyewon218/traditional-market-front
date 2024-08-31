@@ -155,7 +155,7 @@ function PostItem() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3}>
+            <MDBox pb={3}>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
@@ -200,7 +200,7 @@ function PostItem() {
                                         name="itemCategory"
                                         value={item.itemCategory}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{minHeight: 45}}
                                     >
                                         {Object.keys(itemCategories).map(
                                             (category) => (
@@ -222,7 +222,7 @@ function PostItem() {
                                         name="itemSellStatus"
                                         value={item.itemSellStatus}
                                         onChange={handleChangeItem}
-                                        sx={{minHeight: 56}}
+                                        sx={{minHeight: 45}}
                                     >
                                         {Object.keys(categories).map(
                                             (category) => (
@@ -270,9 +270,16 @@ function PostItem() {
                                     ))}
                                 </MDBox>
                             )}
-                            <MDBox mt={4} mb={1} right>
+                            <MDBox mt={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <MDButton onClick={handleAddItem}
-                                          variant="gradient" color="info">
+                                          variant="gradient"
+                                          color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: '0.8rem',
+                                              padding: '4px 8px'
+                                          }}
+                                >
                                     저장
                                 </MDButton>
                             </MDBox>

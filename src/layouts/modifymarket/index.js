@@ -276,7 +276,7 @@ function ModifyMarket() {
                             <MDInput
                                 fullWidth
                                 multiline
-                                rows={4}
+                                rows={2}
                                 label="상세 정보"
                                 name="marketDetail"
                                 value={market.marketDetail || ''}

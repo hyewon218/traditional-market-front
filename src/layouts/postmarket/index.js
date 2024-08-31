@@ -193,7 +193,7 @@ function PostMarket() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3}>
+            <MDBox pb={3}>
                 <Card>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
@@ -358,8 +358,16 @@ function PostMarket() {
                                     ))}
                                 </MDBox>
                             )}
-                            <MDBox mt={4} mb={1} right>
-                                <MDButton onClick={handleAddMarket} variant="gradient" color="info">
+                            <MDBox mt={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <MDButton onClick={handleAddMarket}
+                                          variant="gradient"
+                                          color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: '0.8rem',
+                                              padding: '4px 8px',
+                                          }}
+                                >
                                     저장
                                 </MDButton>
                             </MDBox>
