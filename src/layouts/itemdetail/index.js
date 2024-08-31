@@ -54,6 +54,7 @@ import {getShopOne} from "../../api/shopApi";
 import IconButton from "@mui/material/IconButton";
 import {formatDistanceToNow} from "date-fns";
 import {ko} from 'date-fns/locale';
+import {useMediaQuery} from "@mui/material";
 
 function ItemDetail() {
     const {isAdmin, isSeller, isAuthorization, userId} = useCustomLogin()
@@ -77,6 +78,8 @@ function ItemDetail() {
     const [showButtons, setShowButtons] = useState(false); // 관리자 또는 상점 소유자일 경우 활성화
 
     const navigate = useNavigate();
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         // 현재 사용자 정보와 상점 정보를 가져오는 함수
@@ -346,9 +349,9 @@ function ItemDetail() {
 
     return (
         <DashboardLayout>
-            <Grid container spacing={2}>
+            <Grid container spacing={isSmallScreen ? 0 : 2}>
                 <Grid item xs={12} md={7}>
-                    <MDBox pt={0} pb={3}>
+                    <MDBox pb={isSmallScreen ? 2 : 3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <div style={{
@@ -394,8 +397,8 @@ function ItemDetail() {
                                         marginLeft: '8px'
                                     }}
                                 >{likes} LIKES</MDTypography>
-                                <Grid container>
-                                    <Grid item xs={1.3}>
+                                <Grid container spacing={isSmallScreen ? 1 : 0.5}>
+                                    <Grid item xs={4} md={1.3}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
@@ -403,7 +406,8 @@ function ItemDetail() {
                                                 fontFamily: 'JalnanGothic',
                                                 fontSize: '0.75rem',
                                                 padding: '4px 8px',
-                                                minWidth: 'auto'
+                                                minWidth: 'auto',
+                                                width: '100%',
                                             }}
                                             color="info"
                                         >
@@ -411,7 +415,7 @@ function ItemDetail() {
                                         </MDButton>
                                     </Grid>
                                     {showButtons ? (
-                                        <Grid item xs={1.3}>
+                                        <Grid item xs={4} md={1.3}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
@@ -419,7 +423,8 @@ function ItemDetail() {
                                                     fontFamily: 'JalnanGothic',
                                                     fontSize: '0.75rem',
                                                     padding: '4px 8px',
-                                                    minWidth: 'auto'
+                                                    minWidth: 'auto',
+                                                    width: '100%',
                                                 }}
                                                 onClick={() => handleModifyItem(
                                                     item)}
@@ -429,7 +434,7 @@ function ItemDetail() {
                                         </Grid>
                                     ) : null}
                                     {isAdmin && (
-                                        <Grid item xs={1.3}>
+                                        <Grid item xs={4} md={1.3}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
@@ -437,7 +442,8 @@ function ItemDetail() {
                                                     fontFamily: 'JalnanGothic',
                                                     fontSize: '0.75rem',
                                                     padding: '4px 8px',
-                                                    minWidth: 'auto'
+                                                    minWidth: 'auto',
+                                                    width: '100%',
                                                 }}
                                                 onClick={() => handleDeleteItem(
                                                     item.itemNo)}
@@ -454,7 +460,7 @@ function ItemDetail() {
 
                 {/*상품 정보*/}
                 <Grid item xs={12} md={5}>
-                    <MDBox pt={0} pb={3}>
+                    <MDBox pb={2}>
                         <Card>
                             <MDBox component="form" role="form">
                                 <MDBox pt={2} pb={2} px={3}>
@@ -497,8 +503,8 @@ function ItemDetail() {
                                       size="small">+</MDButton>
                         </MDBox>
                     </Grid>
-                    <Grid container spacing={2} justifyContent="right">
-                        <Grid item xs={6}>
+                    <Grid container spacing={2} justifyContent="right" sx={{mb: isSmallScreen? '20px':'0'}}>
+                        <Grid item xs={6} md={6}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -511,7 +517,7 @@ function ItemDetail() {
                                 </MDButton>
                             </div>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} md={6}>
                             <MDBox>
                                 <div style={{
                                     display: 'flex',

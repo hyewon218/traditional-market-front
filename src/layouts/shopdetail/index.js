@@ -441,7 +441,7 @@ function ShopDetail() {
                     <Grid item xs={12}>
                         <MDTypography variant="body2" textAlign="center"
                                       sx={{fontSize: '1.28rem', pt: 2}}>
-                            선택한 카테고리 내 상점이 존재하지 않습니다.
+                            선택한 카테고리 내 상품이 존재하지 않습니다.
                         </MDTypography>
                     </Grid>
                 ) : (
