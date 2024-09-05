@@ -49,6 +49,14 @@ export const getListTopFiveItem = async (mno, itemName) => {
     return res.data
 }
 
+export const getItemByShop = async (sno, itemNo) => {
+    const res = await axios.get(`${prefixApi}/${sno}/items/by-shop`, {
+        params:
+            {itemNo: itemNo}
+    })
+    return res.data
+}
+
 export const putItem = async (ino, formData) => {
     const header = {headers: {"Content-Type": "multipart/form-data"}}
     const res = await axios.put(`${prefix}/${ino}`, formData, header)

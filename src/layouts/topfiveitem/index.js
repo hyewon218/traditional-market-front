@@ -29,7 +29,13 @@ import MDTypography from '../../components/MD/MDTypography';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import MDButton from "../../components/MD/MDButton";
 import {useLocation} from "react-router-dom";
-import {getListCategoryByMarket, getListTopFiveItem} from "../../api/itemApi";
+import {
+    getItemByShop,
+    getListCategoryByMarket,
+    getListTopFiveItem
+} from "../../api/itemApi";
+import {useMediaQuery} from "@mui/material";
+import {getShopOne} from "../../api/shopApi";
 
 function TopFiveItem() {
     const {state} = useLocation();
@@ -43,10 +49,7 @@ function TopFiveItem() {
 
     const navigate = useNavigate();
 
-    const handleDetail = (item) => { // 상품 상세 페이지
-        console.log('handleDetail');
-        navigate('/item-detail', {state: item});
-    };
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category);
@@ -63,12 +66,27 @@ function TopFiveItem() {
     };
 
     const handleGetTopFiveItems = (itemName) => {
-        getListTopFiveItem(market.marketNo, itemName).then(
-            data => {
+        getListTopFiveItem(market.marketNo, itemName).then(data => {
                 setItems(data);
                 console.log(data);
             }).catch(error => {
             console.error("TOP 5 상품 조회에 실패했습니다.", error);
+        });
+    };
+
+    const GoShopPage = (shopNo) => {
+        getShopOne(shopNo).then(data => {
+            navigate('/shop-detail', {state: data});
+            }).catch(error => {
+            console.error("상점 조회에 실패했습니다.", error);
+        });
+    };
+
+    const GoItemPage = (shopNo, itemNo) => {
+        getItemByShop(shopNo, itemNo).then(data => {
+            navigate('/item-detail', {state: data});
+        }).catch(error => {
+            console.error("상품 조회에 실패했습니다.", error);
         });
     };
 
@@ -80,14 +98,14 @@ function TopFiveItem() {
 
     return (
         <DashboardLayout>
-            {/* 시장 검색 */}
-            <MDBox pt={5} pb={5}
+            <MDBox pt={3} pb={3}
                    sx={{display: 'flex', justifyContent: 'center'}}>
                 <Card sx={{
-                    width: '50%',
+                    width: isSmallScreen? '75%':'50%',
                     display: 'flex',
                     justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    padding: isSmallScreen? '10px 30px':'10px 20px',
                 }}> <MDTypography fontWeight="bold"
                                   sx={{fontSize: '1.5rem', pb:3, pt:3}}
                                   variant="body2">
@@ -100,7 +118,7 @@ function TopFiveItem() {
             {/* 카테고리 */}
             <Grid container spacing={1} justifyContent="center">
                 {["과일", "채소", "육류", "생선"].map((category) => (
-                    <Grid item xs={1.0} key={category}>
+                    <Grid item xs={3} md={1.0} key={category}>
                         <MDBox>
                             <MDButton
                                 onClick={() => handleCategorySelect(category)}
@@ -109,7 +127,8 @@ function TopFiveItem() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1.0rem',
+                                    fontSize: '1.5rem',
+                                    padding: isSmallScreen? '10px 30px':'10px 20px',
                                     fontFamily: 'JalnanGothic'
                                 }}
                             >
@@ -121,7 +140,7 @@ function TopFiveItem() {
             </Grid>
 
             {/* 카테고리 상품 목록 조회 */}
-            <Grid container pt={3} pb={3}>
+            <Grid container pt={3} pb={2}>
                 {selectedCategory && categoryItems.length === 0 ? (
                     <MDBox pt={3} pb={3} textAlign="center">
                         <MDTypography variant="body2" color="textSecondary">
@@ -129,56 +148,75 @@ function TopFiveItem() {
                         </MDTypography>
                     </MDBox>
                 ) : (
-                    categoryItems.map((item) => (
-                        <MDBox pt={2} pb={2} px={3} key={item.id}>
-                            <Card>
-                                <MDBox pt={2} pb={2} px={3}>
-                                    <Grid container>
-                                        <Grid item xs={6}>
-                                            <MDTypography fontWeight="bold"
-                                                          onClick={() => handleGetTopFiveItems(item.itemName)}
-                                                          sx={{ cursor: 'pointer' }} // Added cursor pointer for better UX
-                                                          variant="body2">
-                                                {item.itemName}
-                                            </MDTypography>
+                    categoryItems.map((item, index) => (
+                        <Grid item xs={3} sm={3} md={2} lg={2} key={index}>
+                            <MDBox pt={1} pb={1} px={1} key={item.id}>
+                                <Card>
+                                    <MDBox pt={2} pb={2} px={3}>
+                                        <Grid container>
+                                            <Grid item xs={12}>
+                                                <MDTypography fontWeight="bold"
+                                                              onClick={() => handleGetTopFiveItems(
+                                                                  item.itemName)}
+                                                              sx={{cursor: 'pointer'}} // Added cursor pointer for better UX
+                                                              variant="body2">
+                                                    {item.itemName}
+                                                </MDTypography>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                </MDBox>
-                            </Card>
-                        </MDBox>
+                                    </MDBox>
+                                </Card>
+                            </MDBox>
+                        </Grid>
                     ))
                 )}
             </Grid>
 
             {/* TOP 5 상품 목록 조회 */}
-            <Grid container pt={3} pb={3}>
+
+            <Grid container pt={1} pb={3} justifyContent="center">
                 {items && items.length > 0 ? (
-                    items.map((item) => (
-                        <MDBox pt={2} pb={2} px={3} key={item.id}>
-                            <Card>
-                                <MDBox pt={2} pb={2} px={3}>
-                                    <Grid container>
-                                        <Grid item xs={6}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
-                                                {item.rank}
-                                            </MDTypography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <MDTypography variant="body2"
-                                                          textAlign="right">
-                                                {item.shopName}
-                                            </MDTypography>
-                                            <MDTypography variant="body2"
-                                                          textAlign="right">
-                                                {item.price}
-                                            </MDTypography>
-                                        </Grid>
-                                    </Grid>
-                                </MDBox>
-                            </Card>
+                    <>
+                        {/* TOP 5 목록 텍스트 */}
+                        <MDBox pt={3} pb={3} sx={{ textAlign: 'center', width: '100%', fontSize: '2.5rem' }}>
+                            <MDTypography fontWeight="bold">
+                                TOP 5 상품 목록
+                            </MDTypography>
                         </MDBox>
-                    ))
+
+                        {/* 상품 목록 */}
+                        {items.map((item, index) => (
+                            <Grid item xs={12} sm={12} md={2.4} lg={2} key={index}>
+                                <MDBox pt={1} pb={1} px={1} key={item.id}>
+                                    <Card>
+                                        <MDBox pt={2} pb={2} px={3}>
+                                            <Grid container>
+                                                <Grid item xs={4.5}>
+                                                    <MDTypography fontWeight="bold" variant="body2">
+                                                        {item.rank}
+                                                    </MDTypography>
+                                                </Grid>
+                                                <Grid item xs={7.5}>
+                                                    <MDTypography variant="body2" textAlign="right"
+                                                                  onClick={() => GoShopPage(item.shopNo)}
+                                                                  sx={{cursor: 'pointer'}}
+                                                    >
+                                                        {item.shopName}
+                                                    </MDTypography>
+                                                    <MDTypography variant="body2" textAlign="right"
+                                                                  onClick={() => GoItemPage(item.shopNo, item.itemNo)}
+                                                                  sx={{cursor: 'pointer'}}
+                                                    >
+                                                        {item.price}원
+                                                    </MDTypography>
+                                                </Grid>
+                                            </Grid>
+                                        </MDBox>
+                                    </Card>
+                                </MDBox>
+                            </Grid>
+                        ))}
+                    </>
                 ) : (
                     <p></p>
                 )}
