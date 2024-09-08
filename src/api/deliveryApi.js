@@ -1,6 +1,5 @@
 import axios from "axios"
-
-export const API_SERVER_HOST = `http://localhost:8080`
+import {API_SERVER_HOST} from "./marketApi"
 const prefix = `${API_SERVER_HOST}/api/deliveries`
 
 export const postDelivery = async (formData) => { // 배송지 추가

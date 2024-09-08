@@ -1,6 +1,5 @@
 import axios from "axios"
-
-export const API_SERVER_HOST = `http://localhost:8080`
+import {API_SERVER_HOST} from "./marketApi"
 const prefix = `${API_SERVER_HOST}/api/orders`
 const prefixApi = `${API_SERVER_HOST}/api`
 const orderItemPrefix = `${API_SERVER_HOST}/api/orderitems`
@@ -112,9 +111,9 @@ export const getOrderListSeller = async (pageParam) => { // CANCEL 제외한 판
 
 export const getOrderStatusListSeller = async (orderstatus, pageParam) => { // 판매자가 자신이 소유한 상점의 상품들에 대한 주문 상태별 조회 (판매자만 가능)
     const {page, size, sort} = pageParam
-    const res = await axios.get(`${prefix}-page-seller/cancel`, {
+    const res = await axios.get(`${prefix}-page-seller/status`, {
         params:
-            {page: page, size: size, orderStatus: orderstatus, sort, sort}
+            {page: page, size: size, orderStatus: orderstatus, sort: sort}
     })
     return res.data
 }

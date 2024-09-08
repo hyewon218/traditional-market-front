@@ -33,7 +33,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { postCheckAdminPw, putMemberRole, deleteMember } from "../../api/adminApi";
+import { postCheckAdminPw } from "../../api/adminApi";
 import { getMember } from "../../api/memberApi";
 
 const initState = {
@@ -106,57 +106,65 @@ function MyInfo() {
   };
 
   return (
-    <DashboardLayout>
-      <Box sx={{ p: 3 }}>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sm={3}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={() => handleViewMyInfo(member)}
-              sx={{ height: '80px', color: '#fff', fontSize: '1.25rem' }} // 글자 크기를 키움
-            >
-              내정보
-            </Button>
+      <DashboardLayout>
+        <Box
+          sx={{
+            p: 3,
+            height: '80vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={6} sm={3}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={() => handleViewMyInfo(member)}
+                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
+              >
+                내정보
+              </Button>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleViewOrderList}
+                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
+              >
+                구매목록
+              </Button>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleViewMyInquiries}
+                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
+              >
+                문의내역
+              </Button>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleViewDeliveryManage}
+                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
+              >
+                배송지 관리
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={3}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleViewOrderList}
-              sx={{ height: '80px', color: '#fff', fontSize: '1.25rem' }} // 글자 크기를 키움
-            >
-              구매목록
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleViewMyInquiries}
-              sx={{ height: '80px', color: '#fff', fontSize: '1.25rem' }} // 글자 크기를 키움
-            >
-              문의내역
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleViewDeliveryManage}
-              sx={{ height: '80px', color: '#fff', fontSize: '1.25rem' }} // 글자 크기를 키움
-            >
-              배송지 관리
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </DashboardLayout>
-  );
+        </Box>
+      </DashboardLayout>
+    );
 }
 
 export default MyInfo;

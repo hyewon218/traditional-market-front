@@ -212,8 +212,7 @@ function MemberDetailAdmin() {
         setErrorMessage("비밀번호가 일치하지 않습니다.");
       }
     } catch (error) {
-      console.error('삭제 실패:', error);
-      setErrorMessage("삭제에 실패했습니다.");
+      setErrorMessage(error.response.data);
     }
   };
 
@@ -224,7 +223,7 @@ function MemberDetailAdmin() {
   };
 
   const handleBack = () => {
-    navigate('/member-manage');
+    navigate('/membermanage');
   };
 
   // 권한 변경
@@ -641,8 +640,6 @@ function MemberDetailAdmin() {
           </div>
         )}
         <div>
-            {renderModalContent()}
-
             {/* 신고한 회원 목록 모달 */}
             {showReportListModal && (
               <div style={styles.modal}>
@@ -656,7 +653,7 @@ function MemberDetailAdmin() {
                 {renderModalContent()}
               </div>
             )}
-          </div>
+        </div>
       </Box>
     </DashboardLayout>
   );

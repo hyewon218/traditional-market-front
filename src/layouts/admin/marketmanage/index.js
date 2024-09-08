@@ -15,6 +15,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 
 import Button from '@mui/material/Button';
 
@@ -115,7 +116,7 @@ function MarketManage() {
       }
 
       params.append("page", page);
-      params.append("size", 3);
+      params.append("size", 10);
       params.append("sort", sortBy);
 
       const response = await axios.get(`${url}?${params.toString()}`);
@@ -279,6 +280,7 @@ function MarketManage() {
   };
 
   return (
+   <DashboardLayout>
     <div style={styles.container}>
       <button style={styles.button} onClick={() => navigate('/post-market')}>시장 추가</button>
       <div>
@@ -364,6 +366,7 @@ function MarketManage() {
         </div>
       )}
     </div>
+    </DashboardLayout>
   );
 }
 

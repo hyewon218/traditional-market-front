@@ -52,7 +52,8 @@ function CheckPw() {
         navigate(`/myinfo-detail`, { state: member });
       }
     } catch (error) {
-      setError('비밀번호가 틀립니다');
+      console.log(error);
+      setError(error.response.data);
     }
   };
 
@@ -87,7 +88,7 @@ function CheckPw() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',
+          height: '80vh',
         }}
       >
         <Box
