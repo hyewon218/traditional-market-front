@@ -14,31 +14,31 @@
  */
 
 import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {useLocation} from 'react-router-dom';
+import {useEffect, useState, useCallback, useRef} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 // @mui material components
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
+import Button from "@mui/material/Button";
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
 import MDButton from '../../components/MD/MDButton';
 import MDPagination from '../../components/MD/MDPagination';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
-import Button from "@mui/material/Button";
-import {useNavigate} from "react-router";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
     cancelMarketLike,
@@ -50,8 +50,8 @@ import {
 import {getListCategory, getShopList} from "../../api/shopApi";
 import MapComponent from "../../components/map/MapComponent";
 import ParkingModal from '../../components/common/ParkingModal'; // 주차장 모달
-import TransportModal from '../../components/common/TransportModal';
-import {useMediaQuery} from "@mui/material"; // 대중교통 모달
+import TransportModal from '../../components/common/TransportModal'; // 대중교통 모달
+import {useMediaQuery} from "@mui/material";
 
 const categoryMapping = {
     "전체": 'ALL',
@@ -92,6 +92,7 @@ function MarketDetail() {
     const [liked, setLiked] = useState(false); // 좋아요 여부 확인
     const [shops, setShops] = useState([]);
     const [shopTotalPage, setShopTotalPage] = useState(0);
+    const [page, setPage] = useState(0);
 
     const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리
     const [filteredShops, setFilteredShops] = useState([]); // 시장 카테고리 조회
@@ -104,22 +105,37 @@ function MarketDetail() {
     const [startLocation, setStartLocation] = useState(''); // 출발지 입력값
     const [directionsType, setDirectionsType] = useState(''); // 도보, 대중교통, 자차 구분
 
+
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
+//    useEffect(() => {
+//        handleCountLikes();
+//        handleGetShops();
+//        handleCheckLike();
+//    }, []);
+
     useEffect(() => {
         handleCountLikes();
-        handleGetShops();
+//        handleGetShops();
         handleCheckLike();
     }, []);
 
+//    useEffect(() => {
+//        if (isCategoryFiltered && selectedCategory) {
+//            handleGetCategoryShops(0);
+//        } else {
+//            handleGetShops(shopPage); // Fetch shops without category filter if not active
+//        }
+//    }, [selectedCategory, isCategoryFiltered]);
+
     useEffect(() => {
         if (isCategoryFiltered && selectedCategory) {
-            handleGetCategoryShops(0);
+            handleGetCategoryShops(shopPage);
         } else {
-            handleGetShops(shopPage); // Fetch shops without category filter if not active
+            handleGetShops(shopPage);
         }
-    }, [selectedCategory, isCategoryFiltered]);
+    }, [shopPage, selectedCategory, isCategoryFiltered]);
 
     const handleModifyMarket = (market) => {
         console.log('handleModify');
@@ -198,47 +214,99 @@ function MarketDetail() {
     };
 
     // 시장 내 상점 목록
-    const handleGetShops = (pageNum) => {
-        console.log('handleGetShops');
-        const pageParam = {page: pageNum, size: 8};
+//    const handleGetShops = (pageNum) => {
+//        console.log('handleGetShops');
+//        const pageParam = {page: pageNum, size: 8};
+//        getShopList(market.marketNo, pageParam).then(data => {
+//            console.log('상점 조회 성공!!!');
+//            console.log(data);
+//            setShops(data.content);
+//            setShopTotalPage(data.totalPages);
+//            setSelectedCategory('');
+//            setIsCategoryFiltered(false); // Reset filter
+//        }).catch(error => {
+//            console.error("상점 조회에 실패했습니다.", error);
+//        });
+//    };
+
+    // 시장 내 상점 목록
+    const handleGetShops = (pageNum = 0) => {
+        const pageParam = { page: pageNum, size: 100 };
         getShopList(market.marketNo, pageParam).then(data => {
-            console.log('상점 조회 성공!!!');
-            console.log(data);
-            setShops(data.content);
+            if (pageNum === 0) {
+                // 페이지 번호가 0일 때만 상점 목록을 초기화합니다.
+                setShops(data.content);
+            } else {
+                // 기존 목록에 새 목록을 추가합니다.
+                setShops(prevShops => [...prevShops, ...data.content]);
+            }
+            // 총 페이지 수를 설정합니다.
             setShopTotalPage(data.totalPages);
-            setSelectedCategory('');
-            setIsCategoryFiltered(false); // Reset filter
         }).catch(error => {
             console.error("상점 조회에 실패했습니다.", error);
         });
     };
 
     /*카테고리 조회*/
+//    const handleCategorySelect = (category) => {
+//        if (category === "전체") {
+//            handleGetShops(0);
+//        } else {
+//            const mappedCategory = categoryMapping[category] || '';
+//            setSelectedCategory(mappedCategory);
+//            console.log("mappedCategory!???!?" + mappedCategory);
+//            setIsCategoryFiltered(true); // Set filter active
+//        }
+//    };
+
+    /*카테고리 조회*/
     const handleCategorySelect = (category) => {
         if (category === "전체") {
+            setIsCategoryFiltered(false); // 필터링 해제
+            setShopPage(0); // 페이지 초기화
             handleGetShops(0);
         } else {
             const mappedCategory = categoryMapping[category] || '';
             setSelectedCategory(mappedCategory);
             console.log("mappedCategory!???!?" + mappedCategory);
-            setIsCategoryFiltered(true); // Set filter active
+            setIsCategoryFiltered(true); // 필터 활성화
+            setShopPage(0); // 페이지 초기화
+            handleGetCategoryShops(0); // 카테고리 필터링된 목록을 0 페이지부터 가져오기
         }
     };
 
-    const handleGetCategoryShops = (pageNum) => { // 시장 내 상점 카테고리 조회
-        console.log('handleGetCategoryShops');
-        //console.log('Selected Category:', selectedCategory); // Debugging line
-        const pageParam = {page: pageNum, size: 8};
-        getListCategory(market.marketNo, pageParam, selectedCategory).then(
-            data => {
+//    const handleGetCategoryShops = (pageNum) => { // 시장 내 상점 카테고리 조회
+//        console.log('handleGetCategoryShops');
+//        //console.log('Selected Category:', selectedCategory); // Debugging line
+//        const pageParam = {page: pageNum, size: 8};
+//        getListCategory(market.marketNo, pageParam, selectedCategory).then(
+//            data => {
+//                setFilteredShops(data.content);
+//                setCategoryTotalPage(data.totalPages);
+//            }).catch(error => {
+//            console.error("시장 카테고리 조회에 실패했습니다.", error);
+//        });
+//    };
+
+    const handleGetCategoryShops = (pageNum = 0) => { // 시장 내 상점 카테고리 조회
+        const pageParam = { page: pageNum, size: 100 };
+        getListCategory(market.marketNo, pageParam, selectedCategory).then(data => {
+            console.log('data : ', data);
+            if (pageNum === 0) {
+                // 페이지 번호가 0일 때만 필터링된 상점 목록을 초기화합니다.
                 setFilteredShops(data.content);
-                setCategoryTotalPage(data.totalPages);
-            }).catch(error => {
-            console.error("시장 카테고리 조회에 실패했습니다.", error);
+            } else {
+                // 기존 목록에 새 목록을 추가합니다.
+                setFilteredShops(prevShops => [...prevShops, ...data.content]);
+            }
+            // 총 페이지 수를 설정합니다.
+            setCategoryTotalPage(data.totalPages);
+        }).catch(error => {
+            console.error("상점 카테고리 조회에 실패했습니다.", error);
         });
     };
 
-    // 시장 내 상점 목록
+    // 가격 랭킹
     const handleGetTopFiveItemPage = () => {
         navigate('/top-five-item', {state: market});
     };
@@ -343,8 +411,8 @@ function MarketDetail() {
                     break;
                 default:
                     // 교통수단이 유효하지 않은 경우 처리
-                    console.error('Invalid transportation type:', type);
-                    throw new Error('Invalid transportation type');
+                    console.error('유효하지않은 교통수단입니다 :', type);
+                    throw new Error('유효하지않은 교통수단입니다');
             }
 
             // URL 로그 찍기
@@ -357,10 +425,30 @@ function MarketDetail() {
         }
     };
 
+    // 출발지 입력 모달에서 확인 버튼
+    const handleConfirm = () => {
+        setShowStartLocationModal(false);
+        setShowDirectionsModal(true);
+        setDirectionsType('walk');
+    };
+
+    // 출발지 입력 모달에서 취소 버튼
+    const handleCancel = () => {
+        setShowStartLocationModal(false);
+        setDirectionsType('');
+    };
+
+    // 엔터키
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default action for Enter key
+            handleConfirm(); // Trigger the confirm action
+        }
+    };
+
     // 길찾기 모달
     const openDirectionsModal = () => {
         setShowStartLocationModal(true);
-//        setShowDirectionsModal(true);
     };
 
     const closeDirectionsModal = () => {
@@ -384,8 +472,29 @@ function MarketDetail() {
     };
 
     // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
-    const shouldShowPagination = !isCategoryFiltered || filteredShops.length
-        > 0;
+//    const shouldShowPagination = !isCategoryFiltered || filteredShops.length
+//        > 0;
+
+    // 가장 위로 스크롤
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // 무한 스크롤 로직
+    const observer = useRef();
+    const lastShopElementRef = useCallback(node => {
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                console.log('IntersectionObserver triggered'); // Log trigger
+                // 현재 페이지가 마지막 페이지보다 작은지 확인하여 페이지 증가
+                if (shopPage < (isCategoryFiltered ? categoryTotalPage : shopTotalPage) - 1) {
+                    setShopPage(prevPage => prevPage + 1);
+                }
+            }
+        }, { threshold: 1.0 });
+        if (node) observer.current.observe(node);
+    }, [shopPage, shopTotalPage, categoryTotalPage, isCategoryFiltered]);
 
     return (
         <DashboardLayout>
@@ -395,6 +504,41 @@ function MarketDetail() {
             {showTransportModal && <TransportModal open={showTransportModal}
                                                    onClose={closeTransportModal}
                                                    marketNo={market.marketNo}/>}
+
+            {/* 광고 구역 */}
+            <MDBox
+                sx={{
+                    width: '70%',
+                    height: { xs: '2rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
+                    margin: '0 auto',
+                    backgroundColor: '#f5f5f5', // 배경색 예시
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    boxShadow: 1,
+                    position: 'relative', // 상대 위치로 설정
+                    zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
+                    marginTop: '1rem',
+                }}
+            >
+                <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
+                    <img
+                        src="https://via.placeholder.com/728x90.png?text=Ad+Banner" // 광고 배너 이미지 URL
+                        alt="Advertisement"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover', // 이미지가 광고 영역에 맞게 조절되도록 설정
+                            borderRadius: '8px',
+                        }}
+                    />
+                </a>
+            </MDBox>
 
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
@@ -452,7 +596,7 @@ function MarketDetail() {
                                                         padding: '4px 8px',   // Adjust padding (top-bottom left-right)
                                                         width: '100%'
                                                     }}
-                                                    color="info">좋아요👍🏻
+                                                    color="info">좋아요 👍🏻
                                                 </MDButton>
                                             </Grid>
                                             <Grid item xs={isSmallScreen ? 3 : 1.5}>
@@ -480,8 +624,8 @@ function MarketDetail() {
                                                     onClick={() => handleDeleteMarket(
                                                         market.marketNo)}>시장삭제
                                                 </MDButton>
-                                            </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 1.5}>
+                                             </Grid>
+                                             <Grid item xs={isSmallScreen ? 3 : 1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="success"
@@ -495,61 +639,69 @@ function MarketDetail() {
                                                 </MDButton>
                                             </Grid>
                                             <Grid item xs={isSmallScreen ? 3 : 1.4}>
-                                                <MDButton
-                                                    variant="gradient"
-                                                    color="primary"
-                                                    sx={{
-                                                        fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
-                                                    }}
-                                                    onClick={openParkingModal}
-                                                >
-                                                    주차장
-                                                </MDButton>
-                                            </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 1.5}>
-                                                <MDButton
-                                                    variant="gradient"
-                                                    color="primary"
-                                                    sx={{
-                                                        fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
-                                                    }}
-                                                    onClick={openTransportModal}
-                                                >
-                                                    대중교통
-                                                </MDButton>
-                                            </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 1.4}>
-                                                <MDButton
-                                                    variant="gradient"
-                                                    color="secondary"
-                                                    sx={{
-                                                        fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
-                                                    }}
-                                                    onClick={openDirectionsModal}>
-                                                    길찾기
-                                                </MDButton>
-                                            </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 1.7}>
-                                                <MDButton
-                                                    onClick={handleGetTopFiveItemPage}
-                                                    variant="gradient"
-                                                    sx={{
-                                                        backgroundColor: '#50bcdf',
-                                                        color: '#ffffff',
-                                                        fontSize: '0.75rem',
-                                                        fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
-                                                    }}
-                                                    color="warning"
-                                                >상품별순위
-                                                </MDButton>
+                                                <MDBox>
+                                                    <Grid container
+                                                          justifyContent="flex-end"
+                                                          spacing={0.5}>
+                                                        <Grid item>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="primary"
+                                                                sx={{
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                    width: '100%'
+                                                                }}
+                                                                onClick={openParkingModal}
+                                                            >
+                                                                주차장
+                                                            </MDButton>
+                                                        </Grid>
+                                                        <Grid item xs={isSmallScreen ? 3 : 1.5}>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="primary"
+                                                                sx={{
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                    width: '100%'
+                                                                }}
+                                                                onClick={openTransportModal}
+                                                            >
+                                                                대중교통
+                                                            </MDButton>
+                                                        </Grid>
+                                                        <Grid item xs={isSmallScreen ? 3 : 1.4}>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="secondary"
+                                                                sx={{
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                    width: '100%'
+                                                                }}
+                                                                onClick={openDirectionsModal}>
+                                                                길찾기
+                                                            </MDButton>
+                                                        </Grid>
+                                                        <Grid item xs={isSmallScreen ? 3 : 1.7}>
+                                                            <MDButton
+                                                                onClick={handleGetTopFiveItemPage}
+                                                                variant="gradient"
+                                                                sx={{
+                                                                    backgroundColor: '#50bcdf',
+                                                                    color: '#ffffff',
+                                                                    fontSize: '0.75rem',
+                                                                    fontFamily: 'JalnanGothic',
+                                                                    padding: '4px 8px',
+                                                                    width: '100%'
+                                                                }}
+                                                                color="warning"
+                                                            >상품별순위
+                                                            </MDButton>
+                                                        </Grid>
+                                                    </Grid>
+                                                </MDBox>
                                             </Grid>
                                         </Grid>
                                     </>
@@ -761,7 +913,9 @@ function MarketDetail() {
                                                         <img alt="product"
                                                              key={i}
                                                              width={250}
-                                                             src={`${imgUrl.imageUrl}`}/>
+                                                             src={`${imgUrl.imageUrl}`}
+                                                             onClick={() => handleDetail(shop)}
+                                                             style={{cursor: 'pointer' }}/>
                                                     ))}
                                             </div>
                                         </MDBox>
@@ -772,28 +926,8 @@ function MarketDetail() {
                 )}
             </Grid>
 
-            {shouldShowPagination && (
-                <MDPagination size={"small"}>
-                    <MDPagination item>
-                        <KeyboardArrowLeftIcon/>
-                    </MDPagination>
-                    {[...Array(isCategoryFiltered ? categoryTotalPage
-                        : shopTotalPage).keys()].map((i) => (
-                        <MDPagination item key={i}
-                                      onClick={() => isCategoryFiltered
-                                          ? handleGetCategoryShops(i)
-                                          : changeShopPage(i)}>
-                            {i + 1}
-                        </MDPagination>
-                    ))}
-                    <MDPagination item>
-                        <KeyboardArrowRightIcon/>
-                    </MDPagination>
-                </MDPagination>
-            )}
-
             {showStartLocationModal && (
-                <Dialog open={showStartLocationModal} onClose={() => setShowStartLocationModal(false)}>
+                <Dialog open={showStartLocationModal} onClose={() => setShowStartLocationModal(false)} onKeyDown={handleKeyDown}>
                     <DialogTitle>출발지 입력</DialogTitle>
                     <DialogContent>
                         <MDBox component="form" role="form">
@@ -808,15 +942,8 @@ function MarketDetail() {
                         </MDBox>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => {
-                            setShowStartLocationModal(false);
-                            setShowDirectionsModal(true);
-                            setDirectionsType('walk');
-                        }}>확인</Button>
-                        <Button onClick={() => {
-                            setShowStartLocationModal(false);
-                            setDirectionsType('');
-                        }}>취소</Button>
+                        <Button onClick={handleConfirm}>확인</Button>
+                        <Button onClick={handleCancel}>취소</Button>
                     </DialogActions>
                 </Dialog>
             )}
@@ -841,6 +968,46 @@ function MarketDetail() {
                 </Dialog>
             )}
 
+            {/* 위쪽 화살표 아이콘 */}
+            <IconButton
+                onClick={scrollToTop}
+                sx={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    backgroundColor: '#50bcdf',
+                    color: '#ffffff',
+                    zIndex: 2000, // 다른 요소들보다 위에 위치
+                    '&:hover': {
+                        backgroundColor: '#33a3d0',
+                    },
+                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                        bottom: '70px',  // 모바일에서의 위치 조정
+                        right: '15px',   // 모바일에서의 위치 조정
+                    }
+                }}
+            >
+                <KeyboardArrowUpIcon />
+            </IconButton>
+            {/* {shouldShowPagination && (
+                <MDPagination size={"small"}>
+                    <MDPagination item>
+                        <KeyboardArrowLeftIcon/>
+                    </MDPagination>
+                    {[...Array(isCategoryFiltered ? categoryTotalPage
+                        : shopTotalPage).keys()].map((i) => (
+                        <MDPagination item key={i}
+                                      onClick={() => isCategoryFiltered
+                                          ? handleGetCategoryShops(i)
+                                          : changeShopPage(i)}>
+                            {i + 1}
+                        </MDPagination>
+                    ))}
+                    <MDPagination item>
+                        <KeyboardArrowRightIcon/>
+                    </MDPagination>
+                </MDPagination>
+            )} */}
         </DashboardLayout>
     );
 }

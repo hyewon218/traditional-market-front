@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {useNavigate} from 'react-router';
 
 // @mui material components
@@ -11,6 +11,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from "@mui/material/Badge";
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
@@ -30,8 +31,8 @@ import {getNotificationCount} from "../../api/notificationApi";
 import {useMediaQuery, useTheme} from "@mui/material";
 
 function Market() {
-    const {isAuthorization, isAdmin} = useCustomLogin()
-    const {cartItems, refreshCart} = useCustomCart(); // Use the custom cart hook
+    const {isAuthorization, isAdmin} = useCustomLogin();
+    const {cartItems, refreshCart} = useCustomCart();
 
     const [page, setPage] = useState(0);
     const [markets, setMarkets] = useState([]);
@@ -62,42 +63,92 @@ function Market() {
         }
     }, []);
 
+//    useEffect(() => {
+//        if (isSearchActive) {
+//            return;
+//        }
+//        if (selectedCategory) {
+//            fetchCategoryMarkets(page);
+//        } else {
+//            fetchMarkets(page);
+//        }
+//    }, [selectedCategory, isSearchActive, page]);
+
     useEffect(() => {
         if (isSearchActive) {
-            return;
+            fetchSearchMarkets(page);
         }
-
-        if (selectedCategory) {
-            fetchCategoryMarkets(0);
+        else if (selectedCategory) {
+            fetchCategoryMarkets(page);
         } else {
-            fetchMarkets();
+            fetchMarkets(page);
         }
-    }, [selectedCategory, isSearchActive]);
+    }, [selectedCategory, isSearchActive, page]);
+
+//    const fetchMarkets = (pageNum = 0) => {
+//        const pageParam = {page: pageNum, size: 8};
+//        getList(pageParam).then(data => {
+//            setMarkets(data.content);
+//            setTotalPage(data.totalPages);
+//            resetFilters();
+//        }).catch(error => console.error("시장 목록 조회에 실패했습니다.", error));
+//    };
 
     const fetchMarkets = (pageNum = 0) => {
-        const pageParam = {page: pageNum, size: 8};
+        const pageParam = { page: pageNum, size: 100 };
         getList(pageParam).then(data => {
-            setMarkets(data.content);
+            if (pageNum === 0) {
+                setMarkets(data.content); // 페이지 번호가 0일 때만 초기화
+            } else {
+                setMarkets(prevMarkets => [...prevMarkets, ...data.content]); // 기존 목록에 새 목록 추가
+            }
             setTotalPage(data.totalPages);
-            resetFilters();
         }).catch(error => console.error("시장 목록 조회에 실패했습니다.", error));
     };
 
-    const fetchSearchMarkets = (pageNum) => {
-        const pageParam = {page: pageNum, size: 8};
+//    const fetchSearchMarkets = (pageNum) => {
+//        const pageParam = {page: pageNum, size: 8};
+//        getListSearch(pageParam, search).then(data => {
+//            setFilteredMarkets(data.content);
+//            setSearchTotalPage(data.totalPages);
+//            setIsSearchActive(true);
+//        }).catch(error => console.error("시장 검색 조회에 실패했습니다.", error));
+//    };
+
+    const fetchSearchMarkets = (pageNum = 0) => {
+        const pageParam = { page: pageNum, size: 100 };
         getListSearch(pageParam, search).then(data => {
-            setFilteredMarkets(data.content);
+            console.log('API Response:', data);
+            if (pageNum === 0) {
+                setFilteredMarkets(data.content); // 페이지 번호가 0일 때만 초기화
+            } else {
+                setFilteredMarkets(prevFilteredMarkets => [...prevFilteredMarkets, ...data.content]); // 기존 목록에 새 목록 추가
+            }
             setSearchTotalPage(data.totalPages);
             setIsSearchActive(true);
         }).catch(error => console.error("시장 검색 조회에 실패했습니다.", error));
     };
 
+//    const fetchCategoryMarkets = (pageNum = 0) => {
+//        const pageParam = {page: pageNum, size: 8};
+//        getListCategory(pageParam, selectedCategory).then(data => {
+//            setCategoryMarkets(data.content);
+//            setCategoryTotalPage(data.totalPages);
+//        }).catch(error => console.error("시장 카테고리 조회에 실패했습니다.", error));
+//    };
+
     const fetchCategoryMarkets = (pageNum = 0) => {
-        const pageParam = {page: pageNum, size: 8};
+        const pageParam = { page: pageNum, size: 100 };
         getListCategory(pageParam, selectedCategory).then(data => {
-            setCategoryMarkets(data.content);
+            if (pageNum === 0) {
+                setCategoryMarkets(data.content); // 페이지 번호가 0일 때만 초기화
+            } else {
+                setCategoryMarkets(prevCategoryMarkets => [...prevCategoryMarkets, ...data.content]); // 기존 목록에 새 목록 추가
+            }
             setCategoryTotalPage(data.totalPages);
-        }).catch(error => console.error("시장 카테고리 조회에 실패했습니다.", error));
+        }).catch(error => {
+        console.error("시장 카테고리 조회에 실패했습니다.", error);
+        });
     };
 
     const fetchNotifications = () => {
@@ -117,8 +168,14 @@ function Market() {
         setSearch(event.target.value);
     };
 
+//    const handleSearchSubmit = () => {
+//        setPage(0);
+//        fetchSearchMarkets(0);
+//    };
+
     const handleSearchSubmit = () => {
         setPage(0);
+        setFilteredMarkets([]); // Reset filtered markets
         fetchSearchMarkets(0);
     };
 
@@ -127,12 +184,25 @@ function Market() {
         navigate('/market-detail', {state: market});
     };
 
+//    const handleCategorySelect = (category) => {
+//        if (category === "전체") {
+//            fetchMarkets(0);
+//        } else {
+//            setSelectedCategory(category);
+//            setIsSearchActive(false);
+//            setPage(0);
+//        }
+//    };
+
     const handleCategorySelect = (category) => {
+        setPage(0); // 페이지 번호 초기화
         if (category === "전체") {
-            fetchMarkets(0);
+            setSelectedCategory('');
+            fetchMarkets(); // 전체 목록 로드
         } else {
             setSelectedCategory(category);
-            setIsSearchActive(false);
+            setIsSearchActive(false); // 검색 비활성화
+//            fetchCategoryMarkets(); // 선택한 카테고리의 시장 로드
             setPage(0);
         }
     };
@@ -160,13 +230,71 @@ function Market() {
         }
     };
 
-    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory
-        ? categoryMarkets : markets);
-    const currentTotalPage = isSearchActive ? searchTotalPage
-        : (selectedCategory ? categoryTotalPage : totalPage);
+//    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory
+//        ? categoryMarkets : markets);
+//    const currentTotalPage = isSearchActive ? searchTotalPage
+//        : (selectedCategory ? categoryTotalPage : totalPage);
+
+    // 가장 위로 스크롤
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory ? categoryMarkets : markets);
+    const currentTotalPage = isSearchActive ? searchTotalPage : (selectedCategory ? categoryTotalPage : totalPage);
+
+    // 스크롤 로직 초기화
+    const observer = React.useRef();
+    const lastMarketElementRef = useCallback(node => {
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                console.log('IntersectionObserver triggered'); // Log trigger
+                if (page < currentTotalPage - 1) {
+                    setPage(prevPage => prevPage + 1);
+                }
+            }
+        }, { threshold: 1.0 });
+        if (node) observer.current.observe(node);
+    }, [page, currentTotalPage]);
 
     return (
         <DashboardLayout>
+            {/* 광고 구역 */}
+            <MDBox
+                sx={{
+                    width: '70%',
+                    height: { xs: '2rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
+                    margin: '0 auto',
+                    backgroundColor: '#f5f5f5', // 배경색 예시
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    boxShadow: 1,
+                    position: 'relative', // 상대 위치로 설정
+                    zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
+                    marginTop: '1rem',
+                }}
+            >
+                <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
+                    <img
+                        src="https://via.placeholder.com/728x90.png?text=Ad+Banner" // 광고 배너 이미지 URL
+                        alt="Advertisement"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover', // 이미지가 광고 영역에 맞게 조절되도록 설정
+                            borderRadius: '8px',
+                        }}
+                    />
+                </a>
+            </MDBox>
+
             {/* 시장 검색 */}
             <MDBox pt={2} pb={5}
                    sx={{ display: 'flex', justifyContent: 'center', flexDirection: isSmallScreen ? 'column' : 'row' }}>
@@ -201,6 +329,15 @@ function Market() {
                         <SearchIcon />
                     </IconButton>
                 </Card>
+
+                {/* 알람 아이콘 */}
+                <IconButton onClick={handleNotificationIcon}
+                            sx={{ position: 'absolute', right: isSmallScreen ? '80px' : '160px', marginTop: '0' }}>
+                    <Badge badgeContent={notificationCount} color="primary">
+                        <NotificationImportant />
+                    </Badge>
+                </IconButton>
+
                 {/* 알람 아이콘 */}
                 <IconButton onClick={handleNotificationIcon}
                             sx={{ position: 'absolute', right: isSmallScreen ? '80px' : '160px', marginTop: '0' }}>
@@ -212,14 +349,14 @@ function Market() {
                 <IconButton onClick={handleCartIcon}
                             sx={{ position: 'absolute', right: isSmallScreen ? '30px' : '100px', marginTop: '0' }}>
                     <Badge badgeContent={cartItems.length} color="primary">
-                        <ShoppingCartIcon />
+                        <ShoppingCartIcon/>
                     </Badge>
                 </IconButton>
             </MDBox>
 
             {/* 카테고리 */}
             <Grid container spacing={1} justifyContent="center">
-                {["전체", "서울", "인천", "경기도", "강원도", "충청도", "경상도", "전라도",
+                {["전체", "서울", "인천", "경기도", "강원", "충청도", "경상도", "전라도",
                     "제주도"].map(
                     (category, index) => (
                         <Grid item xs={3} md={index < 3 ? 1.0 : 1.15} key={category}>
@@ -291,14 +428,17 @@ function Market() {
                                                 >상세보기</Button>
                                             </Grid>
                                         </Grid>
-                                        <div
-                                            className="w-full justify-center flex flex-col m-auto items-center">
-                                            {market.imageList.map(
-                                                (imgUrl, i) => (
-                                                    <img alt="product" key={i}
-                                                         width={270}
-                                                         src={imgUrl.imageUrl}/>
-                                                ))}
+                                        <div className="w-full justify-center flex flex-col m-auto items-center">
+                                            {market.imageList.map((imgUrl, i) => (
+                                                <img
+                                                    alt="product"
+                                                    key={i}
+                                                    width={270}
+                                                    src={imgUrl.imageUrl}
+                                                    onClick={() => handleDetail(market)}
+                                                    style={{ cursor: 'pointer' }}
+                                                />
+                                            ))}
                                         </div>
                                     </MDBox>
                                 </Card>
@@ -329,9 +469,31 @@ function Market() {
                 )}
             </Grid>
 
+            {/* 위쪽 화살표 아이콘 */}
+            <IconButton
+                onClick={scrollToTop}
+                sx={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    backgroundColor: '#50bcdf',
+                    color: '#ffffff',
+                    zIndex: 2000, // 다른 요소들보다 위에 위치
+                    '&:hover': {
+                        backgroundColor: '#33a3d0',
+                    },
+                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                        bottom: '70px',  // 모바일에서의 위치 조정
+                        right: '15px',   // 모바일에서의 위치 조정
+                    }
+                }}
+            >
+                <KeyboardArrowUpIcon />
+            </IconButton>
 
             {/* Pagination */}
-            {currentTotalPage > 0 && (
+            {/* 무한스크롤 사용으로 페이징 버튼 제거 */}
+            {/*{currentTotalPage > 0 && (
                 <MDPagination size={"small"}>
                     <MDPagination item onClick={() => changePage(page - 1)}
                                   disabled={page === 0}>
@@ -354,7 +516,7 @@ function Market() {
                         <KeyboardArrowRightIcon/>
                     </MDPagination>
                 </MDPagination>
-            )}
+            )}*/}
         </DashboardLayout>
     );
 }

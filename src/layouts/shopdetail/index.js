@@ -14,14 +14,16 @@
  */
 
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback, useRef} from 'react';
 import {useLocation} from 'react-router-dom';
 
 // @mui material components
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
@@ -68,6 +70,7 @@ function ShopDetail() {
 
     const [items, setItems] = useState([]);
     const [itemTotalPage, setItemTotalPage] = useState(0);
+    const [page, setPage] = useState(0);
 
     const [currentItemImageIndices, setCurrentItemImageIndices] = useState([]);
 
@@ -109,13 +112,21 @@ function ShopDetail() {
         handleCheckLike();
     }, []);
 
+//    useEffect(() => {
+//        if (isCategoryFiltered && selectedCategory) {
+//            handleGetCategoryItems(0);
+//        } else {
+//            handleGetItems(itemPage);
+//        }
+//    }, [selectedCategory, isCategoryFiltered]);
+
     useEffect(() => {
         if (isCategoryFiltered && selectedCategory) {
-            handleGetCategoryItems(0);
+            handleGetCategoryItems(itemPage);
         } else {
             handleGetItems(itemPage);
         }
-    }, [selectedCategory, isCategoryFiltered]);
+    }, [itemPage, selectedCategory, isCategoryFiltered]);
 
     const handleModifyShop = (shop) => {
         console.log('handleModify');
@@ -126,12 +137,29 @@ function ShopDetail() {
         }
     };
 
+//    const handleDeleteShop = (sno) => {
+//        console.log('handleDelete');
+//        deleteShop(sno).then(data => {
+//        }).catch(error => {
+//            console.error("상점 삭제에 실패했습니다.", error);
+//        });
+//    };
+
     const handleDeleteShop = (sno) => {
-        console.log('handleDelete');
-        deleteShop(sno).then(data => {
-        }).catch(error => {
-            console.error("상점 삭제에 실패했습니다.", error);
-        });
+        const isConfirmed = window.confirm('상점을 삭제하시겠습니까?');
+        if (isConfirmed) {
+            console.log('handleDelete');
+            deleteShop(sno)
+                .then(data => {
+                    alert('삭제 성공:', data);
+                    navigate('/market');
+                })
+                .catch(error => {
+                    alert(error.response.data);
+                });
+        } else {
+            console.log('삭제 취소');
+        }
     };
 
     const handleAddItem = (shop) => {
@@ -201,45 +229,104 @@ function ShopDetail() {
     };
 
     // 상점 내 상품 목록
-    const handleGetItems = (pageNum) => {
-        console.log('handleGetItems');
-        const pageParam = {page: pageNum, size: 8};
+//    const handleGetItems = (pageNum) => {
+//        console.log('handleGetItems');
+//        const pageParam = {page: pageNum, size: 8};
+//        getItemList(shop.shopNo, pageParam).then(data => {
+//            console.log('상품 조회 성공!!!');
+//            console.log(data);
+//            setItems(data.content);
+//            setItemTotalPage(data.totalPages);
+//            setSelectedCategory('');
+//            setIsCategoryFiltered(false); // Reset filter
+//            setCurrentItemImageIndices(Array(data.content.length).fill(0)); // 상품 이미지 인덱스 초기화
+//        }).catch(error => {
+//            console.error("상품 조회에 실패했습니다.", error);
+//        });
+//    };
+
+    // 상점 내 상품 목록
+    const handleGetItems = (pageNum = 0) => {
+        const pageParam = { page: pageNum, size: 8 };
         getItemList(shop.shopNo, pageParam).then(data => {
-            console.log('상품 조회 성공!!!');
-            console.log(data);
-            setItems(data.content);
+            if (pageNum === 0) {
+                // 페이지 번호가 0일 때만 상품 목록을 초기화합니다.
+                setItems(data.content);
+                setCurrentItemImageIndices(Array(data.content.length).fill(0)); // 상품 이미지 인덱스 초기화
+            } else {
+                // 기존 목록에 새 목록을 추가합니다.
+                setItems(prevItems => [...prevItems, ...data.content]);
+                setCurrentItemImageIndices(prevIndices => [
+                    ...prevIndices,
+                    ...Array(data.content.length).fill(0)
+                ]); // 새로 추가된 상품의 이미지 인덱스 초기화
+            }
+            // 총 페이지 수를 설정합니다.
             setItemTotalPage(data.totalPages);
-            setSelectedCategory('');
-            setIsCategoryFiltered(false); // Reset filter
-            setCurrentItemImageIndices(Array(data.content.length).fill(0)); // 상품 이미지 인덱스 초기화
         }).catch(error => {
             console.error("상품 조회에 실패했습니다.", error);
         });
     };
 
     /*카테고리 선택*/
+//    const handleCategorySelect = (category) => {
+//        if (category === "전체") {
+//            handleGetItems(0);
+//        } else {
+//            const mappedCategory = categoryMapping[category] || '';
+//            setSelectedCategory(mappedCategory);
+//            console.log("mappedCategory!???!?" + mappedCategory);
+//            setIsCategoryFiltered(true); // Set filter active
+//        }
+//    };
+
+    /*카테고리 선택*/
     const handleCategorySelect = (category) => {
         if (category === "전체") {
+            setIsCategoryFiltered(false); // 필터링 해제
+            setItemPage(0); // 페이지 초기화
             handleGetItems(0);
         } else {
             const mappedCategory = categoryMapping[category] || '';
             setSelectedCategory(mappedCategory);
             console.log("mappedCategory!???!?" + mappedCategory);
-            setIsCategoryFiltered(true); // Set filter active
+            setIsCategoryFiltered(true); // 필터 활성화
+            setItemPage(0); // 페이지 초기화
+            handleGetCategoryItems(0); // 카테고리 필터링된 목록을 0 페이지부터 가져오기
         }
     };
 
     /*상점 내 상품 카테고리 조회*/
-    const handleGetCategoryItems = (pageNum) => {
-        console.log('handleGetCategoryShops');
-        //console.log('Selected Category:', selectedCategory); // Debugging line
-        const pageParam = {page: pageNum, size: 8};
-        getListCategoryByShop(shop.shopNo, pageParam, selectedCategory).then(
-            data => {
+//    const handleGetCategoryItems = (pageNum) => {
+//        console.log('handleGetCategoryShops');
+//        //console.log('Selected Category:', selectedCategory); // Debugging line
+//        const pageParam = {page: pageNum, size: 8};
+//        getListCategoryByShop(shop.shopNo, pageParam, selectedCategory).then(
+//            data => {
+//                setFilteredItems(data.content);
+//                setCategoryTotalPage(data.totalPages);
+//            }).catch(error => {
+//            console.error("시장 카테고리 조회에 실패했습니다.", error);
+//        });
+//    };
+
+    /*상점 내 상품 카테고리 조회*/
+    const handleGetCategoryItems = (pageNum = 0) => { // 시장 내 상점 카테고리 조회
+        console.log('handleGetCategoryItems');
+        const pageParam = { page: pageNum, size: 8 };
+        getListCategoryByShop(shop.shopNo, pageParam, selectedCategory).then(data => {
+            console.log('data : ', data);
+            if (pageNum === 0) {
+                // 페이지 번호가 0일 때만 필터링된 상품 목록을 초기화합니다.
                 setFilteredItems(data.content);
-                setCategoryTotalPage(data.totalPages);
-            }).catch(error => {
-            console.error("시장 카테고리 조회에 실패했습니다.", error);
+            } else {
+                // 기존 목록에 새 목록을 추가합니다.
+                setFilteredItems(prevItems => [...prevItems, ...data.content]);
+            }
+            // 총 페이지 수를 설정합니다.
+            setCategoryTotalPage(data.totalPages);
+        }).catch(error => {
+            console.error("상품 카테고리 조회에 실패했습니다.", error);
         });
     };
 
@@ -263,8 +350,8 @@ function ShopDetail() {
     };
 
     // 카테고리 내 상점이 없으면 페이지네이션 안 보이도록
-    const shouldShowPagination = !isCategoryFiltered || filteredItems.length
-        > 0;
+//    const shouldShowPagination = !isCategoryFiltered || filteredItems.length
+//        > 0;
 
     // 상점 위치 정보 (위도, 경도) 배열
     const locations = [
@@ -276,8 +363,63 @@ function ShopDetail() {
         }
     ];
 
+    // 가장 위로 스크롤
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // 무한 스크롤 로직
+    const observer = useRef();
+    const lastItemElementRef = useCallback(node => {
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                console.log('IntersectionObserver triggered'); // Log trigger
+                // 현재 페이지가 마지막 페이지보다 작은지 확인하여 페이지 증가
+                if (itemPage < (isCategoryFiltered ? categoryTotalPage : itemTotalPage) - 1) {
+                    setItemPage(prevPage => prevPage + 1);
+                }
+            }
+        }, { threshold: 1.0 });
+        if (node) observer.current.observe(node);
+    }, [itemPage, itemTotalPage, categoryTotalPage, isCategoryFiltered]);
+
     return (
         <DashboardLayout>
+            {/* 광고 구역 */}
+            <MDBox
+                sx={{
+                    width: '70%',
+                    height: { xs: '2rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
+                    margin: '0 auto',
+                    backgroundColor: '#f5f5f5', // 배경색 예시
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    boxShadow: 1,
+                    position: 'relative', // 상대 위치로 설정
+                    zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
+                    marginTop: '1rem',
+                }}
+            >
+                <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
+                    <img
+                        src="https://via.placeholder.com/728x90.png?text=Ad+Banner" // 광고 배너 이미지 URL
+                        alt="Advertisement"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover', // 이미지가 광고 영역에 맞게 조절되도록 설정
+                            borderRadius: '8px',
+                        }}
+                    />
+                </a>
+            </MDBox>
             <Grid container spacing={isSmallScreen ? 0 : 2}>
                 <Grid item xs={12} md={6}>
                     <MDBox pt={0} pb={3}>
@@ -448,7 +590,7 @@ function ShopDetail() {
                     (isCategoryFiltered ? filteredItems : items)
                     .filter(item => item.itemSellStatus !== 'SOLD_OUT')
                     .map((item, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={index} ref={index === (isCategoryFiltered ? filteredItems : items).length - 1 ? lastItemElementRef : null}>
                             <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
                                 <Card>
                                     <MDBox pt={2} pb={2} px={3}>
@@ -490,56 +632,81 @@ function ShopDetail() {
                                             <Grid container
                                                   alignItems="center"
                                                   justifyContent="center">
-                                                {item.imageList.length > 1
-                                                    && (
-                                                        <Grid item xs={2}
+                                                {/* 이미지가 있는 경우 */}
+                                                {item.imageList.length > 0 && (
+                                                    <>
+                                                        {item.imageList.length > 1 && (
+                                                                <Grid item xs={2}
+                                                                      display="flex"
+                                                                      alignItems="center"
+                                                                      justifyContent="center">
+                                                                    <MDButton
+                                                                        onClick={() => handlePreviousItemImage(index)}
+                                                                        sx={{
+                                                                            padding: '4px',
+                                                                            minWidth: '32px',
+                                                                            minHeight: '32px',
+                                                                            fontSize: '16px',
+                                                                        }}>
+                                                                        <KeyboardArrowLeftIcon/>
+                                                                    </MDButton>
+                                                                </Grid>
+                                                        )}
+                                                        <Grid item xs={8}
                                                               display="flex"
                                                               alignItems="center"
                                                               justifyContent="center">
-                                                            <MDButton
-                                                                onClick={() => handlePreviousItemImage(index)}
-                                                                sx={{
-                                                                    padding: '4px',
-                                                                    minWidth: '32px',
-                                                                    minHeight: '32px',
-                                                                    fontSize: '16px',
-                                                                }}>
-                                                                <KeyboardArrowLeftIcon/>
-                                                            </MDButton>
+                                                            {currentItemImageIndices[index] !== undefined && item.imageList[currentItemImageIndices[index]] ? (
+                                                                <img
+                                                                    alt="product"
+                                                                    width={300}
+                                                                    src={`${item.imageList[currentItemImageIndices[index]].imageUrl}`}
+                                                                    onClick={() => handleDetail(item)}
+                                                                    style={{
+                                                                        maxWidth: '100%',
+                                                                        height: 'auto',
+                                                                        cursor: 'pointer'
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <MDTypography variant="body2" color="textSecondary">
+                                                                    이미지 없음
+                                                                </MDTypography>
+                                                            )}
                                                         </Grid>
-                                                    )}
-                                                <Grid item xs={8}
-                                                      display="flex"
-                                                      alignItems="center"
-                                                      justifyContent="center">
-                                                    <img
-                                                        alt="product"
-                                                        width={300}
-                                                        src={`${item.imageList[currentItemImageIndices[index]].imageUrl}`}
-                                                        style={{
-                                                            maxWidth: '100%',
-                                                            height: 'auto'
-                                                        }}
-                                                    />
-                                                </Grid>
-                                                {item.imageList.length > 1
-                                                    && (
-                                                        <Grid item xs={2}
-                                                              display="flex"
-                                                              alignItems="center"
-                                                              justifyContent="center">
-                                                            <MDButton
-                                                                onClick={() => handleNextItemImage(index)}
-                                                                sx={{
-                                                                    padding: '4px', // Reduce padding
-                                                                    minWidth: '32px', // Set minimum width to make it smaller
-                                                                    minHeight: '32px', // Set minimum height to make it smaller
-                                                                    fontSize: '16px', // Adjust font size for smaller text
-                                                                }}>
-                                                                <KeyboardArrowRightIcon/>
-                                                            </MDButton>
-                                                        </Grid>
-                                                    )}
+                                                        {item.imageList.length > 1 && (
+                                                            <Grid item xs={2}
+                                                                  display="flex"
+                                                                  alignItems="center"
+                                                                  justifyContent="center">
+                                                                <MDButton
+                                                                    onClick={() => handleNextItemImage(index)}
+                                                                    sx={{
+                                                                        padding: '4px', // Reduce padding
+                                                                        minWidth: '32px', // Set minimum width to make it smaller
+                                                                        minHeight: '32px', // Set minimum height to make it smaller
+                                                                        fontSize: '16px', // Adjust font size for smaller text
+                                                                    }}>
+                                                                    <KeyboardArrowRightIcon/>
+                                                                </MDButton>
+                                                            </Grid>
+                                                        )}
+                                                    </>
+                                                 )}
+
+                                                 {/* 이미지가 없는 경우 */}
+                                                 {item.imageList.length === 0 && (
+                                                     <Grid item xs={12}
+                                                           display="flex"
+                                                           alignItems="center"
+                                                           justifyContent="center">
+                                                         <MDTypography
+                                                             variant="body2"
+                                                             color="textSecondary">
+                                                             이미지 없음
+                                                         </MDTypography>
+                                                     </Grid>
+                                                 )}
                                             </Grid>
                                         </div>
                                     </MDBox>
@@ -550,7 +717,29 @@ function ShopDetail() {
                 )}
             </Grid>
 
-            {shouldShowPagination && (
+            {/* 위쪽 화살표 아이콘 */}
+            <IconButton
+                onClick={scrollToTop}
+                sx={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    backgroundColor: '#50bcdf',
+                    color: '#ffffff',
+                    zIndex: 2000, // 다른 요소들보다 위에 위치
+                    '&:hover': {
+                        backgroundColor: '#33a3d0',
+                    },
+                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                        bottom: '70px',  // 모바일에서의 위치 조정
+                        right: '15px',   // 모바일에서의 위치 조정
+                    }
+                }}
+            >
+                <KeyboardArrowUpIcon />
+            </IconButton>
+
+            {/* {shouldShowPagination && (
                 <MDPagination size={"small"}>
                     <MDPagination item>
                         <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
@@ -565,7 +754,7 @@ function ShopDetail() {
                         <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
                     </MDPagination>
                 </MDPagination>
-            )}
+            )} */}
         </DashboardLayout>
     );
 }
