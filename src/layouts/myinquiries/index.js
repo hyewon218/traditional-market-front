@@ -29,7 +29,7 @@ function MyInquiries() {
     const navigate = useNavigate();
 
     const handleGetInquiries = (page) => {
-        const params = {page, size: 3, sort: 'createTime,desc'};
+        const params = {page, size: 10, sort: 'createTime,desc'};
         getAllMyInquiries(params)
         .then(data => {
             setInquiries(data.content);
@@ -87,7 +87,7 @@ function MyInquiries() {
     // Inline styles
     const styles = {
         table: {
-            width: '1200px',
+            width: '100%',
             borderCollapse: 'collapse',
         },
         th: {
@@ -99,6 +99,7 @@ function MyInquiries() {
             fontWeight: 'bold',
             fontSize: '1.2rem',
             paddingBottom: '7px',
+            marginTop: 3,
         },
         clickable: {
             cursor: 'pointer',

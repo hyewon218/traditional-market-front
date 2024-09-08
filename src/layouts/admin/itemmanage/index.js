@@ -16,7 +16,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 import Button from '@mui/material/Button';
 
 // Data
@@ -89,13 +89,10 @@ function ItemManage () {
 
   // 상품 목록 조회
   const loadItems = async () => {
-      console.log("Loading items with marketNo:", selectedMarketNo,
-                  "and Loading items with shopNo:", selectedShopNo,
-                  "and sort:", sort);
       try {
           const pageParam = {
               page: currentPage,
-              size: 3
+              size: 10
           };
 
           let data;
@@ -383,6 +380,7 @@ function ItemManage () {
 };
 
   return (
+  <DashboardLayout>
     <div style={styles.container}>
       <button style={styles.button} onClick={() => navigate('/post-item-admin')}>상품 추가</button>
       <form onSubmit={handleSearchSubmit}>
@@ -524,6 +522,7 @@ function ItemManage () {
           </div>
         )}
     </div>
+    </DashboardLayout>
   );
 };
 

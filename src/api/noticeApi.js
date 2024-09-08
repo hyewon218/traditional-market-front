@@ -21,7 +21,7 @@ export const getNoticeListSearch = async (pageParam, searchQuery) => { // 공지
     const {page, size} = pageParam
     const res = await axios.get(`${prefixApi}/search`, {
         params:
-            {page: page, size: size, keyword: searchQuery} // Include the search query parameter
+            {page: page, size: size, keyword: searchQuery}
     })
     return res.data
 }

@@ -1,6 +1,5 @@
 import axios from "axios"
-
-export const API_SERVER_HOST = `http://localhost:8080`
+import {API_SERVER_HOST} from "./marketApi"
 const prefix = `${API_SERVER_HOST}/api/payment`
 
 export const postPay = async () => { // 결제 요청

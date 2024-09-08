@@ -45,7 +45,7 @@ function TempPwModal({ open, handleClose, children }) {
             setVerificationError('');
 
         } catch (error) {
-            setVerificationError('임시비밀번호 발급에 실패했습니다.');
+            setVerificationError(error.response.data);
             setVerificationSuccess('');
 
         } finally {

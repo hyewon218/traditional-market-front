@@ -8,9 +8,6 @@ import Card from "@mui/material/Card";
 import MDBox from "../MD/MDBox";
 import MDTypography from "../MD/MDTypography";
 import MDButton from "../MD/MDButton";
-import {getPrimaryDelivery} from "../../api/deliveryApi";
-import {getOrderItemList, putSelectedDelivery} from "../../api/orderApi";
-import {postPay} from "../../api/payApi";
 import DeliveryListModal from "../delivery/DeliveryListModal";
 import {
     FormControl,
@@ -25,6 +22,11 @@ import IconButton from "@mui/material/IconButton";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import DeliveryMessageModal from '../../components/deliverymessage/DeliveryMessageModal';
 import {is} from "date-fns/locale"; // 배송메시지 모달
+
+// Data
+import {getPrimaryDelivery} from "../../api/deliveryApi";
+import {getOrderItemList, putSelectedDelivery} from "../../api/orderApi";
+import {postPay} from "../../api/payApi";
 
 const OrderComponent = () => {
 

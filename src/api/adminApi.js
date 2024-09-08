@@ -321,12 +321,6 @@ export const deleteAllInquiry = async () => {
     return res.data
 }
 
-// 권한 admin인지 확인
-export const getIsAdmin = async () => {
-    const res = await axios.get(`${prefixApi}/members/check-admin`)
-    return res.data
-}
-
 // 가입경로별 회원 수 집계
 export const getCountMembersByProviderType = async () => { // providerType별 회원 수
     const res = await axios.get(`${prefixApi}/members/count-providertype`)

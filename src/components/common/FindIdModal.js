@@ -57,9 +57,8 @@ function FindIdModal({ open, handleClose, children }) {
                 }
 
             } catch (error) {
-                console.log('error : ', error.response.data);
                 setIsVerified(false);
-                setVerificationError('인증번호 확인에 실패했습니다.');
+                setVerificationError(error.response.data);
                 setVerificationSuccess('');
             }
         };
@@ -83,7 +82,7 @@ function FindIdModal({ open, handleClose, children }) {
             setVerificationError('');
 
         } catch (error) {
-            setVerificationError('인증번호 전송에 실패했습니다.');
+            setVerificationError(error.response.data);
             setVerificationSuccess('');
         } finally {
             setIsSending(false);

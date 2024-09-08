@@ -16,7 +16,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 import Button from '@mui/material/Button';
 
 // Data
@@ -81,7 +81,7 @@ function ShopManage () {
       try {
           const pageParam = {
               page: currentPage,
-              size: 3
+              size: 10
           };
 
           let data;
@@ -312,6 +312,7 @@ function ShopManage () {
 };
 
   return (
+  <DashboardLayout>
     <div style={styles.container}>
       <button style={styles.button} onClick={() => navigate('/post-shop-admin')}>상점 추가</button>
       <form onSubmit={handleSearchSubmit}>
@@ -426,6 +427,7 @@ function ShopManage () {
         </div>
       )}
     </div>
+    </DashboardLayout>
   );
 };
 
