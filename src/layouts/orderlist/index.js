@@ -28,7 +28,7 @@ import MDTypography from '../../components/MD/MDTypography';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { getCompleteOrderList, getCancelOrderList, deleteOrder, cancelOrder, cancelOrderKakao } from "../../api/orderApi";
+import { getCompleteOrderList, getCancelOrderList, deleteOrder, cancelOrderKakao } from "../../api/orderApi";
 import { putOrderStatus } from "../../api/adminApi";
 import { getItemOne } from "../../api/itemApi";
 
@@ -49,7 +49,7 @@ function OrderList() {
     const navigate = useNavigate();
 
     const handleGetOrders = (page, orderstatus) => {
-        const params = { page, size: 3, sort: 'createTime,desc' };
+        const params = { page, size: 5, sort: 'createTime,desc' };
         console.log('params : ', params);
 
         let apiCall;
@@ -421,173 +421,191 @@ function OrderList() {
         }
     };
 
-    return (
-        <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                {/* 제목과 상태 필터 버튼들을 같은 라인에 배치 */}
-                <MDBox display="flex" justifyContent="space-between" alignItems="center">
-                    <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
-                        주문 내역
-                    </MDTypography>
-                    {/* 상태 필터 버튼들 추가 */}
-                    <div style={styles.statusButtonsContainer}>
-                        <button style={{ ...styles.statusButton, ...styles.blueButton }} onClick={() => handleStatusFilter(null)}>
-                            전체 보기<br />(취소 제외)
-                        </button>
-                        <button style={{ ...styles.statusButton, ...styles.redButton }} onClick={() => handleStatusFilter('CANCEL')}>
-                            취소 목록
-                        </button>
-                    </div>
-                </MDBox>
-                <MDTypography fontWeight="bold" sx={{ fontSize: '1.5rem', color: 'red' }} variant="body2">
-                    ※ 구매 확정 시 반품 신청 불가합니다.
-                </MDTypography>
-                <MDBox pt={3} pb={3}>
-                    <div style={styles.cardContainer}>
-                        {orders.length > 0 ? (
-                            orders.map((order) => {
-                                // 상품 항목 집계
-                                const { names, totalPrice } = aggregateOrderItems(order.orderItemList);
+   return (
+       <DashboardLayout>
+           <MDBox pt={3} pb={3}>
+               {/* 미디어 쿼리를 이용해 600px 이하에서는 제목과 버튼들이 세로로 배치되도록 함 */}
+               <MDBox
+                   display="flex"
+                   justifyContent="space-between"
+                   alignItems="center"
+                   sx={{
+                       flexDirection: {
+                           xs: 'column', // 600px 이하일 때 세로 배치
+                           sm: 'row', // 600px 이상일 때 가로 배치
+                       },
+                       alignItems: {
+                           xs: 'flex-start', // 600px 이하일 때 왼쪽 정렬
+                           sm: 'center', // 600px 이상일 때 가운데 정렬
+                       },
+                   }}
+               >
+                   <MDTypography
+                       fontWeight="bold"
+                       sx={{ fontSize: '2.5rem', mb: { xs: 2, sm: 0 } }} // 600px 이하일 때 아래 여백 추가
+                       variant="body2"
+                   >
+                       주문 내역
+                   </MDTypography>
+                   {/* 상태 필터 버튼들 추가 */}
+                   <div style={styles.statusButtonsContainer}>
+                       <button style={{ ...styles.statusButton, ...styles.blueButton }} onClick={() => handleStatusFilter(null)}>
+                           전체 보기<br />(취소 제외)
+                       </button>
+                       <button style={{ ...styles.statusButton, ...styles.redButton }} onClick={() => handleStatusFilter('CANCEL')}>
+                           취소 목록
+                       </button>
+                   </div>
+               </MDBox>
+               <MDTypography fontWeight="bold" sx={{ fontSize: '1.5rem', color: 'red' }} variant="body2">
+                   ※ 구매 확정 시 반품 신청 불가합니다.
+               </MDTypography>
+               <MDBox pt={3} pb={3}>
+                   <div style={styles.cardContainer}>
+                       {orders.length > 0 ? (
+                           orders.map((order) => {
+                               // 상품 항목 집계
+                               const { names, totalPrice } = aggregateOrderItems(order.orderItemList);
 
-                                // 첫번째 상품의 이미지 사용
-                                const imageUrl = order.orderItemList[0]?.imageList[0].imageUrl || "/path/to/default-image.jpg";
-                                console.log('imageUrl : ', imageUrl);
-                                console.log('itemNo : ', order.orderItemList[0].itemNo);
+                               // 첫번째 상품의 이미지 사용
+                               const imageUrl = order.orderItemList[0]?.imageList[0].imageUrl || "/path/to/default-image.jpg";
+                               console.log('imageUrl : ', imageUrl);
+                               console.log('itemNo : ', order.orderItemList[0].itemNo);
 
-                                return (
-                                    <Card key={order.orderNo} style={styles.card}>
-                                        <div
-                                            style={styles.cardMediaContainer}
-                                            onClick={() => handleItemDetail(order.orderItemList[0].itemNo)}
-                                        >
-                                            <CardMedia
-                                                component="img"
-                                                image={imageUrl}
-                                                alt="Order Item"
-                                                style={styles.cardMedia}
-                                            />
-                                        </div>
-                                        <CardContent style={styles.cardContent}>
-                                            <MDTypography variant="body2">
-                                                주문 상태: {getOrderStatusText(order.orderStatus)}
-                                            </MDTypography>
-                                            <MDTypography variant="body2">
-                                                주문 날짜: {order.orderDate}
-                                            </MDTypography>
-                                            <MDTypography variant="body2">
-                                                주문 번호: {order.randomOrderNo}
-                                            </MDTypography>
-                                            <MDTypography variant="body2">
-                                                상품명: {names}
-                                            </MDTypography>
-                                            <MDTypography variant="body2">
-                                                가격: {totalPrice.toLocaleString()} 원
-                                            </MDTypography>
-                                            <MDBox mt={2}>
-                                                <button style={styles.button} onClick={() => handleDetail(order)}>
-                                                    상세보기
-                                                </button>
-                                                {order.orderStatus === 'FINISH' && (
-                                                    <>
-                                                        <button style={styles.confirmButton} onClick={() => handleOpenReturnModal(order)}>
-                                                            반품 신청
-                                                        </button>
-                                                        <button style={styles.confirmButton} onClick={() => handlePurchaseConfirm(order.orderNo)}>
-                                                            구매 확정
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {order.orderStatus === 'COMPLETE' && (
-                                                    <button style={styles.cancelButton} onClick={() => handleOpenCancelModal(order.orderNo)}>
-                                                        주문 취소
-                                                    </button>
-                                                )}
-                                            </MDBox>
-                                        </CardContent>
-                                        {order.orderStatus === 'PURCHASECONFIRM' && (
-                                            <IconButton
-                                                style={styles.deleteButton}
-                                                onClick={() => handleDeleteOrder(order.orderNo)}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        )}
-                                    </Card>
-                                );
-                            })
-                        ) : (
-                            <MDTypography variant="body1">주문내역이 없습니다.</MDTypography>
-                        )}
-                        {orders.length > 0 && (
-                            <MDBox sx={styles.pagination}>
-                                {renderPagination()}
-                            </MDBox>
-                        )}
-                    </div>
-                </MDBox>
-            </MDBox>
-            {/* 반품 신청 모달 */}
-            {openReturnModal && (
-                <div style={styles.modal}>
-                    <div style={styles.modalContent}>
-                        <h2>반품 신청</h2>
-                        <div>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="반품 사유"
-                                type="text"
-                                fullWidth
-                                variant="outlined"
-                                value={returnReason}
-                                onChange={handleReturnReasonChange}
-                                error={!!errorMessage}
-                                helperText={errorMessage}
-                            />
-                        </div>
-                        <div style={styles.modalActions}>
-                            <button style={styles.confirmButton} onClick={handleSubmitReturnRequest}>
-                                반품 진행
-                            </button>
-                            <button style={styles.cancelButton} onClick={handleCloseReturnModal}>
-                                취소
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* 주문 취소 모달 */}
-            {openCancelModal && (
-                <div style={styles.modal}>
-                    <div style={styles.modalContent}>
-                        <h2>주문 취소</h2>
-                        <div>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="취소 사유"
-                                type="text"
-                                fullWidth
-                                variant="outlined"
-                                value={cancelReason}
-                                onChange={handleCancelReasonChange}
-                                error={!!cancelErrorMessage}
-                                helperText={cancelErrorMessage}
-                            />
-                        </div>
-                        <div style={styles.modalActions}>
-                            <button style={styles.confirmButton} onClick={handleSubmitCancelRequest}>
-                                취소 진행
-                            </button>
-                            <button style={styles.cancelButton} onClick={handleCloseCancelModal}>
-                                취소
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </DashboardLayout>
-    );
+                               return (
+                                   <Card key={order.orderNo} style={styles.card}>
+                                       <div
+                                           style={styles.cardMediaContainer}
+                                           onClick={() => handleItemDetail(order.orderItemList[0].itemNo)}
+                                       >
+                                           <CardMedia
+                                               component="img"
+                                               image={imageUrl}
+                                               alt="Order Item"
+                                               style={styles.cardMedia}
+                                           />
+                                       </div>
+                                       <CardContent style={styles.cardContent}>
+                                           <MDTypography variant="body2">
+                                               주문 상태: {getOrderStatusText(order.orderStatus)}
+                                           </MDTypography>
+                                           <MDTypography variant="body2">
+                                               주문 날짜: {order.orderDate}
+                                           </MDTypography>
+                                           <MDTypography variant="body2">
+                                               주문 번호: {order.randomOrderNo}
+                                           </MDTypography>
+                                           <MDTypography variant="body2">
+                                               상품명: {names}
+                                           </MDTypography>
+                                           <MDTypography variant="body2">
+                                               가격: {totalPrice.toLocaleString()} 원
+                                           </MDTypography>
+                                           <MDBox mt={2}>
+                                               <button style={styles.button} onClick={() => handleDetail(order)}>
+                                                   상세보기
+                                               </button>
+                                               {order.orderStatus === 'FINISH' && (
+                                                   <>
+                                                       <button style={styles.confirmButton} onClick={() => handleOpenReturnModal(order)}>
+                                                           반품 신청
+                                                       </button>
+                                                       <button style={styles.confirmButton} onClick={() => handlePurchaseConfirm(order.orderNo)}>
+                                                           구매 확정
+                                                       </button>
+                                                   </>
+                                               )}
+                                               {order.orderStatus === 'COMPLETE' && (
+                                                   <button style={styles.cancelButton} onClick={() => handleOpenCancelModal(order.orderNo)}>
+                                                       주문 취소
+                                                   </button>
+                                               )}
+                                           </MDBox>
+                                       </CardContent>
+                                       {order.orderStatus === 'PURCHASECONFIRM' && (
+                                           <IconButton
+                                               style={styles.deleteButton}
+                                               onClick={() => handleDeleteOrder(order.orderNo)}
+                                           >
+                                               <CloseIcon />
+                                           </IconButton>
+                                       )}
+                                   </Card>
+                               );
+                           })
+                       ) : (
+                           <MDTypography variant="body1">주문내역이 없습니다.</MDTypography>
+                       )}
+                       {orders.length > 0 && (
+                           <MDBox sx={styles.pagination}>
+                               {renderPagination()}
+                           </MDBox>
+                       )}
+                   </div>
+               </MDBox>
+           </MDBox>
+           {/* 반품 신청 모달 */}
+           {openReturnModal && (
+               <div style={styles.modal}>
+                   <div style={styles.modalContent}>
+                       <h2>반품 신청</h2>
+                       <div>
+                           <TextField
+                               autoFocus
+                               margin="dense"
+                               label="반품 사유"
+                               type="text"
+                               fullWidth
+                               variant="outlined"
+                               value={returnReason}
+                               onChange={handleReturnReasonChange}
+                               error={!!errorMessage}
+                               helperText={errorMessage}
+                           />
+                       </div>
+                       <div style={styles.modalActions}>
+                           <button style={styles.confirmButton} onClick={handleSubmitReturnRequest}>
+                               반품 진행
+                           </button>
+                           <button style={styles.cancelButton} onClick={handleCloseReturnModal}>
+                               취소
+                           </button>
+                       </div>
+                   </div>
+               </div>
+           )}
+           {/* 주문 취소 모달 */}
+           {openCancelModal && (
+               <div style={styles.modal}>
+                   <div style={styles.modalContent}>
+                       <h2>주문 취소</h2>
+                       <div>
+                           <TextField
+                               autoFocus
+                               margin="dense"
+                               label="취소 사유"
+                               type="text"
+                               fullWidth
+                               variant="outlined"
+                               value={cancelReason}
+                               onChange={handleCancelReasonChange}
+                               error={!!cancelErrorMessage}
+                               helperText={cancelErrorMessage}
+                           />
+                       </div>
+                       <div style={styles.modalActions}>
+                           <button style={styles.confirmButton} onClick={handleSubmitCancelRequest}>
+                               취소 진행
+                           </button>
+                           <button style={styles.cancelButton} onClick={handleCloseCancelModal}>
+                               취소
+                           </button>
+                       </div>
+                   </div>
+               </div>
+           )}
+       </DashboardLayout>
+   );
 }
 
 export default OrderList;

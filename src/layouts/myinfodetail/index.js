@@ -142,7 +142,7 @@ function MyInfoDetail() {
                 setErrorMessage('현재 비밀번호가 일치하지 않습니다.');
             }
         } catch (error) {
-            setErrorMessage('비밀번호 확인에 실패했습니다.');
+            setErrorMessage(error.response.data);
         }
     };
 
@@ -167,6 +167,7 @@ function MyInfoDetail() {
             alert('비밀번호가 성공적으로 변경되었습니다.');
             setShowChangePwdModal(false);
         } catch (error) {
+            console.log(error.response.data);
             alert('비밀번호 변경에 실패했습니다.');
         }
     };
@@ -202,7 +203,7 @@ function MyInfoDetail() {
         if (window.confirm('탈퇴 후 복구는 불가능합니다. 정말 탈퇴하시겠습니까?')) {
             try {
                 await deleteMember();
-                alert('회원 탈퇴가 성공적으로 완료되었습니다.');
+                alert('회원 탈퇴가 성공적으로 완료되었습니다. 탈퇴 후 회원 정보는 30일간 보관되며 이후 자동 폐기됩니다.');
                 setShowDeleteModal(false);
                 navigate('/market');
             } catch (error) {
@@ -247,10 +248,23 @@ function MyInfoDetail() {
     return (
         <DashboardLayout>
             <Box sx={{ p: 3 }}>
-                <Typography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
+                <Typography
+                    fontWeight="bold"
+                    sx={{ fontSize: '2.5rem' }}
+                    variant="body2"
+                >
                     내 정보
                 </Typography>
-                <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                <Box
+                    sx={{
+                        mt: 2,
+                        display: 'flex',
+                        gap: 1,
+                        '@media (max-width: 600px)': {
+                            gap: '1.5cm',
+                        },
+                    }}
+                >
                     <Button
                         variant="contained"
                         color="error"
@@ -260,9 +274,26 @@ function MyInfoDetail() {
                         돌아가기
                     </Button>
                 </Box>
-                <Card sx={{ p: 3, mb: 2 }}>
+                <Card
+                    sx={{
+                        p: 3,
+                        mb: 2,
+                        '@media (max-width: 600px)': {
+                            p: '1.5cm',
+                        },
+                    }}
+                >
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
+                        <Grid
+                            item
+                            xs={12}
+                            md={8}
+                            sx={{
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
                             <Typography variant="body1" paragraph>
                                 <strong>회원 ID</strong> : {member.memberId}
                             </Typography>
@@ -270,40 +301,84 @@ function MyInfoDetail() {
                                 <strong>이메일</strong> : {member.memberEmail}
                             </Typography>
                             <Typography variant="body1" paragraph>
-                                <strong>닉네임</strong> : {member.memberNickname ? member.nicknameWithRandomTag : "설정된 닉네임이 없습니다"}
+                                <strong>닉네임</strong> :{' '}
+                                {member.memberNickname
+                                    ? member.nicknameWithRandomTag
+                                    : '설정된 닉네임이 없습니다'}
                                 <Button
-                                  variant="contained"
-                                  color="error"
-                                  onClick={() => handleGetRemainingTime(member.memberNo)}
-                                  sx={{ ml: 2 }}
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => handleGetRemainingTime(member.memberNo)}
+                                    sx={{ ml: 2 }}
                                 >
-                                  닉네임 변경까지 남은 시간
+                                    닉네임 변경까지 남은 시간
                                 </Button>
-                                <span style={{ color: 'red', fontWeight: 'bold', marginLeft: '10px' }}>
+                                <span
+                                    style={{
+                                        color: 'red',
+                                        fontWeight: 'bold',
+                                        marginLeft: '10px',
+                                    }}
+                                >
                                     *닉네임은 한달에 한번 변경 가능합니다.
                                 </span>
                             </Typography>
                             {member.warningStartDate && (
                                 <Typography variant="body1" paragraph>
-                                    <strong>제재일</strong> : {formatCreateTime(member.warningStartDate) + " (제재 해제일 : " + calculateExpirationDate(member.warningStartDate) + ")"}
-                                    <span style={{ display: 'block', color: 'red', fontWeight: 'bold', marginTop: '10px' }}>
-                                        *운영정책 위반으로 댓글 및 일대일 채팅상담이 제한됩니다.
+                                    <strong>제재일</strong> :{' '}
+                                    {formatCreateTime(member.warningStartDate) +
+                                        ' (제재 해제일 : ' +
+                                        calculateExpirationDate(
+                                            member.warningStartDate
+                                        ) +
+                                        ')'}
+                                    <span
+                                        style={{
+                                            display: 'block',
+                                            color: 'red',
+                                            fontWeight: 'bold',
+                                            marginTop: '10px',
+                                        }}
+                                    >
+                                        *운영정책 위반으로 댓글 및 일대일 채팅상담이
+                                        제한됩니다.
                                     </span>
                                 </Typography>
                             )}
                             <Typography variant="body1" paragraph>
                                 <strong>가입일</strong> : {formatCreateTime(member.createTime)}
                             </Typography>
-                            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                                <Button variant="contained" color="error" onClick={handleOpenNicknameModal}>
+                            <Box
+                                sx={{
+                                    mt: 2,
+                                    display: 'flex',
+                                    gap: 1,
+                                    '@media (max-width: 600px)': {
+                                        gap: '1.5cm',
+                                    },
+                                }}
+                            >
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={handleOpenNicknameModal}
+                                >
                                     닉네임 변경
                                 </Button>
                                 {member.providerType === 'LOCAL' && (
-                                    <Button variant="contained" color="error" onClick={handleOpenPasswordModal}>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={handleOpenPasswordModal}
+                                    >
                                         비밀번호 변경
                                     </Button>
                                 )}
-                                <Button variant="contained" color="error" onClick={handleOpenDeleteModal}>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={handleOpenDeleteModal}
+                                >
                                     회원 탈퇴
                                 </Button>
                             </Box>
@@ -312,7 +387,10 @@ function MyInfoDetail() {
                 </Card>
 
                 {/* 닉네임 변경 모달 */}
-                <Modal open={showNicknameModal} onClose={() => setShowNicknameModal(false)}>
+                <Modal
+                    open={showNicknameModal}
+                    onClose={() => setShowNicknameModal(false)}
+                >
                     <Box
                         sx={{
                             position: 'absolute',
@@ -324,6 +402,9 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
+                            '@media (max-width: 600px)': {
+                                p: '1.5cm',
+                            },
                         }}
                     >
                         <Typography variant="h6" component="h2">
@@ -337,11 +418,29 @@ function MyInfoDetail() {
                             onChange={(e) => setNickname(e.target.value)}
                             required
                         />
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                            <Button variant="contained" color="error" onClick={handleNicknameChange}>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                gap: 1,
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleNicknameChange}
+                            >
                                 변경
                             </Button>
-                            <Button variant="contained" color="error" onClick={() => setShowNicknameModal(false)}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => setShowNicknameModal(false)}
+                            >
                                 취소
                             </Button>
                         </Box>
@@ -349,7 +448,10 @@ function MyInfoDetail() {
                 </Modal>
 
                 {/* 비밀번호 확인 모달 */}
-                <Modal open={showPasswordModal} onClose={() => setShowPasswordModal(false)}>
+                <Modal
+                    open={showPasswordModal}
+                    onClose={() => setShowPasswordModal(false)}
+                >
                     <Box
                         sx={{
                             position: 'absolute',
@@ -361,6 +463,9 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
+                            '@media (max-width: 600px)': {
+                                p: '1.5cm',
+                            },
                         }}
                     >
                         <Typography variant="h6" component="h2">
@@ -380,11 +485,29 @@ function MyInfoDetail() {
                                 {errorMessage}
                             </Typography>
                         )}
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                            <Button variant="contained" color="error" onClick={handleCheckPassword}>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                gap: 1,
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleCheckPassword}
+                            >
                                 확인
                             </Button>
-                            <Button variant="contained" color="error" onClick={() => setShowPasswordModal(false)}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => setShowPasswordModal(false)}
+                            >
                                 취소
                             </Button>
                         </Box>
@@ -392,7 +515,10 @@ function MyInfoDetail() {
                 </Modal>
 
                 {/* 비밀번호 변경 모달 */}
-                <Modal open={showChangePwdModal} onClose={() => setShowChangePwdModal(false)}>
+                <Modal
+                    open={showChangePwdModal}
+                    onClose={() => setShowChangePwdModal(false)}
+                >
                     <Box
                         sx={{
                             position: 'absolute',
@@ -404,6 +530,9 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
+                            '@media (max-width: 600px)': {
+                                p: '1.5cm',
+                            },
                         }}
                     >
                         <Typography variant="h6" component="h2">
@@ -427,11 +556,29 @@ function MyInfoDetail() {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                            <Button variant="contained" color="error" onClick={handleChangePassword}>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                gap: 1,
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleChangePassword}
+                            >
                                 변경
                             </Button>
-                            <Button variant="contained" color="error" onClick={() => setShowChangePwdModal(false)}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => setShowChangePwdModal(false)}
+                            >
                                 취소
                             </Button>
                         </Box>
@@ -439,7 +586,10 @@ function MyInfoDetail() {
                 </Modal>
 
                 {/* 회원 탈퇴 모달 */}
-                <Modal open={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+                <Modal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                >
                     <Box
                         sx={{
                             position: 'absolute',
@@ -451,6 +601,9 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
+                            '@media (max-width: 600px)': {
+                                p: '1.5cm',
+                            },
                         }}
                     >
                         <Typography variant="h6" component="h2">
@@ -459,7 +612,14 @@ function MyInfoDetail() {
                         <Typography variant="body1">
                             탈퇴를 위해 인증번호를 입력하세요.
                         </Typography>
-                        <Box sx={{ mt: 2 }}>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
                             <TextField
                                 fullWidth
                                 margin="normal"
@@ -469,11 +629,25 @@ function MyInfoDetail() {
                                 error={!!verificationError}
                                 helperText={verificationError}
                             />
-                            <Button variant="contained" color="error" onClick={handleSendEmailCode}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleSendEmailCode}
+                            >
                                 인증번호 전송
                             </Button>
                         </Box>
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                gap: 1,
+                                '@media (max-width: 600px)': {
+                                    gap: '1.5cm',
+                                },
+                            }}
+                        >
                             <Button
                                 variant="contained"
                                 color="error"
@@ -482,7 +656,11 @@ function MyInfoDetail() {
                             >
                                 탈퇴
                             </Button>
-                            <Button variant="contained" color="error" onClick={() => setShowDeleteModal(false)}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => setShowDeleteModal(false)}
+                            >
                                 취소
                             </Button>
                         </Box>

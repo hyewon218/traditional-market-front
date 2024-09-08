@@ -42,7 +42,8 @@ function SignIn() {
     const handleClickLogout = () => {
         logoutPost().then(() => {
             alert("로그아웃 되었습니다.");
-            moveToPath("/");
+//            moveToPath("/");
+            window.location.href = "/";
         });
     }
 
@@ -86,9 +87,11 @@ function SignIn() {
     if (!isAuthorization) {
         return (
             <DashboardLayout>
-                <MDBox mt={20} mb={3}>
+                <MDBox
+                    style={{ height: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
                     <Grid container spacing={3} justifyContent="center">
-                        <Grid item xs={12} lg={8}>
+                        <Grid item xs={8} lg={4}>
                             <Card>
                                 <MDBox
                                     variant="gradient"
@@ -175,7 +178,7 @@ function SignIn() {
                                                 계정이 없으신가요?{' '}
                                                 <MDTypography
                                                     component={Link}
-                                                    to="/authentication/sign-up"
+                                                    to="/authentication/signup"
                                                     variant="button"
                                                     color="info"
                                                     fontWeight="medium"
@@ -213,9 +216,11 @@ function SignIn() {
     } else {
         return (
             <DashboardLayout>
-                <MDBox mt={30} mb={3}>
+                <MDBox
+                    style={{ height: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
                     <Grid container spacing={3} justifyContent="center">
-                        <Grid item xs={12} lg={8}>
+                        <Grid item xs={8} lg={4}>
                             <Card>
                                 <MDBox
                                     variant="gradient"

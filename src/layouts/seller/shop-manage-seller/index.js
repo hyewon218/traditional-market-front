@@ -14,8 +14,9 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useMediaQuery} from '@mui/material';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
@@ -70,7 +71,7 @@ function ShopManageSeller() {
         try {
             const pageParam = {
                 page: currentPage,
-                size: 3
+                size: 7
             };
 
             const data = await getShopListBySellerNo({ pageParam, sort });
@@ -174,6 +175,8 @@ function ShopManageSeller() {
         return pagination;
     };
 
+    const isMobile = useMediaQuery('(max-width:600px)');
+
     return (
         <DashboardLayout>
             <MDBox pt={3} pb={3}>
@@ -188,15 +191,16 @@ function ShopManageSeller() {
                 </MDTypography>
                 <MDBox pt={3} pb={3}>
                     <Card style={styles.card}>
-                        <MDBox pt={2} pb={3} px={3}>
+                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
                             {shops.length === 0 ? (
                                 <MDTypography style={styles.noShopsMessage} variant="body2">
                                     상점이 존재하지 않습니다.
                                 </MDTypography>
                             ) : (
                                 <div>
-                                    <table style={styles.table}>
-                                        <thead>
+                                    {!isMobile ? (
+                                        <table style={styles.table}>
+                                            <thead>
                                             <tr>
                                                 <th>
                                                     <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
@@ -229,8 +233,8 @@ function ShopManageSeller() {
                                                     </MDTypography>
                                                 </th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
+                                            </thead>
+                                            <tbody>
                                             {shops.map((shop) => (
                                                 <tr key={shop.shopNo}>
                                                     <td>
@@ -275,8 +279,46 @@ function ShopManageSeller() {
                                                     </td>
                                                 </tr>
                                             ))}
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        // 모바일 뷰에서는 리스트 형태로 출력
+                                        shops.map((shop, index) => {
+                                            const isLastItem = index === shops.length - 1;
+                                            return (
+                                                <div key={shop.shopNo} style={{
+                                                    ...styles.mobileItem,
+                                                    borderBottom: !isLastItem ? '1px solid #ddd' : 'none',
+                                                    marginBottom: '10px' // Add spacing between items
+                                                }}>
+                                                    <MDTypography
+                                                        onClick={() => handleDetail(shop)}
+                                                        sx={{ ...styles.clickable, ...styles.mobileField }}
+                                                        variant="body2">
+                                                        상점 이름: {shop.shopName}
+                                                    </MDTypography>
+                                                    <MDTypography
+                                                        onClick={() => handleMarketDetail(shop.marketData)}
+                                                        sx={{ ...styles.clickable, ...styles.mobileField, marginTop: '5px' }}
+                                                        variant="body2">
+                                                        소속 시장: {shop.marketName}
+                                                    </MDTypography>
+                                                    <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
+                                                        판매자: {shop.sellerName}
+                                                    </MDTypography>
+                                                    <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
+                                                        전화번호: {shop.tel}
+                                                    </MDTypography>
+                                                    <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
+                                                        분류: {categoryTranslations[shop.category] || shop.category}
+                                                    </MDTypography>
+                                                    <MDTypography sx={{ ...styles.mobileField, marginTop: '5px', marginBottom: '5px' }} variant="body2">
+                                                        좋아요 수: {shop.likes}
+                                                    </MDTypography>
+                                                </div>
+                                            );
+                                        })
+                                    )}
                                     <MDBox sx={styles.pagination}>
                                         {renderPagination()}
                                     </MDBox>
@@ -311,6 +353,7 @@ const styles = {
         fontSize: '1.5rem',
         paddingBottom: '7px',
         textAlign: 'left',
+        marginTop: 3,
     },
     clickable: {
         cursor: 'pointer',

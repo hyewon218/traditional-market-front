@@ -13,6 +13,8 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
+
+// 공지사항 내용 html 태그 삭제
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -73,7 +75,7 @@ function NoticeDetail() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [noticeToDelete, setNoticeToDelete] = useState(null);
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("")
+  const [errorMessage, setErrorMessage] = useState("");
   const {isAdmin} = useCustomLogin();
 
   const navigate = useNavigate();
@@ -131,23 +133,23 @@ function NoticeDetail() {
   };
 
   const formatCreateTime = (dateString) => {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat('ko-KR', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-      }).format(date);
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
   };
 
   return (
     <DashboardLayout>
       <Box sx={{ p: 3 }}>
         <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-            <Button variant="contained" color="error" onClick={handleBack} startIcon={<KeyboardArrowLeftIcon />}>
-              돌아가기
-            </Button>
+          <Button variant="contained" color="error" onClick={handleBack} startIcon={<KeyboardArrowLeftIcon />}>
+            돌아가기
+          </Button>
         </Box>
         {/* 공지사항 기본 정보 */}
         <Card sx={{ p: 3, mb: 2 }}>
@@ -158,38 +160,50 @@ function NoticeDetail() {
                 {notice.noticeTitle}
               </Typography>
               <Typography variant="body1" paragraph>
-                  <strong>작성 시간</strong> : {formatCreateTime(notice.createTime)}
-                </Typography>
+                <strong>작성 시간</strong> : {formatCreateTime(notice.createTime)}
+              </Typography>
               <Typography variant="body1" paragraph>
-                  <strong>공지사항 작성자</strong> : {notice.noticeWriter}
-                </Typography>
+                <strong>공지사항 작성자</strong> : {notice.noticeWriter}
+              </Typography>
 
               {/* 구분선 추가 */}
               <hr style={styles.divider} />
 
               <Typography variant="body1" paragraph>
-                <strong>공지사항 내용</strong> : {notice.noticeContent}
+                <strong>공지사항 내용</strong> :
               </Typography>
+              <Box
+                sx={{
+                  '& .ql-editor': {
+                    minHeight: '200px',
+                    whiteSpace: 'pre-wrap', // Preserve whitespace
+                  },
+                }}
+                dangerouslySetInnerHTML={{ __html: notice.noticeContent }}
+              />
+              {/* <Typography variant="body1" paragraph>
+                {notice.noticeContent}
+              </Typography> */}
 
               {/* 관리자만 수정 및 삭제 버튼 보이기 */}
-                {isAdmin && (
-                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleModifyNotice(notice)}
-                    >
-                      공지사항 수정
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDeleteWithPassword(notice.noticeNo)}
-                    >
-                      공지사항 삭제
-                    </Button>
-                  </Box>
-                )}
+              {isAdmin && (
+                <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleModifyNotice(notice)}
+                  >
+                    공지사항 수정
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDeleteWithPassword(notice.noticeNo)}
+                  >
+                    공지사항 삭제
+                  </Button>
+                </Box>
+              )}
             </Grid>
             <Grid item xs={12} md={4}>
               {/* 이미지 갤러리 */}
@@ -213,7 +227,7 @@ function NoticeDetail() {
           <div style={styles.modal}>
             <div style={styles.modalContent}>
               <Typography variant="h6" gutterBottom>
-                {notice.noticeName} 삭제
+                {notice.noticeTitle} 삭제
               </Typography>
               <form onSubmit={(e) => {
                 e.preventDefault();
