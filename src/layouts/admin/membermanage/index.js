@@ -17,6 +17,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useMediaQuery} from '@mui/material';
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
@@ -37,7 +38,7 @@ function MemberManage() {
     const navigate = useNavigate();
 
     const handleGetMembers = (page = 0, role = 'all') => {
-        const params = {page, size: 3};
+        const params = {page, size: 10};
         let apiCall;
 
         if (searchQuery) {
@@ -110,7 +111,7 @@ function MemberManage() {
 
     const styles = {
         table: {
-            width: '1200px',
+            width: '100%',
             borderCollapse: 'collapse',
         },
         th: {
@@ -122,6 +123,7 @@ function MemberManage() {
             fontWeight: 'bold',
             fontSize: '1.2rem',
             paddingBottom: '7px',
+            marginTop: 3,
         },
         clickable: {
             cursor: 'pointer',
@@ -165,6 +167,16 @@ function MemberManage() {
             marginRight: '5px',
             marginTop: '3px'
         },
+        memberItem: {
+            borderBottom: '1px solid #ddd',
+            padding: '10px',
+            marginBottom: '10px',
+            cursor: 'pointer'
+        },
+        memberDetails: {
+            fontSize: '0.9rem',
+            color: '#555'
+        }
     };
 
     const renderPagination = () => {
@@ -235,37 +247,43 @@ function MemberManage() {
         return pagination;
     };
 
+    const isMobile = useMediaQuery('(max-width:600px)');
+
     return (
         <DashboardLayout>
-            <MDTypography fontWeight="bold"
-                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
-                          variant="body2">
+            <MDTypography
+                fontWeight="bold"
+                sx={{ ml: 4, mt: 2, fontSize: '2rem' }}
+                variant="body2"
+            >
                 회원 관리
             </MDTypography>
             <MDBox pt={1} pb={2}>
-                <MDBox pt={1} pb={2} px={3}>
+                <MDBox pt={1} pb={2} px={3} sx={{ position: 'relative' }}>
+                    {/* "탈퇴회원 관리" 버튼 추가 */}
+                    <MDButton
+                        onClick={() => handleManageWithdrawMembers()}
+                        variant="gradient"
+                        color="warning"
+                        sx={{
+                            position: { xs: 'relative', sm: 'absolute' }, // 모바일에서는 relative, 데스크탑에서는 absolute
+                            top: { xs: 'auto', sm: '16px' }, // 데스크탑에서는 상단 여백 설정
+                            right: { xs: 'auto', sm: '30px' }, // 데스크탑에서는 오른쪽 여백 설정
+                            mb: { xs: '16px', sm: '0' }, // 모바일에서는 버튼 아래에 여백 추가
+                            fontFamily: 'JalnanGothic',
+                            fontSize: '1rem',
+                            padding: '8px 16px',
+                            backgroundColor: '#FF5722', // 주황색 배경
+                            color: '#FFFFFF', // 흰색 글자
+                            zIndex: 10 // 버튼이 다른 요소 위에 보이도록 설정
+                        }}
+                    >
+                        탈퇴회원 관리
+                    </MDButton>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3} sx={{position: 'relative'}}> {/* 수정된 부분 */}
-                            {/* "탈퇴회원 관리" 버튼 추가 */}
-                            <MDButton
-                                onClick={handleManageWithdrawMembers}
-                                variant="gradient"
-                                color="warning" // 주황색 버튼을 위해 색상을 변경
-                                sx={{
-                                    position: 'absolute',
-                                    top: '16px',
-                                    right: '16px',
-                                    fontFamily: 'JalnanGothic',
-                                    fontSize: '1rem',
-                                    padding: '8px 16px',
-                                    backgroundColor: '#FF5722', // 주황색 배경
-                                    color: '#FFFFFF' // 흰색 글자
-                                }}
-                            >
-                                탈퇴회원 관리
-                            </MDButton>
+                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
                             {/* 검색 폼 추가 */}
-                            <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+                            <form onSubmit={handleSearchSubmit} style={{ ...styles.searchForm, marginTop: { xs: '48px', sm: '0' } }}>
                                 <select
                                     id="searchType"
                                     name="searchType"
@@ -289,10 +307,12 @@ function MemberManage() {
                                     sx={{
                                         fontFamily: 'JalnanGothic',
                                         fontSize: '1.2rem',
-                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
-                                        mt:'8px'
+                                        padding: '4px 8px',
+                                        mt: '8px'
                                     }}
-                                    color="info">검색
+                                    color="info"
+                                >
+                                    검색
                                 </MDButton>
                             </form>
                             {/* 드롭다운 추가 */}
@@ -312,123 +332,191 @@ function MemberManage() {
                             </select>
 
                             <div className="memberList-contents">
-                                {members.length === 0 ? (
-                                    <MDTypography
-                                        style={styles.noMembersMessage}
-                                        variant="body2">
-                                        해당 권한에 해당하는 회원이 없습니다
-                                    </MDTypography>
+                                {isMobile ? (
+                                    // 모바일 실선 리스트 형식
+                                    members.length === 0 ? (
+                                        <MDTypography
+                                            style={styles.noMembersMessage}
+                                            variant="body2"
+                                        >
+                                            해당 권한에 해당하는 회원이 없습니다
+                                        </MDTypography>
+                                    ) : (
+                                        members.map((member) => (
+                                            <div
+                                                key={member.memberId}
+                                                style={styles.memberItem}
+                                                onClick={() => handleDetail(member)}
+                                            >
+                                                <MDTypography variant="body2">
+                                                    <strong>ID:</strong> {member.memberId}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>이메일:</strong> {member.memberEmail}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>닉네임:</strong> {member.nicknameWithRandomTag}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>제재여부:</strong> {member.warning ? "제재중" : "정상"}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>신고당한횟수:</strong> {member.countReport}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>가입경로:</strong> {member.providerType}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>권한:</strong> {member.role}
+                                                </MDTypography>
+                                                <MDTypography variant="body2">
+                                                    <strong>가입일:</strong> {formatCreateTime(member.createTime)}
+                                                </MDTypography>
+                                            </div>
+                                        ))
+                                    )
                                 ) : (
-                                    <table style={styles.table}>
-                                        <thead>
-                                        <tr>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    회원 ID
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    이메일
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    닉네임
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    제재여부
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    가입경로
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    권한
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    가입일
-                                                </MDTypography>
-                                            </th>
-                                        </tr>
-                                        </thead>
-
-                                        <tbody>
-                                        {members.map((member) => (
-                                            <tr key={member.memberId}>
-                                                <td>
+                                    // 테이블 형식
+                                    members.length === 0 ? (
+                                        <MDTypography
+                                            style={styles.noMembersMessage}
+                                            variant="body2"
+                                        >
+                                            해당 권한에 해당하는 회원이 없습니다
+                                        </MDTypography>
+                                    ) : (
+                                        <table style={styles.table}>
+                                            <thead>
+                                            <tr>
+                                                <th>
                                                     <MDTypography
-                                                        style={styles.clickable}
-                                                        sx={styles.td}
+                                                        fontWeight="bold"
                                                         variant="body2"
-                                                        onClick={() => handleDetail(
-                                                            member)}
+                                                        sx={styles.th}
                                                     >
-                                                        {member.memberId}
+                                                        회원 ID
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {member.memberEmail}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        이메일
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {member.nicknameWithRandomTag}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        닉네임
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {member.warning ? "제재중" : ""}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        제재여부
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {member.providerType}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        신고당한횟수
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {member.role}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        가입경로
                                                     </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">
-                                                        {formatCreateTime(
-                                                            member.createTime)}
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        권한
                                                     </MDTypography>
-                                                </td>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}
+                                                    >
+                                                        가입일
+                                                    </MDTypography>
+                                                </th>
                                             </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            {members.map((member) => (
+                                                <tr key={member.memberId}>
+                                                    <td>
+                                                        <MDTypography
+                                                            onClick={() => handleDetail(member)}
+                                                            sx={{
+                                                                cursor: 'pointer', // 클릭 가능한 커서 표시
+                                                                ...styles.td // 기존 스타일을 유지
+                                                            }}
+                                                            variant="body2"
+                                                        >
+                                                            {member.memberId}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.memberEmail}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.nicknameWithRandomTag}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.warning ? "제재중" : "정상"}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.countReport}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.providerType}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {member.role}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography sx={styles.td} variant="body2">
+                                                            {formatCreateTime(member.createTime)}
+                                                        </MDTypography>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    )
                                 )}
                             </div>
                         </MDBox>
@@ -441,6 +529,7 @@ function MemberManage() {
             </MDBox>
         </DashboardLayout>
     );
+
 }
 
 export default MemberManage;

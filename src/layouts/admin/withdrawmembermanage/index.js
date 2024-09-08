@@ -14,8 +14,9 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useMediaQuery} from '@mui/material';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
@@ -44,7 +45,7 @@ function WithdrawMemberManage() {
     const navigate = useNavigate();
 
     const handleGetWithdrawMembers = (page) => {
-        const params = { page, size: 3, sort: 'createTime,desc' };
+        const params = { page, size: 10, sort: 'createTime,desc' };
         console.log('params : ', params);
         let apiCall;
 
@@ -174,6 +175,27 @@ function WithdrawMemberManage() {
         searchForm: {marginBottom: '20px'},
         searchInput: {padding: '8px', borderRadius: '4px', border: '1px solid #ccc', marginRight: '10px'},
         searchButton: {padding: '8px 16px', border: 'none', borderRadius: '4px', backgroundColor: '#f0f0f0', cursor: 'pointer'},
+        mobileList: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+        },
+        mobileItem: {
+            padding: '1rem',
+            borderBottom: '1px solid #ddd',
+        },
+        mobileField: {
+            marginBottom: '0.5rem',
+        },
+        mobileButton: {
+            padding: '4px 8px',
+            fontSize: '1rem',
+            color: '#fff',
+            backgroundColor: '#f44336',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+        },
     };
 
     const renderPagination = () => {
@@ -218,6 +240,8 @@ function WithdrawMemberManage() {
         return pagination;
     };
 
+    const isMobile = useMediaQuery('(max-width:600px)');
+
     return (
         <DashboardLayout>
             <MDBox pt={3} pb={3}>
@@ -229,7 +253,7 @@ function WithdrawMemberManage() {
                     전체 삭제
                 </button>
                     <Card style={styles.card}>
-                        <MDBox pt={2} pb={3} px={3}>
+                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
                             {/* 검색 폼 추가 */}
                             <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
                                 <select
@@ -255,64 +279,110 @@ function WithdrawMemberManage() {
                             </form>
                             <div className="withdrawMemberList-contents">
                                 {withdrawMembers.length > 0 ? (
-                                    <table style={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        고유번호
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        아이디
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        이메일
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        탈퇴일
-                                                    </MDTypography>
-                                                </th>
-                                                <th>
-                                                    <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                        삭제
-                                                    </MDTypography>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                                    isMobile ? (
+                                        <div style={styles.mobileList}>
                                             {withdrawMembers.map((withdrawMember) => (
-                                                <tr key={withdrawMember.withdrawMemberNo}>
-                                                    <td>
-                                                        <MDTypography onClick={() => handleDetail(withdrawMember)} sx={{ ...styles.clickable, ...styles.td }} variant="body2">
-                                                            {withdrawMember.withdrawMemberNo}
-                                                        </MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{withdrawMember.withdrawMemberId}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{withdrawMember.withdrawMemberEmail}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <MDTypography sx={styles.td} variant="body2">{formatCreateTime(withdrawMember.withdrawDate)}</MDTypography>
-                                                    </td>
-                                                    <td>
-                                                        <button style={styles.button} onClick={() => handleDeleteWithdrawMember(withdrawMember.withdrawMemberNo)}>
-                                                            삭제
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                                <div key={withdrawMember.withdrawMemberNo} style={styles.mobileItem}>
+                                                    <MDTypography
+                                                        onClick={() => handleDetail(withdrawMember)}
+                                                        sx={{ ...styles.clickable, ...styles.mobileField }}
+                                                        variant="body2"
+                                                    >
+                                                        고유번호 : {withdrawMember.withdrawMemberNo}
+                                                    </MDTypography>
+                                                    <MDTypography sx={styles.mobileField} variant="body2">
+                                                        {withdrawMember.withdrawMemberId}
+                                                    </MDTypography>
+                                                    <MDTypography sx={styles.mobileField} variant="body2">
+                                                        {withdrawMember.withdrawMemberEmail}
+                                                    </MDTypography>
+                                                    <MDTypography sx={styles.mobileField} variant="body2">
+                                                        {formatCreateTime(withdrawMember.withdrawDate)}
+                                                    </MDTypography>
+                                                    <button
+                                                        style={styles.mobileButton}
+                                                        onClick={() => handleDeleteWithdrawMember(withdrawMember.withdrawMemberNo)}
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </div>
                                             ))}
-                                        </tbody>
-                                    </table>
+                                        </div>
+                                    ) : (
+                                        <table style={styles.table}>
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
+                                                            고유번호
+                                                        </MDTypography>
+                                                    </th>
+                                                    <th>
+                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
+                                                            아이디
+                                                        </MDTypography>
+                                                    </th>
+                                                    <th>
+                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
+                                                            이메일
+                                                        </MDTypography>
+                                                    </th>
+                                                    <th>
+                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
+                                                            탈퇴일
+                                                        </MDTypography>
+                                                    </th>
+                                                    <th>
+                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
+                                                            삭제
+                                                        </MDTypography>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {withdrawMembers.map((withdrawMember) => (
+                                                    <tr key={withdrawMember.withdrawMemberNo}>
+                                                        <td>
+                                                            <MDTypography
+                                                                onClick={() => handleDetail(withdrawMember)}
+                                                                sx={{ ...styles.clickable, ...styles.td }}
+                                                                variant="body2"
+                                                            >
+                                                                {withdrawMember.withdrawMemberNo}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography sx={styles.td} variant="body2">
+                                                                {withdrawMember.withdrawMemberId}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography sx={styles.td} variant="body2">
+                                                                {withdrawMember.withdrawMemberEmail}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography sx={styles.td} variant="body2">
+                                                                {formatCreateTime(withdrawMember.withdrawDate)}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                style={styles.button}
+                                                                onClick={() => handleDeleteWithdrawMember(withdrawMember.withdrawMemberNo)}
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    )
                                 ) : (
-                                     <MDTypography variant="body2" sx={{ fontSize: '1.5rem' }}>탈퇴회원이 없습니다.</MDTypography>
+                                    <MDTypography variant="body2" sx={{ fontSize: '1.5rem' }}>
+                                        탈퇴회원이 없습니다.
+                                    </MDTypography>
                                 )}
                                 {withdrawMembers.length > 0 && (
                                     <MDBox sx={styles.pagination}>

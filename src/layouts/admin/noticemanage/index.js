@@ -16,6 +16,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useMediaQuery} from '@mui/material';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
@@ -45,7 +46,7 @@ function NoticeManage() {
     const navigate = useNavigate();
 
     const handleGetNotices = (page) => {
-        const params = {page, size: 3, sort: 'createTime,desc'};
+        const params = {page, size: 10, sort: 'createTime,desc'};
         let apiCall;
 
         if (searchQuery) {
@@ -145,9 +146,9 @@ function NoticeManage() {
     };
 
     const styles = {
-        table: {width: '1200px', borderCollapse: 'collapse'},
+        table: {width: '100%', borderCollapse: 'collapse'},
         th: {fontWeight: 'bold', fontSize: '1.8rem', paddingBottom: '10px'},
-        td: {fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px'},
+        td: {fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px', wordBreak: 'break-word', marginTop: 3},
         clickable: {cursor: 'pointer'},
         button: {
             margin: '0 5px',
@@ -271,180 +272,228 @@ function NoticeManage() {
         return pagination;
     };
 
-    return (
-        <DashboardLayout>
-            <MDTypography fontWeight="bold"
-                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
-                          variant="body2">
-                공지사항 관리
-            </MDTypography>
-            <MDButton
-                variant="gradient"
-                color="success"
-                sx={{
-                    fontFamily: 'JalnanGothic',
-                    fontSize: '1.1rem',
-                    padding: '4px 8px',
-                    marginLeft: '30px',
-                    marginTop: '15px',
-                    mb: '10px'
-                }}
-                onClick={() => handleAddNotice()}>공지사항 생성
-            </MDButton>
-            <MDBox pt={1} pb={2}>
-                <MDBox pt={1} pb={2} px={3}>
-                    <Card>
-                        <MDBox pt={2} pb={3} px={3}>
-                            {/* 검색 폼 추가 */}
-                            <form onSubmit={handleSearchSubmit}
-                                  style={styles.searchForm}>
-                                <MDInput
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    placeholder="검색어를 입력하세요"
-                                    style={styles.searchInput}
-                                />
-                                <MDButton
-                                    type="submit"
-                                    variant="gradient"
-                                    sx={{
-                                        fontFamily: 'JalnanGothic',
-                                        fontSize: '1.2rem',
-                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
-                                        mt: '8px',
-                                    }}
-                                    color="info">검색
-                                </MDButton>
-                            </form>
-                            <div className="noticeList-contents">
-                                {notices.length > 0 ? (
-                                    <table style={styles.table}>
-                                        <thead>
-                                        <tr>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    공지사항 제목
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    작성자
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    작성일
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    수정
-                                                </MDTypography>
-                                            </th>
-                                            <th>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                              sx={styles.th}>
-                                                    삭제
-                                                </MDTypography>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {notices.map((notice) => (
-                                            <tr key={notice.noticeNo}>
-                                                <td>
-                                                    <MDTypography
-                                                        onClick={() => handleDetail(
-                                                            notice)}
-                                                        sx={{...styles.clickable, ...styles.td}}
-                                                        variant="body2">
-                                                        {notice.noticeTitle}
-                                                    </MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">{notice.noticeWriter}</MDTypography>
-                                                </td>
-                                                <td>
-                                                    <MDTypography sx={styles.td}
-                                                                  variant="body2">{formatCreateTime(
-                                                        notice.createTime)}</MDTypography>
-                                                </td>
-                                                <td>
-                                                    <button
-                                                        style={styles.button}
-                                                        onClick={() => handleUpdateNotice(
-                                                            notice)}>
-                                                        수정
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button
-                                                        style={styles.button}
-                                                        onClick={() => openDeleteModal(
-                                                            notice)}>
-                                                        삭제
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <MDTypography
-                                        variant="body2"
-                                        sx={{
-                                            marginLeft: '8px'
-                                        }}>공지사항이
-                                        없습니다.</MDTypography>
-                                )}
-                                {notices.length > 0 && (
-                                    <MDBox sx={styles.pagination}>
-                                        {renderPagination()}
-                                    </MDBox>
-                                )}
-                            </div>
-                        </MDBox>
-                    </Card>
-                </MDBox>
-            </MDBox>
+    const isMobile = useMediaQuery('(max-width:600px)');
 
-            {/* 비밀번호 모달 */}
-            {showModal && (
-                <div style={styles.modal}>
-                    <div style={styles.modalContent}>
-                        <h3>공지사항 삭제 확인</h3>
-                        <input
-                            type="password"
-                            placeholder="관리자 비밀번호"
-                            value={adminPw}
-                            onChange={(e) => setAdminPw(e.target.value)}
-                        />
-                        {errorMessage && <div
-                            style={styles.errorMessage}>{errorMessage}</div>}
-                        <button style={styles.button}
-                                onClick={handleDeleteNotice}>
-                            삭제
-                        </button>
-                        <button style={styles.button}
-                                onClick={handleCloseModal}>
-                            취소
-                        </button>
-                    </div>
-                </div>
-            )}
-        </DashboardLayout>
-    );
+    return (
+         <DashboardLayout>
+             <MDTypography fontWeight="bold"
+                           sx={{ ml: 4, mt: 2, fontSize: '2rem' }}
+                           variant="body2">
+                 공지사항 관리
+             </MDTypography>
+             <MDButton
+                 variant="gradient"
+                 color="success"
+                 sx={{
+                     fontFamily: 'JalnanGothic',
+                     fontSize: '1.1rem',
+                     padding: '4px 8px',
+                     marginLeft: '30px',
+                     marginTop: '15px',
+                     mb: '10px'
+                 }}
+                 onClick={() => handleAddNotice()}>
+                 공지사항 생성
+             </MDButton>
+             <MDBox pt={1} pb={2}>
+                 <MDBox pt={1} pb={2} px={3}>
+                     <Card>
+                         <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
+                             {/* 검색 폼 추가 */}
+                             <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+                                 <MDInput
+                                     type="text"
+                                     value={searchQuery}
+                                     onChange={handleSearchChange}
+                                     placeholder="검색어를 입력하세요"
+                                     style={styles.searchInput}
+                                 />
+                                 <MDButton
+                                     type="submit"
+                                     variant="gradient"
+                                     sx={{
+                                         fontFamily: 'JalnanGothic',
+                                         fontSize: '1.2rem',
+                                         padding: '4px 8px',
+                                         mt: '8px',
+                                     }}
+                                     color="info">검색
+                                 </MDButton>
+                             </form>
+                             <div className="noticeList-contents">
+                                 {notices.length > 0 ? (
+                                     !isMobile ? (
+                                         <table style={styles.table}>
+                                             <thead>
+                                             <tr>
+                                                 <th>
+                                                     <MDTypography fontWeight="bold"
+                                                                   variant="body2"
+                                                                   sx={styles.th}>
+                                                         공지사항 제목
+                                                     </MDTypography>
+                                                 </th>
+                                                 <th>
+                                                     <MDTypography fontWeight="bold"
+                                                                   variant="body2"
+                                                                   sx={styles.th}>
+                                                         작성자
+                                                     </MDTypography>
+                                                 </th>
+                                                 <th>
+                                                     <MDTypography fontWeight="bold"
+                                                                   variant="body2"
+                                                                   sx={styles.th}>
+                                                         작성일
+                                                     </MDTypography>
+                                                 </th>
+                                                 <th>
+                                                     <MDTypography fontWeight="bold"
+                                                                   variant="body2"
+                                                                   sx={styles.th}>
+                                                         수정
+                                                     </MDTypography>
+                                                 </th>
+                                                 <th>
+                                                     <MDTypography fontWeight="bold"
+                                                                   variant="body2"
+                                                                   sx={styles.th}>
+                                                         삭제
+                                                     </MDTypography>
+                                                 </th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             {notices.map((notice) => (
+                                                 <tr key={notice.noticeNo}>
+                                                     <td>
+                                                         <MDTypography
+                                                             onClick={() => handleDetail(notice)}
+                                                             sx={{ ...styles.clickable, ...styles.td }}
+                                                             variant="body2">
+                                                             {notice.noticeTitle}
+                                                         </MDTypography>
+                                                     </td>
+                                                     <td>
+                                                         <MDTypography sx={styles.td}
+                                                                       variant="body2">
+                                                             {notice.noticeWriter}
+                                                         </MDTypography>
+                                                     </td>
+                                                     <td>
+                                                         <MDTypography sx={styles.td}
+                                                                       variant="body2">
+                                                             {formatCreateTime(notice.createTime)}
+                                                         </MDTypography>
+                                                     </td>
+                                                     <td>
+                                                         <MDButton
+                                                             variant="contained"
+                                                             color="info"
+                                                             onClick={() => handleUpdateNotice(notice)}>
+                                                             수정
+                                                         </MDButton>
+                                                     </td>
+                                                     <td>
+                                                         <MDButton
+                                                             variant="contained"
+                                                             color="error"
+                                                             onClick={() => openDeleteModal(notice)}>
+                                                             삭제
+                                                         </MDButton>
+                                                     </td>
+                                                 </tr>
+                                             ))}
+                                             </tbody>
+                                         </table>
+                                     ) : (
+                                         // 모바일에서는 리스트 형태로 출력
+                                         notices.map((notice, index) => {
+                                             const isLastItem = index === notices.length - 1;
+                                             return (
+                                                 <div key={notice.noticeNo} style={{
+                                                     ...styles.mobileItem,
+                                                     borderBottom: !isLastItem ? '1px solid #ddd' : 'none',
+                                                     marginBottom: '10px' // Add spacing between items
+                                                 }}>
+                                                     <MDTypography
+                                                         onClick={() => handleDetail(notice)}
+                                                         sx={{ ...styles.clickable, ...styles.mobileField }}
+                                                         variant="body2">
+                                                         {notice.noticeTitle}
+                                                     </MDTypography>
+                                                     <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
+                                                         {notice.noticeWriter}
+                                                     </MDTypography>
+                                                     <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
+                                                         {formatCreateTime(notice.createTime)}
+                                                     </MDTypography>
+                                                     <div style={{
+                                                         display: 'flex',
+                                                         justifyContent: 'flex-end', // Align buttons to the right
+                                                         marginTop: '10px',
+                                                         gap: '10px' // Space between buttons
+                                                     }}>
+                                                         <MDButton
+                                                             variant="contained"
+                                                             color="info"
+                                                             onClick={() => handleUpdateNotice(notice)}>
+                                                             수정
+                                                         </MDButton>
+                                                         <MDButton
+                                                             variant="contained"
+                                                             color="error"
+                                                             onClick={() => openDeleteModal(notice)}>
+                                                             삭제
+                                                         </MDButton>
+                                                     </div>
+                                                 </div>
+                                             );
+                                         })
+                                     )
+                                 ) : (
+                                     <MDTypography
+                                         variant="body2"
+                                         sx={{
+                                             marginLeft: '8px'
+                                         }}>
+                                         공지사항이 없습니다.
+                                     </MDTypography>
+                                 )}
+                                 {notices.length > 0 && (
+                                     <MDBox sx={styles.pagination}>
+                                         {renderPagination()}
+                                     </MDBox>
+                                 )}
+                             </div>
+                         </MDBox>
+                     </Card>
+                 </MDBox>
+             </MDBox>
+
+             {/* 비밀번호 모달 */}
+             {showModal && (
+                 <div style={styles.modal}>
+                     <div style={styles.modalContent}>
+                         <h3>공지사항 삭제 확인</h3>
+                         <input
+                             type="password"
+                             placeholder="관리자 비밀번호"
+                             value={adminPw}
+                             onChange={(e) => setAdminPw(e.target.value)}
+                         />
+                         {errorMessage && <div style={styles.errorMessage}>{errorMessage}</div>}
+                          <MDButton onClick={handleCloseModal}>
+                              취소
+                          </MDButton>
+                         <MDButton color="error" onClick={handleDeleteNotice}>
+                             삭제
+                         </MDButton>
+                     </div>
+                 </div>
+             )}
+         </DashboardLayout>
+     );
 }
 
 export default NoticeManage;

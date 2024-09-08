@@ -29,7 +29,7 @@ import MDButton from '../../components/MD/MDButton';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import {useNavigate} from "react-router-dom";
-import {FormControl, InputLabel, Select} from "@mui/material";
+import {FormControl, InputLabel, Select, useMediaQuery, useTheme} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
 const categories = {
@@ -191,10 +191,14 @@ function PostMarket() {
         }
     };
 
+    const theme = useTheme();
+    const isMd = useMediaQuery(theme.breakpoints.down('md'));
+    const isXl = useMediaQuery(theme.breakpoints.down('xl'));
+
     return (
         <DashboardLayout>
             <MDBox pb={3}>
-                <Card>
+                <Card sx={{ width: isMd ? '100%' : (isXl ? '50%' : 'auto'), mx: 'auto' }}>
                     <MDBox pt={4} pb={3} px={3}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
