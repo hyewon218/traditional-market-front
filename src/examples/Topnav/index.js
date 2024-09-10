@@ -813,9 +813,9 @@ function Topnav({ brandName, logoSrc }) {
             component={Link}
             to="/market"
             sx={{
-              display: { xs: 'flex', sm: 'none' }, // 모바일에서만 로고 표시
+              display: { xs: 'flex', sm: 'flex', md: 'flex', lg:'none' }, // 모바일에서만 로고 표시
               alignItems: 'center',
-              mb: 2, // 모바일에서 하단 여백 추가
+              mb: 1, // 모바일에서 하단 여백 추가
               justifyContent: 'center',
               width: '100%',
             }}
@@ -830,7 +830,7 @@ function Topnav({ brandName, logoSrc }) {
           {/* 데스크탑 환경에서 로고와 메뉴 항목 배치 */}
           <Box
             sx={{
-              display: { xs: 'none', sm: 'flex' }, // 데스크탑에서만 로고 표시
+              display: { xs: 'none', sm: 'none', md: 'none', lg:'flex' }, // 데스크탑에서만 로고 표시
               alignItems: 'center',
               justifyContent: 'flex-start',
               width: '100%',
