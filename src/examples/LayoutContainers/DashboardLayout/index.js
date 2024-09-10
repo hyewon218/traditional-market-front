@@ -174,27 +174,38 @@ function DashboardLayout({ children }) {
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
         p: 3,
         position: 'relative',
-        marginTop: pxToRem(50), // 기본 상단 여백
+        marginTop: pxToRem(30), // 기본 상단 여백
 
         // 화면 폭이 450px 이하일 때 적용
         [breakpoints.down('xs')]: {
-          marginTop: pxToRem(100), // 450px 이하 화면에서 상단 여백을 크게 설정
+          marginTop: pxToRem(50), // 450px 이하 화면에서 상단 여백을 크게 설정
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center', // 세로 방향으로 중앙 정렬
         },
 
+          [breakpoints.between('xs','sm')]: {
+              marginTop: pxToRem(50), // 450px 이하 화면에서 상단 여백을 크게 설정
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center', // 세로 방향으로 중앙 정렬
+          },
+
         // 화면 폭이 600px 이하 (sm 이하)일 때 적용
         [breakpoints.between('sm', 'md')]: {
-          marginTop: pxToRem(100), // sm 이상에서 상단 여백을 다르게 설정
+          marginTop: pxToRem(110), // sm 이상에서 상단 여백을 다르게 설정
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center', // 세로 방향으로 중앙 정렬
         },
 
         [breakpoints.up('md')]: {
-          marginTop: pxToRem(80), // sm 이상에서 상단 여백을 다르게 설정
+          marginTop: pxToRem(70), // sm 이상에서 상단 여백을 다르게 설정
         },
+
+          [breakpoints.up('lg')]: {
+              marginTop: pxToRem(60), // sm 이상에서 상단 여백을 다르게 설정
+          },
 
         [breakpoints.up('xl')]: {
           marginLeft: miniSidenav ? pxToRem(120) : pxToRem(0),
