@@ -201,7 +201,7 @@ function Notice() {
     };
 
     // 600px 이하일 때 true를 반환
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     return (
          <DashboardLayout>

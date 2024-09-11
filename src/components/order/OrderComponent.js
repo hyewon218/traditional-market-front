@@ -21,7 +21,6 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import DeliveryMessageModal from '../../components/deliverymessage/DeliveryMessageModal';
-import {is} from "date-fns/locale"; // 배송메시지 모달
 
 // Data
 import {getPrimaryDelivery} from "../../api/deliveryApi";
@@ -39,7 +38,7 @@ const OrderComponent = () => {
 
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
     const total = useMemo(() => {
         let total = 0
@@ -145,16 +144,6 @@ const OrderComponent = () => {
         ? '변경'
         : '배송지 추가'; // 기본 배송지가 false 이면
 
-
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '2rem',
-        fontFamily: 'JalnanGothic',
-        padding: '20px 40px',
-        width: '600px',
-    };
-
     const handlePreviousImage = (orderItemNo) => {
         setCurrentImageIndexes(prev => {
             const currentIndex = prev[orderItemNo] || 0;
@@ -195,27 +184,34 @@ const OrderComponent = () => {
                 />
                 : <></>
             }
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <MDBox pb={3}>
-                        <Card>
-                            <MDBox pt={2} pb={3} px={3}>
-                                <Grid container>
-                                    <Grid item xs={10}>
-                                        <MDTypography
-                                            fontWeight="bold"
-                                            variant="body2">
-                                            결제
-                                        </MDTypography>
+            <MDBox
+                sx={{
+                    mt: {xs: 5, sm: 5, md: 7, lg: 1},
+                }}
+            >
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                        <MDBox pb={3}>
+                            <Card>
+                                <MDBox pt={2} pb={3} px={3}>
+                                    <Grid container>
+                                        <Grid item xs={10}>
+                                            <MDTypography
+                                                fontWeight="bold"
+                                                variant="body2">
+                                                결제
+                                            </MDTypography>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </MDBox>
-                        </Card>
-                    </MDBox>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </MDBox>
+
             <Grid container>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
                     <MDTypography
                         fontWeight="bold"
                         variant="body2"
@@ -288,17 +284,23 @@ const OrderComponent = () => {
                             </MDBox>
                         </Grid>
 
-                        <Grid item xs={12} md={4.5} sx={{marginLeft: isSmallScreen? '0px' : '35px',
-                        marginBottom: isSmallScreen? '15px' : '0'
+                        <Grid item xs={12} md={4.5} sx={{marginLeft: isSmallScreen? '20px' : '35px'
                         }}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center'
                             }}>
-                                <MDButton onClick={() => handleClickPay ()}
+                                <MDButton onClick={() => handleClickPay()}
                                           variant="gradient"
                                           size="large"
-                                          sx={buttonStyle}
+                                          sx={{
+                                              backgroundColor: '#50bcdf',
+                                              color: '#ffffff',
+                                              fontSize: isSmallScreen? '1.5rem' :'2rem',
+                                              fontFamily: 'JalnanGothic',
+                                              padding: '20px 0px',
+                                              width: '600px',
+                                          }}
                                           disabled={!deliveryAddress}
                                 >{total}원 결제하기
                                 </MDButton>
@@ -314,7 +316,7 @@ const OrderComponent = () => {
                         주문상품
                     </MDTypography>
                     <Grid container>
-                        <Grid item xs={12} md={6.9}>
+                        <Grid item xs={12} sm={12} md={12} lg={6.9}>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={1}>
@@ -424,7 +426,7 @@ const OrderComponent = () => {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} mb={10}>
                 <Grid item xs={12}>
                     <MDTypography
                         fontWeight="bold"
@@ -434,7 +436,7 @@ const OrderComponent = () => {
                         결제수단
                     </MDTypography>
                     <Grid container spacing={1}>
-                        <Grid item xs={12} md={7}>
+                        <Grid item xs={12} sm={12} md={12} lg={7}>
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={2} px={2} pb={2}>

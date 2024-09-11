@@ -49,7 +49,7 @@ function TopFiveItem() {
 
     const navigate = useNavigate();
 
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category);

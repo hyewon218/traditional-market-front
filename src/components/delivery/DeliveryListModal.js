@@ -31,11 +31,9 @@ const DeliveryListModal = ({callbackFn}) => {
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
 
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
-
     const handleGetDeliveries = (pageNum) => {
         console.log('handleGetDeliveries');
-        const pageParam = {page: pageNum, size: 3};
+        const pageParam = {page: pageNum, size: 2};
         getDeliveryList(pageParam).then(data => {
             setDeliveries(data.content);
             //console.log(data.content)
@@ -152,13 +150,15 @@ const DeliveryListModal = ({callbackFn}) => {
             }
 
             <div
-                className={`fixed top-0 left-0 z-[1050] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}
+                className={`fixed top-20 md:top-36 lg:top-20 left-0 z-[1050] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}
             >
-                <MDBox pt={3} pb={3}
+                <MDBox
+                    sx={{
+                        mt: {xs: 5, sm: 5, md: 3, lg: 3},
+                    }}
                        style={{
                            width: '80%',
                            maxWidth: '600px',
-                           marginTop: '25px'
                        }}>
                     <Card>
                         <MDButton
@@ -177,7 +177,7 @@ const DeliveryListModal = ({callbackFn}) => {
                         >
                             &times;
                         </MDButton>
-                        <MDBox pt={4} pb={3} px={3}>
+                        <MDBox pt={3} px={3}>
                             <div>
                                 <MDTypography
                                     fontWeight="bold"
@@ -196,13 +196,11 @@ const DeliveryListModal = ({callbackFn}) => {
                                     onClick={handleDeliveryPostModal}
                                     variant="gradient"
                                     sx={{
-                                        backgroundColor: '#50bcdf',
                                         color: '#ffffff',
-                                        fontSize: '2rem',
+                                        fontSize: '1.2rem',
                                         fontFamily: 'JalnanGothic',
-                                        padding: '20px',
-                                        width: '100%',
-                                        maxWidth: '500px',
+                                        padding: '10px',
+                                        width: '90%',
                                     }}
                                     color={"light"}>
                                     + 배송지 추가
@@ -210,25 +208,19 @@ const DeliveryListModal = ({callbackFn}) => {
                             </div>
                             <Grid container>
                                 <Grid item xs={12}>
-                                    <MDBox
-                                        pb={1}
-                                        style={{
-                                            maxHeight: '400px',
-                                            overflowY: 'auto'
-                                        }}
-                                    >
+                                    <MDBox pb={1}>
                                         <div>
                                             <ul>
                                                 {Array.isArray(deliveries)
                                                     && deliveries.map(
                                                         delivery =>
                                                             <li key={delivery.deliveryNo}>
-                                                                <MDBox pt={3} sx={{ml: isSmallScreen? -3 : 0}}>
+                                                                <MDBox pt={2}>
                                                                     <Grid container>
-                                                                        <Grid item xs={9} md={9.5}>
+                                                                        <Grid item xs={9.8} sm={9.8} md={9.8} lg={9.8}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
-                                                                                sx={{fontSize: '1.2rem'}}
+                                                                                sx={{fontSize: '1.1rem'}}
                                                                                 variant="body2">
                                                                                 {delivery.receiver
                                                                                     + ' '
@@ -240,7 +232,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                     && (
                                                                                         <span
                                                                                             style={{
-                                                                                                fontSize: '1rem',
+                                                                                                fontSize: '0.9rem',
                                                                                                 color: "deeppink"
                                                                                             }}>
                                                                                         기본 배송지
@@ -249,7 +241,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                             </MDTypography>
                                                                         </Grid>
 
-                                                                        <Grid item xs={3} md={2.5}>
+                                                                        <Grid item xs={2.2} sm={2.2} md={2.2} lg={2.2}>
                                                                             <MDButton
                                                                                 onClick={() => handleSelectDelivery(delivery)}
                                                                                 variant="gradient"
@@ -266,7 +258,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                     </Grid>
 
                                                                     <Grid container>
-                                                                        <Grid item xs={12} md={5} sx={{mt: -1}}>
+                                                                        <Grid item xs={12} md={5} sx={{mt: -2}}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
@@ -275,7 +267,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                         </Grid>
                                                                     </Grid>
                                                                     <Grid container>
-                                                                        <Grid item xs={12} md={12} >
+                                                                        <Grid item xs={12} md={12}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
@@ -290,8 +282,8 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                         </Grid>
                                                                     </Grid>
 
-                                                                    <Grid container spacing={-10}>
-                                                                        <Grid item xs={3} md={2}>
+                                                                    <Grid container >
+                                                                        <Grid item xs={1.6} md={1.6} lg={1.6}>
                                                                             <MDButton
                                                                                 onClick={() => handleDeliveryPutModal(
                                                                                     delivery)}
@@ -306,7 +298,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                 수정
                                                                             </MDButton>
                                                                         </Grid>
-                                                                        <Grid item xs={3} md={2}>
+                                                                        <Grid item xs={1.6} md={1.6} lg={1.6}>
                                                                             <MDButton
                                                                                 onClick={() => handleDeleteDelivery(
                                                                                     delivery.deliveryNo)}
@@ -321,7 +313,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                 삭제
                                                                             </MDButton>
                                                                         </Grid>
-                                                                        <Grid item xs={6} md={4}>
+                                                                        <Grid item xs={4} md={4} lg={4}>
                                                                             <MDButton
                                                                                 onClick={() => handlePrimaryDelivery(
                                                                                     delivery.deliveryNo)}

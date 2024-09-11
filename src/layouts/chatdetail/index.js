@@ -391,7 +391,10 @@ function ChatDetail() {
 
     return (
         <DashboardLayout>
-            <MDBox sx={{
+            <MDBox
+                pb={17}
+                sx={{
+                mt: {xs: 5, sm: 5, md: 7, lg: 1},
                 maxWidth: '800px',
                 margin: '0 auto',
                 display: 'flex',
@@ -423,17 +426,29 @@ function ChatDetail() {
                     답변까지 시간이 걸릴 수 있습니다. 알람함을 확인해주세요.
                 </MDTypography>
 
-                <MDBox ref={chatContainerRef} sx={{
-                    flexGrow: 1,
-                    maxHeight: '500px',
-                    overflowY: 'auto',
-                }}>
+                <MDBox ref={chatContainerRef}
+                       sx={{
+                           flexGrow: 1,
+                           maxHeight: {
+                               xs: '300px',  // 모바일 화면
+                               sm: '400px',  // 작은 화면
+                               md: '350px',  // 중간 화면
+                               lg: '400px',  // 큰 화면
+                           },
+                           overflowY: 'auto',
+                       }}>
                     {msgBox}
                 </MDBox>
 
                 <MDBox sx={{
                     position: 'fixed',
-                    bottom: 30,
+                    bottom: {
+                        xs: 30,  // 모바일 화면
+                        sm: 30,  // 작은 화면
+                        md: 60,  // 중간 화면에서 더 띄움
+                        lg: 30,  // 큰 화면
+                        xl: 30   // 매우 큰 화면
+                    },
                     width: '100%',
                     backgroundColor: 'white',
                     padding: '16px',

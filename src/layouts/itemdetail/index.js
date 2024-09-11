@@ -79,7 +79,7 @@ function ItemDetail() {
 
     const navigate = useNavigate();
 
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
     useEffect(() => {
         // 현재 사용자 정보와 상점 정보를 가져오는 함수
@@ -330,15 +330,6 @@ function ItemDetail() {
         }
     };
 
-    const buttonStyle = {
-        backgroundColor: '#50bcdf',
-        color: '#ffffff',
-        fontSize: '2rem',
-        fontFamily: 'JalnanGothic',
-        padding: '20px 40px',
-        width: '330px',
-    };
-
     useEffect(() => {
         console.log("isAdmin : " + isAdmin)
 
@@ -367,7 +358,7 @@ function ItemDetail() {
                     left: 0,
                     right: 0,
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    marginTop: '1rem',
+                    mt: {xs:5, sm:5, md:7, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -384,9 +375,9 @@ function ItemDetail() {
                 </a>
             </MDBox>
 
-            <Grid container spacing={isSmallScreen ? 0 : 2}>
-                <Grid item xs={12} md={7}>
-                    <MDBox pb={isSmallScreen ? 2 : 3}>
+            <Grid container spacing={isSmallScreen ? -1 : 2}>
+                <Grid item xs={12} sm={12} md={12} lg={7} sx={{ mb: 3 }}>
+                    <MDBox>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
                                 <div style={{
@@ -400,7 +391,6 @@ function ItemDetail() {
                                             onClick={handlePreviousImage}
                                             style={{
                                                 position: 'absolute',
-                                                left: 0
                                             }}
                                         >
                                             <KeyboardArrowLeftIcon/>
@@ -433,13 +423,13 @@ function ItemDetail() {
                                     }}
                                 >{likes} LIKES</MDTypography>
                                 <Grid container spacing={isSmallScreen ? 1 : 0.5}>
-                                    <Grid item xs={4} md={1.3}>
+                                    <Grid item xs={isSmallScreen ? 2 : 2}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: '0.75rem',
+                                                fontSize: '1rem',
                                                 padding: '4px 8px',
                                                 minWidth: 'auto',
                                                 width: '100%',
@@ -494,7 +484,7 @@ function ItemDetail() {
                 </Grid>
 
                 {/*상품 정보*/}
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} sm={12} md={12} lg={5} sx={{ mb: 3 }}>
                     <MDBox pb={2}>
                         <Card>
                             <MDBox component="form" role="form">
@@ -529,7 +519,7 @@ function ItemDetail() {
                             </MDBox>
                         </Card>
                     </MDBox>
-                    <Grid item xs={9}>
+                    <Grid container>
                         <MDBox display="flex" alignItems="center" mb={2}>
                             <MDButton onClick={handleDecreaseQuantity}
                                       size="small">-</MDButton>
@@ -541,8 +531,8 @@ function ItemDetail() {
                             </MDTypography>
                         </MDBox>
                     </Grid>
-                    <Grid container spacing={2} justifyContent="right" sx={{mb: isSmallScreen? '20px':'0'}}>
-                        <Grid item xs={6} md={6}>
+                    <Grid container spacing={isSmallScreen ? 0 : 2}>
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -550,12 +540,19 @@ function ItemDetail() {
                                 <MDButton onClick={handleClickAddCart}
                                           variant="gradient"
                                           size="large"
-                                          sx={buttonStyle}
+                                          sx={{
+                                              backgroundColor: '#50bcdf',
+                                              color: '#ffffff',
+                                              fontSize: '2rem',
+                                              fontFamily: 'JalnanGothic',
+                                              padding: '20px 0px',
+                                              width: '330px',
+                                          }}
                                 >장바구니
                                 </MDButton>
                             </div>
                         </Grid>
-                        <Grid item xs={6} md={6}>
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
                             <MDBox>
                                 <div style={{
                                     display: 'flex',
@@ -564,7 +561,14 @@ function ItemDetail() {
                                     <MDButton onClick={handleClickOrder}
                                               variant="gradient"
                                               size="large"
-                                              sx={buttonStyle}
+                                              sx={{
+                                                  backgroundColor: '#50bcdf',
+                                                  color: '#ffffff',
+                                                  fontSize: '2rem',
+                                                  fontFamily: 'JalnanGothic',
+                                                  padding: '20px 0px',
+                                                  width: '330px',
+                                              }}
                                     >구매하기
                                     </MDButton>
                                 </div>
@@ -576,7 +580,7 @@ function ItemDetail() {
 
             {/*댓글*/}
             <Grid container spacing={2}>
-                <Grid item xs={12} md={7}>
+                <Grid item xs={12} sm={12} md={12} lg={7} sx={{ mb: 3 }}>
                     <MDBox pt={0} pb={3}>
                         <Card>
                             <MDBox pt={2} pb={3} px={3}>
@@ -585,15 +589,12 @@ function ItemDetail() {
                                         <MDBox pt={1}
                                                pb={1.5}
                                                key={comment.id}>
-                                            <Grid
-                                                container>
-                                                <Grid
-                                                    item
-                                                    xs={3.5}>
+                                            <Grid container>
+                                                <Grid item xs={5}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         sx={{
-                                                            fontSize: '0.9rem'
+                                                            fontSize: '1rem'
                                                         }}
                                                         variant="body2">
                                                         {editingCommentId
@@ -612,9 +613,7 @@ function ItemDetail() {
                                                             )}
                                                     </MDTypography>
                                                 </Grid>
-                                                <Grid
-                                                    item
-                                                    xs={2}>
+                                                <Grid item xs={2}>
                                                     <MDTypography
                                                         variant="body2"
                                                         sx={{
@@ -624,9 +623,7 @@ function ItemDetail() {
                                                         {comment.username}
                                                     </MDTypography>
                                                 </Grid>
-                                                <Grid
-                                                    item
-                                                    xs={2}>
+                                                <Grid item xs={2}>
                                                     <MDTypography
                                                         variant="body2"
                                                         sx={{
@@ -718,41 +715,33 @@ function ItemDetail() {
                                                         >
                                                             신고
                                                         </MDButton>
-                                                        <MDTypography
-                                                            variant="body2"
-                                                            sx={{ mt: -1.5, fontSize: '0.8rem' }}
-                                                            textAlign="right"
-                                                        >
-                                                            {formatDistanceToNow(new Date(comment.createTime), {
-                                                                addSuffix: true,
-                                                                locale: ko
-                                                            })}
-                                                        </MDTypography>
                                                     </Grid>
                                                 )}
                                             </Grid>
                                         </MDBox>
                                     ))}
-                                <MDPagination
-                                    size={"small"}>
-                                    <MDPagination item>
-                                        <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
+                                {totalPage > 1 && (
+                                    <MDPagination
+                                        size={"small"}>
+                                        <MDPagination item>
+                                            <KeyboardArrowLeftIcon></KeyboardArrowLeftIcon>
+                                        </MDPagination>
+                                        {[...Array(
+                                            totalPage).keys()].map(
+                                            (i) => (
+                                                <MDPagination
+                                                    item
+                                                    key={i}
+                                                    onClick={() => changePage(
+                                                        i)}>
+                                                    {i + 1}
+                                                </MDPagination>
+                                            ))}
+                                        <MDPagination item>
+                                            <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
+                                        </MDPagination>
                                     </MDPagination>
-                                    {[...Array(
-                                        totalPage).keys()].map(
-                                        (i) => (
-                                            <MDPagination
-                                                item
-                                                key={i}
-                                                onClick={() => changePage(
-                                                    i)}>
-                                                {i + 1}
-                                            </MDPagination>
-                                        ))}
-                                    <MDPagination item>
-                                        <KeyboardArrowRightIcon></KeyboardArrowRightIcon>
-                                    </MDPagination>
-                                </MDPagination>
+                                )}
 
                                 <MDBox sx={{
                                     mt: 2,
@@ -774,11 +763,11 @@ function ItemDetail() {
                                               xs={3}>
                                             <MDButton
                                                 variant="contained"
-                                                color="primary"
+                                                color="info"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: '0.9rem',
-                                                    padding: '4px 8px',
+                                                    fontSize: '1rem',
+                                                    padding: '4px 10px',
                                                 }}
                                                 onClick={handleWriteComment}
                                                 fullWidth

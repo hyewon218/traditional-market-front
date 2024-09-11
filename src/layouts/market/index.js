@@ -5,8 +5,6 @@ import {useNavigate} from 'react-router';
 // @mui material components
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -16,7 +14,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
-import MDPagination from '../../components/MD/MDPagination';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
@@ -274,11 +271,8 @@ function Market() {
                     boxShadow: 1,
                     position: 'relative', // 상대 위치로 설정
                     zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
-                    top: 0,
-                    left: 0,
-                    right: 0,
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    marginTop: '1rem',
+                    mt: {xs:5, sm:5, md:7, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -359,7 +353,7 @@ function Market() {
                 {["전체", "서울", "인천", "경기도", "강원", "충청도", "경상도", "전라도",
                     "제주도"].map(
                     (category, index) => (
-                        <Grid item xs={3} md={index < 3 ? 1.0 : 1.15} key={category}>
+                        <Grid item xs={3} sm={3} md={2} lg={index < 3 ? 1.0 : 1.15} key={category}>
                             <MDBox>
                                 <MDButton
                                     onClick={() => handleCategorySelect(category)}
@@ -368,7 +362,7 @@ function Market() {
                                     sx={{
                                         backgroundColor: '#50bcdf',
                                         color: '#ffffff',
-                                        fontSize: '1.0rem',
+                                        fontSize: '1.1rem',
                                         fontFamily: 'JalnanGothic',
                                         width: '100%'
                                     }}
@@ -381,17 +375,17 @@ function Market() {
             </Grid>
 
             {/* 시장 목록 조회 */}
-            <Grid container pt={3} pb={3}>
+            <Grid container pt={3} pb={15}>
                 {renderMarkets.length > 0 ? (
                     renderMarkets.map((market, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                        <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
                             <MDBox pb={2}  key={market.id}>
                                 <Card sx={{
                                     width: '90%',
                                     maxWidth: '350px',
                                     mx: 'auto',
                                 }}>
-                                    <MDBox pt={2} pb={2} px={2}>
+                                    <MDBox pt={2} pb={2} px={3}>
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <MDTypography fontWeight="bold"
@@ -482,7 +476,7 @@ function Market() {
                     '&:hover': {
                         backgroundColor: '#33a3d0',
                     },
-                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                    '@media (max-width: 900px)': { // 모바일에 대한 스타일링
                         bottom: '70px',  // 모바일에서의 위치 조정
                         right: '15px',   // 모바일에서의 위치 조정
                     }
