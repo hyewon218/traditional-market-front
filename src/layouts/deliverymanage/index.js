@@ -839,7 +839,6 @@ function DeliveryManage() {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [newDelivery, setNewDelivery] = useState({});
     const [editDelivery, setEditDelivery] = useState(null);
-    const navigate = useNavigate();
 
     const handleGetDeliveries = (page) => {
         const params = { page, size : 7, sort: 'createTime,asc' };
@@ -1129,7 +1128,7 @@ function DeliveryManage() {
             fontSize: '1rem',
         },
         // 모바일 스타일
-        '@media (max-width: 600px)': {
+        '@media (max-width: 900px)': {
             deliveryItem: {
                 display: 'block',
                 textAlign: 'left',
@@ -1216,7 +1215,7 @@ function DeliveryManage() {
     };
 
     // 600px 이하일 때 true를 반환
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     return (
         <DashboardLayout>

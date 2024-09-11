@@ -26,19 +26,15 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // Material Dashboard 2 React components
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
 import MDButton from '../../components/MD/MDButton';
-import MDPagination from '../../components/MD/MDPagination';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-
 import useCustomLogin from "../../hooks/useCustomLogin";
 import {
     cancelMarketLike,
@@ -107,7 +103,7 @@ function MarketDetail() {
 
 
     const navigate = useNavigate();
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
 //    useEffect(() => {
 //        handleCountLikes();
@@ -523,7 +519,7 @@ function MarketDetail() {
                     left: 0,
                     right: 0,
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    marginTop: '1rem',
+                    mt: {xs:5, sm:5, md:7, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -540,9 +536,9 @@ function MarketDetail() {
                 </a>
             </MDBox>
 
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                    <MDBox pt={0} pb={3}>
+            <Grid container spacing={isSmallScreen ? -1 : 2}>
+                <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
+                    <MDBox>
                         <Card>
                             <MDBox pt={2} pb={2} px={2.5}>
                                 <Grid container>
@@ -571,7 +567,6 @@ function MarketDetail() {
                                             )}
                                         </div>
                                     </Grid>
-
                                 </Grid>
                                 <MDTypography
                                     variant="body2">{market.marketDetail}</MDTypography>
@@ -592,8 +587,8 @@ function MarketDetail() {
                                                     variant="gradient"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '0.75rem',
-                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
                                                         width: '100%'
                                                     }}
                                                     color="info">좋아요 👍🏻
@@ -609,7 +604,7 @@ function MarketDetail() {
                                                         width: '100%'
                                                     }}
                                                     onClick={() => handleModifyMarket(
-                                                        market)}>시장수정
+                                                        market)}>시장 수정
                                                 </MDButton>
                                             </Grid>
                                             <Grid item xs={isSmallScreen ? 3 : 1.5}>
@@ -622,7 +617,7 @@ function MarketDetail() {
                                                         width: '100%'
                                                     }}
                                                     onClick={() => handleDeleteMarket(
-                                                        market.marketNo)}>시장삭제
+                                                        market.marketNo)}>시장 삭제
                                                 </MDButton>
                                              </Grid>
                                              <Grid item xs={isSmallScreen ? 3 : 1.5}>
@@ -635,154 +630,152 @@ function MarketDetail() {
                                                         width: '100%'
                                                     }}
                                                     onClick={() => handleAddShop(
-                                                        market)}>상점추가
+                                                        market)}>상점 추가
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 1.4}>
-                                                <MDBox>
-                                                    <Grid container
-                                                          justifyContent="flex-end"
-                                                          spacing={0.5}>
-                                                        <Grid item>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="primary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                    width: '100%'
-                                                                }}
-                                                                onClick={openParkingModal}
-                                                            >
-                                                                주차장
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item xs={isSmallScreen ? 3 : 1.5}>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="primary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                    width: '100%'
-                                                                }}
-                                                                onClick={openTransportModal}
-                                                            >
-                                                                대중교통
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item xs={isSmallScreen ? 3 : 1.4}>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="secondary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                    width: '100%'
-                                                                }}
-                                                                onClick={openDirectionsModal}>
-                                                                길찾기
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item xs={isSmallScreen ? 3 : 1.7}>
-                                                            <MDButton
-                                                                onClick={handleGetTopFiveItemPage}
-                                                                variant="gradient"
-                                                                sx={{
-                                                                    backgroundColor: '#50bcdf',
-                                                                    color: '#ffffff',
-                                                                    fontSize: '0.75rem',
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                    width: '100%'
-                                                                }}
-                                                                color="warning"
-                                                            >상품별순위
-                                                            </MDButton>
-                                                        </Grid>
-                                                    </Grid>
-                                                </MDBox>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 3 : 1.4}>
+
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="primary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openParkingModal}
+                                                >
+                                                    주차장
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 3 : 1.5}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="primary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openTransportModal}
+                                                >
+                                                    대중교통
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 3 : 1.4}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="secondary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openDirectionsModal}>
+                                                    길찾기
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 3 : 1.7}>
+                                                <MDButton
+                                                    onClick={handleGetTopFiveItemPage}
+                                                    variant="gradient"
+                                                    sx={{
+                                                        backgroundColor: '#50bcdf',
+                                                        color: '#ffffff',
+                                                        fontSize: '0.75rem',
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    color="warning"
+                                                >상품별순위
+                                                </MDButton>
                                             </Grid>
                                         </Grid>
                                     </>
                                 ) : (
                                     <>
-                                        <Grid container>
-                                            <Grid item xs={1.5}>
+                                        <Grid container spacing={isSmallScreen ? 1 : 1}>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 2 : 2}>
                                                 <MDButton
                                                     onClick={handlePostOrCancelLike}
                                                     variant="gradient"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '0.75rem',
-                                                        padding: '4px 8px',   // Adjust padding (top-bottom left-right)
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
                                                     }}
                                                     color="info">좋아요 👍🏻
                                                 </MDButton>
                                             </Grid>
-
-                                            <Grid item xs={10.5}>
-                                                <MDBox>
-                                                    <Grid container
-                                                          justifyContent="flex-end"
-                                                          spacing={0.5}>
-                                                        <Grid item>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="primary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                }}
-                                                                onClick={openParkingModal}
-                                                            >
-                                                                주차장
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="secondary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                }}
-                                                                onClick={openTransportModal}
-                                                            >
-                                                                대중교통
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            <MDButton
-                                                                variant="gradient"
-                                                                color="secondary"
-                                                                sx={{
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                }}
-                                                                onClick={openDirectionsModal}>
-                                                                길찾기
-                                                            </MDButton>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            <MDButton
-                                                                onClick={handleGetTopFiveItemPage}
-                                                                variant="gradient"
-                                                                sx={{
-                                                                    backgroundColor: '#50bcdf',
-                                                                    color: '#ffffff',
-                                                                    fontSize: '0.75rem',
-                                                                    fontFamily: 'JalnanGothic',
-                                                                    padding: '4px 8px',
-                                                                    minWidth: '100px',
-                                                                }}
-                                                                color="warning"
-                                                            >
-                                                                🔥상품별 가격 순위
-                                                            </MDButton>
-                                                        </Grid>
-                                                    </Grid>
-                                                </MDBox>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 2 : 2}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="primary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openParkingModal}
+                                                >
+                                                    주차장
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 2 : 2}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="secondary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openTransportModal}
+                                                >
+                                                    대중교통
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 2 : 2}>
+                                                <MDButton
+                                                    variant="gradient"
+                                                    color="secondary"
+                                                    sx={{
+                                                        fontFamily: 'JalnanGothic',
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                    onClick={openDirectionsModal}>
+                                                    길찾기
+                                                </MDButton>
+                                            </Grid>
+                                            <Grid item
+                                                  xs={isSmallScreen ? 4 : 4}>
+                                                <MDButton
+                                                    onClick={handleGetTopFiveItemPage}
+                                                    variant="gradient"
+                                                    color="warning"
+                                                    sx={{
+                                                        fontSize: '1rem',
+                                                        fontFamily: 'JalnanGothic',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
+                                                    }}
+                                                >
+                                                    🔥상품별 가격 순위
+                                                </MDButton>
                                             </Grid>
                                         </Grid>
                                     </>
@@ -793,10 +786,20 @@ function MarketDetail() {
                 </Grid>
 
                 {/*지도*/}
-                <Grid item xs={12} md={6}>
-                    <MDBox pt={0} pb={3}>
-                        <Card style={{height: '295px'}}>
-                            <MDBox component="form" role="form">
+                <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
+                    <MDBox>
+                        <Card style={{height: {
+                                xs: '295px',
+                                sm: '295px',
+                                md: '295px',
+                                lg: '295px'
+                            },}}>
+                            <MDBox component="form" role="form"  style={{height: {
+                                    xs: '295px',
+                                    sm: '295px',
+                                    md: '295px',
+                                    lg: '295px'
+                                },}} >
                                 <MapComponent marketAddr={market.marketAddr}
                                               marketName={market.marketName}/>
                             </MDBox>
@@ -806,10 +809,10 @@ function MarketDetail() {
             </Grid>
 
             {/*카테고리*/}
-            <Grid container spacing={0.1} justifyContent="center">
+            <Grid container spacing={1} justifyContent="center">
                 {Object.keys(categoryMapping).map((displayCategory, index) => (
                     <Grid item
-                          xs={4} md={index === 0 ? 0.85 : index === 1 ? 1.0
+                          sx={2} sm={2} md={2.5} lg={index === 0 ? 0.85 : index === 1 ? 1.0
                               : index === 2 ? 1.0 : index === 3 ? 1.0
                                   : index === 4 ? 1.0 : index === 5 ? 1.15
                                       : index === 6 ? 1.25 : index === 7 ? 1.0
@@ -825,7 +828,7 @@ function MarketDetail() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '0.88rem',
+                                    fontSize: '1rem',
                                     fontFamily: 'JalnanGothic',
                                     width: '100%'
                                 }}
@@ -838,7 +841,7 @@ function MarketDetail() {
             </Grid>
 
             {/* 시장 내 상점 목록 */}
-            <Grid container pt={2} pb={3}>
+            <Grid container pt={2} pb={10}>
                 {(isCategoryFiltered && filteredShops.length === 0) ? (
                     <Grid item xs={12}>
                         <MDTypography variant="body2" textAlign="center"
@@ -849,7 +852,7 @@ function MarketDetail() {
                 ) : (
                     (isCategoryFiltered ? filteredShops : shops).map(
                         (shop, index) => (
-                            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                            <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
                                 <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
                                     <Card sx={{
                                         width: '100%',
@@ -981,7 +984,7 @@ function MarketDetail() {
                     '&:hover': {
                         backgroundColor: '#33a3d0',
                     },
-                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                    '@media (max-width: 900px)': { // 모바일에 대한 스타일링
                         bottom: '70px',  // 모바일에서의 위치 조정
                         right: '15px',   // 모바일에서의 위치 조정
                     }

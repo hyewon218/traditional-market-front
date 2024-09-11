@@ -26,7 +26,6 @@ import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout'
 // Data
 import {
 getAllWithdrawMembers,
-getWithdrawMemberOne,
 getWithdrawMemberListSearch,
 deleteAllWithdrawMembers,
 deleteWithdrawMember,
@@ -240,7 +239,7 @@ function WithdrawMemberManage() {
         return pagination;
     };
 
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     return (
         <DashboardLayout>

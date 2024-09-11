@@ -134,15 +134,21 @@ function Chat() {
 
     return (
         <DashboardLayout>
+            <MDBox
+                pb={50}
+                sx={{
+                    mt: {xs: 5, sm: 5, md: 7, lg: 1},
+                }}
+            >
                 <Grid container>
-                    <Grid item xs={9.5}>
+                    <Grid item xs={12} sm={12} md={9} lg={9.5}>
                         <MDTypography fontWeight="bold"
                                       sx={{ml: 4, mt: 2, fontSize: '2rem'}}
                                       variant="body2">
                             채팅 상담 목록
                         </MDTypography>
                     </Grid>
-                    <Grid item xs={2.5}>
+                    <Grid item xs={12} sm={12} md={3} lg={2.5}>
                         {!isAdmin && (
                             <MDBox>
                                 <MDButton
@@ -151,6 +157,7 @@ function Chat() {
                                     size="large"
                                     sx={{
                                         ...buttonStyle,
+                                        mt: 1,
                                     }}
                                 >
                                     채팅 상담하기
@@ -228,6 +235,7 @@ function Chat() {
                     </MDPagination>
                 </MDPagination>
             )}
+            </MDBox>
         </DashboardLayout>
     )
 }

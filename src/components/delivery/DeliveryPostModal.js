@@ -30,7 +30,7 @@ const DeliveryPostModal = ({callbackFn}) => {
     const [deliveries, setDeliveries] = useState({...initState})
     const [isOpen, setIsOpen] = useState(true);
 
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
     const handleChangeDelivery = (e) => {
         const {name, value} = e.target;
@@ -103,29 +103,49 @@ const DeliveryPostModal = ({callbackFn}) => {
     return ReactDOM.createPortal(
         <DashboardLayout>
             <div
-                className={`fixed top-0 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
-                <MDBox pt={3} pb={3}
+                className={`fixed top-20 md:top-36 lg:top-20 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
+                <MDBox
+                       sx={{
+                           mt: {xs: 5, sm: 5, md: 3, lg: 3},
+                       }}
                        style={{
-                           width: isSmallScreen ? '80%' : '50%',
-                           maxWidth: '900px',
-                           marginTop: '10px'
+                           width: isSmallScreen ? '70%' : '50%',
                        }}>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3}>
-                            <div>
+                        <MDBox pt={2} pb={3} px={3}
+                               style={{
+                                   maxHeight: isSmallScreen? '66vh':'84vh', // 폼의 최대 높이
+                                   overflowY: 'auto', // 폼 내부 스크롤
+                                   borderRadius: '15px', // 모서리 라운드
+                               }}
+                               sx={{
+                                   '&::-webkit-scrollbar': {
+                                       width: '8px',
+                                   },
+                                   '&::-webkit-scrollbar-track': {
+                                       background: '#f1f1f1',
+                                       borderRadius: '12px', // 스크롤 트랙 라운드
+                                   },
+                                   '&::-webkit-scrollbar-thumb': {
+                                       background: '#888',
+                                       borderRadius: '12px', // 스크롤바 자체 라운드
+                                   },
+                                   '&::-webkit-scrollbar-thumb:hover': {
+                                       background: '#555',
+                                   },
+                               }}
+                        >
+                            <div style={{ marginTop: '5px' }}>
                                 <MDTypography
                                     fontWeight="bold"
                                     variant="body2"
-                                    fontSize="25px"
+                                    fontSize="20px"
                                 >
                                     배송지 추가
                                 </MDTypography>
                             </div>
 
-                            <MDBox component="form" role="form"  style={{
-                                maxHeight: '700px', // Adjust the height as needed
-                                overflowY: 'auto'  // Enable vertical scrolling
-                            }}>
+                            <MDBox component="form" role="form">
                                 <MDBox mb={2}>
                                     <MDInput
                                         name="title"
@@ -209,7 +229,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         fullWidth/>
                                 </MDBox>
 
-                                <MDBox mt={4} mb={1} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     <MDButton onClick={handlePostDelivery}
                                               variant="gradient"
                                               style={{ marginRight: '10px' }}

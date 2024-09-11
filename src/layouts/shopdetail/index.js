@@ -29,7 +29,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
 import MDButton from '../../components/MD/MDButton';
-import MDPagination from '../../components/MD/MDPagination';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
@@ -82,7 +81,7 @@ function ShopDetail() {
     const [showButtons, setShowButtons] = useState(false); // 관리자 또는 상점 소유자일 경우 활성화
 
     const navigate = useNavigate();
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const isSmallScreen = useMediaQuery('(max-width:900px)');
 
     useEffect(() => {
         // 현재 사용자 정보 가져오기
@@ -404,7 +403,7 @@ function ShopDetail() {
                     left: 0,
                     right: 0,
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    marginTop: '1rem',
+                    mt: {xs:5, sm:5, md:7, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -420,19 +419,19 @@ function ShopDetail() {
                     />
                 </a>
             </MDBox>
-            <Grid container spacing={isSmallScreen ? 0 : 2}>
-                <Grid item xs={12} md={6}>
-                    <MDBox pt={0} pb={3}>
+            <Grid container spacing={isSmallScreen ? 2 : 2}>
+                <Grid item xs={12} sm={12} md={12} lg={6}>
+                    <MDBox>
                         <Card>
-                            <MDBox pt={isSmallScreen ? 1 : 2} pb={isSmallScreen ? 1 : 2} px={isSmallScreen ? 1 : 2.5}>
-                                <Grid container spacing={isSmallScreen ? 1 : 2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <MDTypography fontWeight="bold" variant="body2" sx={{ fontSize: isSmallScreen ? '0.875rem' : '1rem' }}>
+                            <MDBox pt={2} pb={2} px={2.5}>
+                                <Grid container>
+                                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                                        <MDTypography fontWeight="bold" variant="body2" sx={{ fontSize: '1rem' }}>
                                             {shop.shopName}
                                         </MDTypography>
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <MDTypography variant="body2" textAlign={isSmallScreen ? 'center' : 'right'} sx={{ fontSize: isSmallScreen ? '0.875rem' : '1rem' }}>
+                                    <Grid item xs={6} sm={6} md={6} lg={6}>
+                                        <MDTypography variant="body2" textAlign='right' sx={{ fontSize: '1rem' }}>
                                             {shop.shopAddr}
                                         </MDTypography>
                                     </Grid>
@@ -444,9 +443,8 @@ function ShopDetail() {
                                                 <img
                                                     alt="product"
                                                     key={i}
-                                                    width={isSmallScreen ? 150 : 230}
+                                                    width={230}
                                                     src={`${imgUrl.imageUrl}`}
-                                                    style={{ marginBottom: '8px' }}
                                                 />
                                             ))}
                                         </div>
@@ -455,28 +453,25 @@ function ShopDetail() {
                                 <MDTypography
                                     variant="body2"
                                     sx={{
-                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
-                                        marginLeft: '8px',
-                                        textAlign: isSmallScreen ? 'center' : 'left'
+                                        fontSize: '0.75rem',
+                                        marginLeft: '8px'
                                     }}
-                                >
-                                    {likes} LIKES
+                                >{likes} LIKES
                                 </MDTypography>
 
-                                <Grid container spacing={isSmallScreen ? 1 : 0.5} justifyContent={isSmallScreen ? 'center' : 'flex-start'}>
-                                    <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
+                                <Grid container spacing={isSmallScreen ? 1 : 0.5}>
+                                    <Grid item xs={isSmallScreen ? 2 : 2}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
-                                                padding: isSmallScreen ? '2px 4px' : '4px 8px',
-                                                width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
+                                                fontSize: '1rem',
+                                                padding: '4px 8px',
+                                                width: '100%'
                                             }}
                                             color="info"
-                                        >
-                                            좋아요 👍🏻
+                                        >좋아요 👍🏻
                                         </MDButton>
                                     </Grid>
                                     {showButtons && (
@@ -487,9 +482,9 @@ function ShopDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
-                                                        padding: isSmallScreen ? '2px 4px' : '4px 8px',
-                                                        width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
                                                     }}
                                                     onClick={() => handleModifyShop(shop)}
                                                 >
@@ -502,9 +497,9 @@ function ShopDetail() {
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
-                                                        padding: isSmallScreen ? '2px 4px' : '4px 8px',
-                                                        width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
+                                                        fontSize: '1rem',
+                                                        padding: '4px 8px',
+                                                        width: '100%'
                                                     }}
                                                     onClick={() => handleAddItem(shop)}
                                                 >
@@ -520,9 +515,9 @@ function ShopDetail() {
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
-                                                    padding: isSmallScreen ? '2px 4px' : '4px 8px',
-                                                    width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
+                                                    fontSize: '1rem',
+                                                    padding: '4px 8px',
+                                                    width: '100%'
                                                 }}
                                                 onClick={() => handleDeleteShop(shop.shopNo)}
                                             >
@@ -531,7 +526,6 @@ function ShopDetail() {
                                         </Grid>
                                     )}
                                 </Grid>
-
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -539,8 +533,8 @@ function ShopDetail() {
 
 
                 {/* 지도 */}
-                <Grid item xs={12} md={6} mb={isSmallScreen ? 3 : 0}>
-                    <Card style={{height: '278px'}}>
+                <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
+                    <Card style={{height: '270px'}}>
                         <MDBox component="form" role="form">
                             <ShopMapComponent
                                 containerId="shop-map" // 지도 컨테이너 ID
@@ -555,7 +549,7 @@ function ShopDetail() {
             {/*카테고리*/}
             <Grid container spacing={isSmallScreen ? 1 : 2} justifyContent="center" >
                 {Object.keys(categoryMapping).map((displayCategory) => (
-                    <Grid item xs={isSmallScreen ? 2 : 3} sm={2} md={1.5} key={displayCategory}>
+                    <Grid item xs={2} sm={2} md={2} lg={1} key={displayCategory}>
                         <MDBox>
                             <MDButton
                                 onClick={() => handleCategorySelect(displayCategory)}
@@ -567,7 +561,7 @@ function ShopDetail() {
                                     fontSize: '1.35rem',
                                     fontFamily: 'JalnanGothic',
                                     marginBottom: 1.5,
-                                    width: '100%' // 버튼이 그리드 항목의 전체 너비를 차지하도록 설정
+                                    width: '100%'
                                 }}
                             >
                                 {displayCategory}
@@ -578,7 +572,7 @@ function ShopDetail() {
             </Grid>
 
             {/*상점 내 상품 조회*/}
-            <Grid container pt={0} pb={3}>
+            <Grid container pb={10}>
                 {(isCategoryFiltered && filteredItems.length === 0) ? (
                     <Grid item xs={12}>
                         <MDTypography variant="body2" textAlign="center"
@@ -590,7 +584,7 @@ function ShopDetail() {
                     (isCategoryFiltered ? filteredItems : items)
                     .filter(item => item.itemSellStatus !== 'SOLD_OUT')
                     .map((item, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={index} ref={index === (isCategoryFiltered ? filteredItems : items).length - 1 ? lastItemElementRef : null}>
+                        <Grid item xs={12} sm={6} md={6} lg={3} key={index} ref={index === (isCategoryFiltered ? filteredItems : items).length - 1 ? lastItemElementRef : null}>
                             <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
                                 <Card>
                                     <MDBox pt={2} pb={2} px={3}>
@@ -730,7 +724,7 @@ function ShopDetail() {
                     '&:hover': {
                         backgroundColor: '#33a3d0',
                     },
-                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
+                    '@media (max-width: 900px)': { // 모바일에 대한 스타일링
                         bottom: '70px',  // 모바일에서의 위치 조정
                         right: '15px',   // 모바일에서의 위치 조정
                     }

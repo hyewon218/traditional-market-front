@@ -224,7 +224,6 @@ import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
 import MDInput from '../../../components/MD/MDInput';
 import MDButton from '../../../components/MD/MDButton';
-import MDTypography from '../../../components/MD/MDTypography';
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 import { postNotice, getNotice } from '../../../api/noticeApi';
 import ReactQuill from 'react-quill';
@@ -328,7 +327,7 @@ function PostNoticeAdmin() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '80vh', // 화면 전체 높이를 차지하도록
-          '@media (max-width:600px)': {
+          '@media (max-width:900px)': {
             height: 'auto', // 모바일에서는 높이를 자동으로 조정
           },
         }}

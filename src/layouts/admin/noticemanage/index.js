@@ -272,7 +272,7 @@ function NoticeManage() {
         return pagination;
     };
 
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     return (
          <DashboardLayout>

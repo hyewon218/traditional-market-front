@@ -20,7 +20,6 @@ import {useMediaQuery} from '@mui/material';
 
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
-import Button from '@mui/material/Button';
 import MDTypography from '../../../components/MD/MDTypography';
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 
@@ -175,7 +174,7 @@ function ShopManageSeller() {
         return pagination;
     };
 
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     return (
         <DashboardLayout>

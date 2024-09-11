@@ -493,11 +493,11 @@ import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
-import { Modal, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Modal, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 // Data
 import { putOrderStatus } from "../../../api/adminApi";
-import { getOrderListSearchSeller, getOrderListSeller, getOrderStatusListSeller, getCancelOrderListSeller, cancelOrderKakao } from "../../../api/orderApi";
+import { getOrderListSearchSeller, getOrderListSeller, getOrderStatusListSeller, cancelOrderKakao } from "../../../api/orderApi";
 
 function OrderManageSeller() {
     const [orders, setOrders] = useState([]);
@@ -653,7 +653,7 @@ function OrderManageSeller() {
         }
     };
 
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
 
     const styles = {
           table: { width: '100%', borderCollapse: 'collapse' },

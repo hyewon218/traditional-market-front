@@ -789,7 +789,7 @@ function Topnav({ brandName, logoSrc }) {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: '#f5f5f5', // 흰색 배경
+          backgroundColor: '#ECEFF3', // 흰색 배경
           color: 'black', // 검정색 글씨
           zIndex: (theme) => theme.zIndex.drawer + 1, // 드로워보다 위에 표시
           '@media (max-width: 900px)': {
