@@ -81,7 +81,7 @@ function ShopDetail() {
     const [showButtons, setShowButtons] = useState(false); // 관리자 또는 상점 소유자일 경우 활성화
 
     const navigate = useNavigate();
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         // 현재 사용자 정보 가져오기
@@ -389,7 +389,7 @@ function ShopDetail() {
             <MDBox
                 sx={{
                     width: '70%',
-                    height: { xs: '2rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
+                    height: { xs: '3rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
                     margin: '0 auto',
                     backgroundColor: '#f5f5f5', // 배경색 예시
                     display: 'flex',
@@ -399,11 +399,8 @@ function ShopDetail() {
                     boxShadow: 1,
                     position: 'relative', // 상대 위치로 설정
                     zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
-                    top: 0,
-                    left: 0,
-                    right: 0,
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    mt: {xs:5, sm:5, md:7, lg:1},
+                    mt: {xs:-3, sm:1, md:1, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -460,13 +457,13 @@ function ShopDetail() {
                                 </MDTypography>
 
                                 <Grid container spacing={isSmallScreen ? 1 : 0.5}>
-                                    <Grid item xs={isSmallScreen ? 2 : 2}>
+                                    <Grid item xs={isSmallScreen ? 3 : 2}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: '1rem',
+                                                fontSize: isSmallScreen ? '0.7rem' :'1rem',
                                                 padding: '4px 8px',
                                                 width: '100%'
                                             }}
@@ -482,7 +479,7 @@ function ShopDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
+                                                        fontSize: isSmallScreen ? '0.7rem' :'1rem',
                                                         padding: '4px 8px',
                                                         width: '100%'
                                                     }}
@@ -497,7 +494,7 @@ function ShopDetail() {
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
+                                                        fontSize: isSmallScreen ? '0.7rem' :'1rem',
                                                         padding: '4px 8px',
                                                         width: '100%'
                                                     }}
@@ -515,7 +512,7 @@ function ShopDetail() {
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: '1rem',
+                                                    fontSize: isSmallScreen ? '0.7rem' :'1rem',
                                                     padding: '4px 8px',
                                                     width: '100%'
                                                 }}
@@ -547,9 +544,9 @@ function ShopDetail() {
             </Grid>
 
             {/*카테고리*/}
-            <Grid container spacing={isSmallScreen ? 1 : 2} justifyContent="center" >
+            <Grid container spacing={isSmallScreen ? 0.4 : 2} justifyContent="center" >
                 {Object.keys(categoryMapping).map((displayCategory) => (
-                    <Grid item xs={2} sm={2} md={2} lg={1} key={displayCategory}>
+                    <Grid item xs={2.4} sm={2} md={2} lg={1} key={displayCategory}>
                         <MDBox>
                             <MDButton
                                 onClick={() => handleCategorySelect(displayCategory)}
@@ -558,10 +555,13 @@ function ShopDetail() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1.35rem',
+                                    fontSize: isSmallScreen ? '0.8rem':'1.35rem',
                                     fontFamily: 'JalnanGothic',
                                     marginBottom: 1.5,
-                                    width: '100%'
+                                    width: '100%',
+                                    padding: isSmallScreen ? '1px 2px':'4px 8px',
+                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                 }}
                             >
                                 {displayCategory}
@@ -724,7 +724,7 @@ function ShopDetail() {
                     '&:hover': {
                         backgroundColor: '#33a3d0',
                     },
-                    '@media (max-width: 900px)': { // 모바일에 대한 스타일링
+                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
                         bottom: '70px',  // 모바일에서의 위치 조정
                         right: '15px',   // 모바일에서의 위치 조정
                     }

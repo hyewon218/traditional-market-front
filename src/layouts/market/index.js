@@ -261,7 +261,7 @@ function Market() {
             <MDBox
                 sx={{
                     width: '70%',
-                    height: { xs: '2rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
+                    height: { xs: '3rem', sm: '8rem' }, // sm 이하 1.5cm, sm 이상 2cm
                     margin: '0 auto',
                     backgroundColor: '#f5f5f5', // 배경색 예시
                     display: 'flex',
@@ -272,7 +272,7 @@ function Market() {
                     position: 'relative', // 상대 위치로 설정
                     zIndex: 10, // 광고가 다른 콘텐츠 위에 표시되도록 함
                     marginBottom: '1rem', // 광고 구역과 그 아래 콘텐츠 사이의 여백
-                    mt: {xs:5, sm:5, md:7, lg:1},
+                    mt: {xs:-3, sm:1, md:1, lg:1},
                 }}
             >
                 <a href="https://www.example.com" target="_blank" rel="noopener noreferrer">
@@ -310,12 +310,11 @@ function Market() {
                             }
                         }}
                         sx={{
-                            width: isSmallScreen ? '88%' : '93%',
-                            height: '60px',
-                            padding: '8px',
-                            borderRadius: '8px',
-                            marginRight: '50px',
-                            marginLeft: isSmallScreen ? '6px' : '0',
+                            width: isSmallScreen ? '80%' : '93%',
+                            height: isSmallScreen ? '50px' :'60px',
+                            padding: isSmallScreen ? '3px' :'8px',
+                            borderRadius: isSmallScreen ? '10px' :'8px',
+                            marginRight: isSmallScreen ? '43px' : '50px',
                         }}
                     />
                     <IconButton onClick={handleSearchSubmit}
@@ -326,22 +325,14 @@ function Market() {
 
                 {/* 알람 아이콘 */}
                 <IconButton onClick={handleNotificationIcon}
-                            sx={{ position: 'absolute', right: isSmallScreen ? '80px' : '160px', marginTop: '0' }}>
-                    <Badge badgeContent={notificationCount} color="primary">
-                        <NotificationImportant />
-                    </Badge>
-                </IconButton>
-
-                {/* 알람 아이콘 */}
-                <IconButton onClick={handleNotificationIcon}
-                            sx={{ position: 'absolute', right: isSmallScreen ? '80px' : '160px', marginTop: '0' }}>
+                            sx={{ position: 'absolute', right: isSmallScreen ? '50px' : '160px', marginTop: '0' }}>
                     <Badge badgeContent={notificationCount} color="primary">
                         <NotificationImportant />
                     </Badge>
                 </IconButton>
                 {/* 장바구니 아이콘 + 장바구니에 담긴 상품 갯수 */}
                 <IconButton onClick={handleCartIcon}
-                            sx={{ position: 'absolute', right: isSmallScreen ? '30px' : '100px', marginTop: '0' }}>
+                            sx={{ position: 'absolute', right: isSmallScreen ? '10px' : '100px', marginTop: '0' }}>
                     <Badge badgeContent={cartItems.length} color="primary">
                         <ShoppingCartIcon/>
                     </Badge>
@@ -349,11 +340,11 @@ function Market() {
             </MDBox>
 
             {/* 카테고리 */}
-            <Grid container spacing={1} justifyContent="center">
+            <Grid container spacing={isSmallScreen ? 0.8 : 1} justifyContent="center">
                 {["전체", "서울", "인천", "경기도", "강원", "충청도", "경상도", "전라도",
                     "제주도"].map(
                     (category, index) => (
-                        <Grid item xs={3} sm={3} md={2} lg={index < 3 ? 1.0 : 1.15} key={category}>
+                        <Grid item xs={3} sm={4} md={2} lg={index < 3 ? 1.0 : 1.15} key={category}>
                             <MDBox>
                                 <MDButton
                                     onClick={() => handleCategorySelect(category)}
@@ -362,9 +353,12 @@ function Market() {
                                     sx={{
                                         backgroundColor: '#50bcdf',
                                         color: '#ffffff',
-                                        fontSize: '1.1rem',
+                                        fontSize: isSmallScreen ? '0.9rem' :'1.1rem',
                                         fontFamily: 'JalnanGothic',
-                                        width: '100%'
+                                        width: '100%',
+                                        padding: isSmallScreen ? '2px 4px' : '4px 8px',
+                                        lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                     }}
                                 >
                                     {category}
@@ -476,7 +470,7 @@ function Market() {
                     '&:hover': {
                         backgroundColor: '#33a3d0',
                     },
-                    '@media (max-width: 900px)': { // 모바일에 대한 스타일링
+                    '@media (max-width: 600px)': { // 모바일에 대한 스타일링
                         bottom: '70px',  // 모바일에서의 위치 조정
                         right: '15px',   // 모바일에서의 위치 조정
                     }
