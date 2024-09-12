@@ -24,7 +24,7 @@ const CartComponent = () => {
     const [counts, setCounts] = useState({}); // 각 장바구니 항목의 수량을 관리하기 위해
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const total = useMemo(() => {
         let total = 0
@@ -120,7 +120,7 @@ const CartComponent = () => {
         <DashboardLayout>
             <MDBox
                 sx={{
-                    mt: {xs: 5, sm: 5, md: 7, lg: 1},
+                    mt: {xs:-3, sm:-3, md:1, lg:1},
                 }}
             >
                 <Grid container spacing={2}>
@@ -170,32 +170,31 @@ const CartComponent = () => {
                                                                 className="border-2 rounded-2"
                                                                 style={{
                                                                     marginBottom: '16px',
-                                                                    marginLeft: '-10px',
+                                                                    marginLeft: isSmallScreen ? '-15px' :'-10px',
+                                                                    marginRight: isSmallScreen ? '18px' :'0px',
                                                                 }}>
                                                                 <MDBox pt={2}
                                                                        px={2}
                                                                        pb={2}
                                                                 >
                                                                     <Grid container spacing={2}>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={12}
-                                                                            sm={2}>
+                                                                        <Grid item xs={1.5}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
                                                                                 <button
                                                                                     style={{
                                                                                         padding: '2px 4px',
-                                                                                        fontSize: '0.875rem',  // Smaller font size
+                                                                                        fontSize: isSmallScreen ? '0.7rem' :'0.875rem',
                                                                                         color: 'white',
                                                                                         backgroundColor: '#f56565', // Red color
-                                                                                        width: '24px',  // Smaller width
-                                                                                        height: '24px', // Smaller height
+                                                                                        width: isSmallScreen ? '18px' :'24px',  // Smaller width
+                                                                                        height: isSmallScreen ? '18px' :'24px', // Smaller height
                                                                                         borderRadius: '0.5rem', // Rounded corners
                                                                                         display: 'flex',
                                                                                         alignItems: 'center',
-                                                                                        justifyContent: 'center'
+                                                                                        justifyContent: 'center',
+
                                                                                     }}
                                                                                     onClick={() => handleDeleteCartItem(
                                                                                         cartItem.cartItemNo)}
@@ -204,10 +203,7 @@ const CartComponent = () => {
                                                                                 </button>
                                                                             </MDTypography>
                                                                         </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={7}
-                                                                            sm={5}>
+                                                                        <Grid item xs={5.5}>
                                                                             <div
                                                                                 style={{
                                                                                     position: 'relative',
@@ -223,7 +219,7 @@ const CartComponent = () => {
                                                                                                 cartItem.cartItemNo)}
                                                                                             style={{
                                                                                                 position: 'absolute',
-                                                                                                left: '50px'
+                                                                                                left: isSmallScreen ? '0px':'50px'
                                                                                             }}
                                                                                             disabled={cartItem.imageList.length
                                                                                                 <= 1}
@@ -247,7 +243,7 @@ const CartComponent = () => {
                                                                                                 cartItem.cartItemNo)}
                                                                                             style={{
                                                                                                 position: 'absolute',
-                                                                                                right: '50px'
+                                                                                                right: isSmallScreen ? '0px':'50px'
                                                                                             }}
                                                                                             disabled={cartItem.imageList.length
                                                                                                 <= 1}
@@ -257,10 +253,7 @@ const CartComponent = () => {
                                                                                     )}
                                                                             </div>
                                                                         </Grid>
-                                                                        <Grid
-                                                                            item
-                                                                            xs={5}
-                                                                        >
+                                                                        <Grid item xs={5}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
                                                                                 sx={{fontSize: '1.5rem'}}
@@ -269,7 +262,7 @@ const CartComponent = () => {
                                                                             </MDTypography>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
-                                                                                sx={{fontSize: '2rem'}}
+                                                                                sx={{fontSize: isSmallScreen ? '1rem' :'2rem'}}
                                                                                 variant="body2">
                                                                                 {cartItem.price
                                                                                     * (counts[cartItem.cartItemNo]
@@ -280,9 +273,7 @@ const CartComponent = () => {
                                                                                 sx={{mt: 2}}>
                                                                                 <Grid
                                                                                     item
-                                                                                    xs={isSmallScreen
-                                                                                        ? 3
-                                                                                        : 2}>
+                                                                                    xs={isSmallScreen ? 4 : 2}>
                                                                                     <MDTypography
                                                                                         fontWeight="bold"
                                                                                         variant="body2">
@@ -310,9 +301,7 @@ const CartComponent = () => {
                                                                                 </Grid>
                                                                                 <Grid
                                                                                     item
-                                                                                    xs={isSmallScreen
-                                                                                        ? 3
-                                                                                        : 2}>
+                                                                                    xs={isSmallScreen ? 3 : 2}>
                                                                                     <MDTypography
                                                                                         fontWeight="bold"
                                                                                         variant="body2">
@@ -339,15 +328,14 @@ const CartComponent = () => {
 
                                             <Grid item xs={12} sm={12} md={5} lg={5}
                                                   sx={{
-                                                      paddingRight: isSmallScreen
-                                                          ? '20px' : '26px'
+                                                      paddingRight: isSmallScreen ? '0px' : '26px'
                                                   }}>
                                                 <div className="w-full"
                                                      style={{marginBottom: '20px'}}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         sx={{
-                                                            fontSize: '2rem',
+                                                            fontSize: isSmallScreen ? '1.5rem':'2rem',
                                                             paddingTop: '9px',
                                                             paddingLeft: '13px'
                                                         }}

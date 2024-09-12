@@ -792,7 +792,7 @@ function Topnav({ brandName, logoSrc }) {
           backgroundColor: '#ECEFF3', // 흰색 배경
           color: 'black', // 검정색 글씨
           zIndex: (theme) => theme.zIndex.drawer + 1, // 드로워보다 위에 표시
-          '@media (max-width: 900px)': {
+          '@media (max-width: 600px)': {
             flexDirection: 'column',
             zIndex: 1200,
           },
@@ -802,7 +802,7 @@ function Topnav({ brandName, logoSrc }) {
           sx={{
             justifyContent: 'space-between',
             flexDirection: 'row',
-            '@media (max-width: 900px)': {
+            '@media (max-width: 600px)': {
               flexDirection: 'column',
               alignItems: 'center',
             },
@@ -979,7 +979,7 @@ function Topnav({ brandName, logoSrc }) {
             width: '100%',
             boxSizing: 'border-box',
             WebkitOverflowScrolling: 'touch', // 터치 스크롤을 지원하도록 설정
-            gap: '0.5rem', // 메뉴 항목 간의 간격 추가
+            //gap: '0.5rem', // 메뉴 항목 간의 간격 추가
             flexWrap: 'nowrap', // 메뉴 항목이 한 줄로 유지되도록
           }}
         >
@@ -992,7 +992,7 @@ function Topnav({ brandName, logoSrc }) {
                 component={Link}
                 to={item.route}
                 sx={{
-                  fontSize: '1rem',
+                  fontSize: '0.9rem',
                   fontFamily: 'JalnanGothic',
                   padding: '0.75rem 1.5rem',
                   backgroundColor: location.pathname === item.route ? '#ADD8E6' : 'transparent',
@@ -1000,7 +1000,7 @@ function Topnav({ brandName, logoSrc }) {
                     backgroundColor: '#ADD8E6',
                   },
                   whiteSpace: 'nowrap',
-                  margin: '0 0.25rem', // 버튼 간의 간격 추가
+                  margin: '0rem', // 버튼 간의 간격 추가
                   flex: '1 1 auto', // 버튼 너비를 유동적으로 설정
                   minWidth: '90px', // 버튼의 최소 너비 설정
                 }}
@@ -1016,7 +1016,7 @@ function Topnav({ brandName, logoSrc }) {
                 color="inherit"
                 onClick={handleAdminMenuClick}
                 sx={{
-                  fontSize: '1rem',
+                  fontSize: '0.9rem',
                   fontFamily: 'JalnanGothic',
                   padding: '0.75rem 1.5rem',
                   color: 'black',
