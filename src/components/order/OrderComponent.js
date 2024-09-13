@@ -38,7 +38,7 @@ const OrderComponent = () => {
 
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
 
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const total = useMemo(() => {
         let total = 0
@@ -186,7 +186,7 @@ const OrderComponent = () => {
             }
             <MDBox
                 sx={{
-                    mt: {xs: 5, sm: 5, md: 7, lg: 1},
+                    mt: {xs:-3, sm:-3, md:1, lg:1},
                 }}
             >
                 <Grid container spacing={2}>
@@ -215,7 +215,9 @@ const OrderComponent = () => {
                     <MDTypography
                         fontWeight="bold"
                         variant="body2"
-                        fontSize="25px"
+                        sx={{
+                            fontSize: isSmallScreen ? '20px':'25px',
+                        }}
                     >
                         배송지
                     </MDTypography>
@@ -233,7 +235,7 @@ const OrderComponent = () => {
                                                     <Grid item xs={isSmallScreen ? 8 : 8.5} >
                                                         <MDTypography
                                                             fontWeight="bold"
-                                                            sx={{ fontSize: '1.3rem'}}
+                                                            sx={{ fontSize: isSmallScreen ? '1rem':'1.3rem'}}
                                                             variant="body2"
                                                         >
                                                             {deliveryAddressTitleMessage}
@@ -249,7 +251,10 @@ const OrderComponent = () => {
                                                                 color: '#ffffff',
                                                                 fontFamily: 'JalnanGothic',
                                                                 height: '40px',
-                                                                fontSize: '0.875rem',
+                                                                fontSize: isSmallScreen ? '0.7rem':'0.875rem',
+                                                                padding: isSmallScreen
+                                                                    ? '1px 2px'
+                                                                    : '4px 8px',
                                                                 mr:2
                                                             }}
                                                         >{buttonText}
@@ -260,6 +265,7 @@ const OrderComponent = () => {
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         variant="body2"
+                                                        sx={{ fontSize: isSmallScreen ? '0.7rem':'1rem'}}
                                                     >
                                                         {selectedDelivery?.phone || primaryDelivery.phone}
                                                     </MDTypography>
@@ -268,6 +274,7 @@ const OrderComponent = () => {
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         variant="body2"
+                                                        sx={{ fontSize: isSmallScreen ? '0.7rem':'1rem'}}
                                                     >
                                                         {deliveryAddress}
                                                     </MDTypography>
@@ -284,8 +291,10 @@ const OrderComponent = () => {
                             </MDBox>
                         </Grid>
 
-                        <Grid item xs={12} md={4.5} sx={{marginLeft: isSmallScreen? '20px' : '35px'
-                        }}>
+                        <Grid item
+                              xs={12} md={4.5}
+                              sx={{marginLeft: isSmallScreen? '0px' : '35px', mb: isSmallScreen? '20px':'0'}}
+                        >
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center'
@@ -312,14 +321,16 @@ const OrderComponent = () => {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <MDTypography fontWeight="bold" variant="body2"
-                                  fontSize="25px">
+                                  sx={{
+                                      fontSize: isSmallScreen ? '20px':'25px',
+                                  }}>
                         주문상품
                     </MDTypography>
                     <Grid container>
                         <Grid item xs={12} sm={12} md={12} lg={6.9}>
                             <MDBox pb={3}>
                                 <Card>
-                                    <MDBox pt={1}>
+                                    <MDBox>
                                         <ul>
                                             {Array.isArray(orderItems)
                                                 && orderItems.map(orderItem => {
@@ -331,15 +342,16 @@ const OrderComponent = () => {
                                                             style={{ marginBottom: '16px' }}>
                                                             <MDBox px={2}>
                                                                 <Grid container spacing={2}>
-                                                                    <Grid item xs={7} md={6}>
+                                                                    <Grid item xs={7} md={6} lg={6}>
                                                                         {/* Image Navigation */}
                                                                         <div
                                                                             style={{
                                                                                 position: 'relative',
                                                                                 display: 'flex',
-                                                                                width: isSmallScreen ? '200px' : '280px',
+                                                                                width: isSmallScreen ? '150px' : '280px',
                                                                                 height: isSmallScreen ? '120px' : '160px',
-                                                                                marginTop: isSmallScreen ? '13px' : '10px'
+                                                                                marginTop: isSmallScreen ? '13px' : '10px',
+                                                                                marginLeft: isSmallScreen ? '-20px':'0'
                                                                             }}
                                                                         >
                                                                             {hasImages && (
@@ -347,7 +359,7 @@ const OrderComponent = () => {
                                                                                     onClick={() => handlePreviousImage(orderItem.orderItemNo)}
                                                                                     style={{
                                                                                         position: 'absolute',
-                                                                                        left: '-30px',
+                                                                                        left: isSmallScreen ? '-10px' :'-30px',
                                                                                         top: '50%',
                                                                                         transform: 'translateY(-50%)',
                                                                                         zIndex: 1
@@ -364,7 +376,8 @@ const OrderComponent = () => {
                                                                                     maxWidth: '100%',
                                                                                     maxHeight: '100%',
                                                                                     objectFit: 'contain',
-                                                                                    marginRight: isSmallScreen? '0px':'50px'
+                                                                                    marginRight: isSmallScreen? '0px':'50px',
+                                                                                    marginTop: isSmallScreen? '0px':'0px',
                                                                                 }}
                                                                             />
 
@@ -373,7 +386,7 @@ const OrderComponent = () => {
                                                                                     onClick={() => handleNextImage(orderItem.orderItemNo)}
                                                                                     style={{
                                                                                         position: 'absolute',
-                                                                                        right: isSmallScreen? '-15px':'0',
+                                                                                        right: isSmallScreen? '-10px':'0',
                                                                                         top: '50%',
                                                                                         transform: 'translateY(-50%)',
                                                                                         zIndex: 1
@@ -385,16 +398,16 @@ const OrderComponent = () => {
                                                                         </div>
                                                                     </Grid>
 
-                                                                    <Grid item xs={5} md={6}  sx={{ mt: isSmallScreen? 2:4 }}>
+                                                                    <Grid item xs={5} md={6}  sx={{ mt: isSmallScreen? 3:4 }}>
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{ fontSize: '1.5rem' }}
+                                                                            sx={{ fontSize: isSmallScreen ? '1rem':'1.5rem' }}
                                                                             variant="body2">
                                                                             {orderItem.itemName}
                                                                         </MDTypography>
                                                                         <MDTypography
                                                                             fontWeight="bold"
-                                                                            sx={{ fontSize: '1.5rem' }}
+                                                                            sx={{ fontSize: isSmallScreen ? '1.3rem':'1.5rem' }}
                                                                             variant="body2">
                                                                             {orderItem.orderPrice * orderItem.count}원
                                                                         </MDTypography>
@@ -406,6 +419,7 @@ const OrderComponent = () => {
                                                                                 xs={7}
                                                                                 sx={{ mt: 1 }}>
                                                                                 <MDTypography
+                                                                                    sx={{ fontSize: isSmallScreen ? '0.75rem':'1.5rem' }}
                                                                                     fontWeight="bold"
                                                                                     variant="body2">
                                                                                     수량 : {orderItem.count}개
@@ -431,7 +445,9 @@ const OrderComponent = () => {
                     <MDTypography
                         fontWeight="bold"
                         variant="body2"
-                        fontSize="25px"
+                        sx={{
+                            fontSize: isSmallScreen ? '20px':'25px',
+                        }}
                     >
                         결제수단
                     </MDTypography>

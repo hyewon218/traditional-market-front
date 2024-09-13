@@ -653,7 +653,7 @@ function OrderManageSeller() {
         }
     };
 
-    const isMobile = useMediaQuery('(max-width:900px)');
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     const styles = {
           table: { width: '100%', borderCollapse: 'collapse' },

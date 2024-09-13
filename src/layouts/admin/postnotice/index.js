@@ -327,7 +327,7 @@ function PostNoticeAdmin() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '80vh', // 화면 전체 높이를 차지하도록
-          '@media (max-width:900px)': {
+          '@media (max-width:600px)': {
             height: 'auto', // 모바일에서는 높이를 자동으로 조정
           },
         }}

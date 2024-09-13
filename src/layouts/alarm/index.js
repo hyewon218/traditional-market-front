@@ -45,6 +45,7 @@ import {
 import {getShopOne} from "../../api/shopApi";
 import {getItemOne} from "../../api/itemApi";
 import {getInquiryOne} from "../../api/inquiryApi";
+import {useMediaQuery} from "@mui/material";
 
 const notificationTypeMessages = {
     NEW_LIKE_ON_MARKET: "시장에 좋아요가 눌렸어요!",
@@ -74,6 +75,8 @@ function Alarm() {
 
     const navigate = useNavigate();
 
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+
     const changePage = (pageNum) => {
         console.log('change pages');
         console.log(pageNum);
@@ -83,7 +86,7 @@ function Alarm() {
     };
 
     const handleGetAlarm = (pageNum = 0) => {
-        const pageParam = { page: pageNum, size: 10 };
+        const pageParam = {page: pageNum, size: 10};
         getNotificationList(pageParam).then(data => {
             console.log('알람 목록 조회!!!');
             console.log(data);
@@ -174,7 +177,7 @@ function Alarm() {
             || notificationType === "NEW_CHAT_ON_CHATROOM") {
             fetchChatRoom(targetId);
         } else if (notificationType === "NEW_INQUIRY_ANSWER"
-            || notificationType ===  "NEW_INQUIRY") {
+            || notificationType === "NEW_INQUIRY") {
             fetchInquiryAnswer(targetId);
         } else if (notificationType === "NEW_LIKE_ON_MARKET" ||
             notificationType === "NEW_COMMENT_ON_MARKET") {
@@ -212,7 +215,8 @@ function Alarm() {
             eventSource.addEventListener("error", function (event) {
                 console.log("Error occurred:", event);
                 if (event.target.readyState === EventSource.CLOSED) { // 연결이 닫힌 경우
-                    console.log("Connection closed, attempting to reconnect...");
+                    console.log(
+                        "Connection closed, attempting to reconnect...");
                     // 3초 후 connect() 함수를 사용하여 다시 연결을 시도
                     setTimeout(() => connect(), 3000);
                 }
@@ -235,77 +239,81 @@ function Alarm() {
 
     return (
         <DashboardLayout>
-            <MDBox
-                pb={50}
-                sx={{
-                    mt: {xs: 5, sm: 5, md: 9, lg: 1},
-                }}
-            >
-                <MDTypography fontWeight="bold"
-                              sx={{ml: 4, fontSize: '2rem'}}
-                              variant="body2">
-                    알람 목록
-                </MDTypography>
-                <MDBox pt={1} pb={2}>
-                    {alarms.length > 0 ? (
-                        alarms.map((notification) => (
-                            <MDBox pt={2} pb={2} px={3} key={notification.id}>
-                                <Card sx={{
-                                    backgroundColor: notification.read
-                                        ? '#ffffff' : '#fff8b0',
-                                    cursor: 'pointer'
-                                }}
-                                      onClick={() => handleAlarmClick(
-                                          notification)}
-                                >
-                                    <MDBox pt={2} pb={2} px={3}>
-                                        <Grid container>
-                                            <Grid item xs={8}>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                >
-                                                    {notificationTypeMessages[notification.notificationType]
-                                                        || "알림이 도착했습니다!"}
-                                                </MDTypography>
-                                            </Grid>
-                                            <Grid item xs={4}>
-                                                <MDTypography fontWeight="bold"
-                                                              variant="body2"
-                                                >
-                                                    {notification.createTime}
-                                                </MDTypography>
-                                            </Grid>
+            <MDTypography fontWeight="bold"
+                          sx={{
+                              ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
+                              fontSize: isSmallScreen? '1.2rem':'2rem'
+                          }}
+                          variant="body2">
+                알람 목록
+            </MDTypography>
+            <MDBox pt={1} pb={2}>
+                {alarms.length > 0 ? (
+                    alarms.map((notification) => (
+                        <MDBox pt={isSmallScreen? 1:1} pb={1} px={isSmallScreen? 1:3} key={notification.id}>
+                            <Card sx={{
+                                backgroundColor: notification.read
+                                    ? '#ffffff' : '#fff8b0',
+                                cursor: 'pointer'
+                            }}
+                                  onClick={() => handleAlarmClick(
+                                      notification)}
+                            >
+                                <MDBox pt={2} pb={1} px={isSmallScreen? 2:2}>
+                                    <Grid container>
+                                        <Grid item xs={8} lg={8}>
+                                            <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.8rem':'1rem'
+                                                }}
+                                                fontWeight="bold"
+                                                variant="body2"
+                                            >
+                                                {notificationTypeMessages[notification.notificationType]
+                                                    || "알림이 도착했습니다!"}
+                                            </MDTypography>
                                         </Grid>
-                                    </MDBox>
-                                </Card>
-                            </MDBox>
-                        ))
-                    ) : (
-                        <MDTypography fontWeight="bold"
-                                      sx={{ml: 4, mt: 2, fontSize: '1.5rem'}}
-                                      variant="body2">
-                            알람이 없습니다
-                        </MDTypography>
-                    )}
-                </MDBox>
-
-                {alarms.length > 0 && totalPage > 1 && (
-                    <MDPagination>
-                        <MDPagination item>
-                            <KeyboardArrowLeftIcon/>
-                        </MDPagination>
-                        {[...Array(totalPage).keys()].map((i) => (
-                            <MDPagination item key={i}
-                                          onClick={() => changePage(i)}>
-                                {i + 1}
-                            </MDPagination>
-                        ))}
-                        <MDPagination item>
-                            <KeyboardArrowRightIcon/>
-                        </MDPagination>
-                    </MDPagination>
+                                        <Grid item xs={4} lg={4}>
+                                            <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                }}
+                                                fontWeight="bold"
+                                                variant="body2"
+                                            >
+                                                {notification.createTime}
+                                            </MDTypography>
+                                        </Grid>
+                                    </Grid>
+                                </MDBox>
+                            </Card>
+                        </MDBox>
+                    ))
+                ) : (
+                    <MDTypography fontWeight="bold"
+                                  sx={{ml: 4, mt: 2, fontSize: '1.5rem'}}
+                                  variant="body2">
+                        알람이 없습니다
+                    </MDTypography>
                 )}
             </MDBox>
+
+            {alarms.length > 0 && totalPage > 1 && (
+                <MDPagination>
+                    <MDPagination item>
+                        <KeyboardArrowLeftIcon/>
+                    </MDPagination>
+                    {[...Array(totalPage).keys()].map((i) => (
+                        <MDPagination item key={i}
+                                      onClick={() => changePage(i)}>
+                            {i + 1}
+                        </MDPagination>
+                    ))}
+                    <MDPagination item>
+                        <KeyboardArrowRightIcon/>
+                    </MDPagination>
+                </MDPagination>
+            )}
         </DashboardLayout>
     );
 }

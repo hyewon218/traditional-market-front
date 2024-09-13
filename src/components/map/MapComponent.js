@@ -2,8 +2,12 @@ import React, {useEffect} from 'react';
 import Grid from "@mui/material/Grid";
 import MDTypography from "../MD/MDTypography";
 import './MapComponent.css';
+import {useMediaQuery} from "@mui/material";
+import theme from "../../assets/theme";
 
 const MapComponent = ({marketAddr, marketName}) => {
+
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     function showMarketInfo(address, marketName) {
         // address가 없을 경우 기본 주소 설정
@@ -246,49 +250,49 @@ const MapComponent = ({marketAddr, marketName}) => {
     return (
         <div>
             <Grid container>
-                <Grid item xs={8} md={9.1} lg={8}>
+                <Grid item xs={7} md={9.1} lg={8}>
                     <div style={{borderRadius: '12px'}} id="map" className="map"></div>
                 </Grid>
-                <Grid item xs={4} md={2.9} lg={4}>
+                <Grid item xs={5} md={2.9} lg={4}>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '1.1rem', mb: 1}}
+                        sx={{fontSize: isSmallScreen? '1rem':'1.1rem', mb: 1}}
                         textAlign="right">
                         날씨 정보
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="current-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="feels-like"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="min-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="max-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="humidity"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: '0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
                         textAlign="right">
                         <p id="weather-description"></p>
                     </MDTypography>

@@ -260,7 +260,7 @@ function MyInfoDetail() {
                         mt: 2,
                         display: 'flex',
                         gap: 1,
-                        '@media (max-width: 900px)': {
+                        '@media (max-width: 600px)': {
                             gap: '1.5cm',
                         },
                     }}
@@ -278,7 +278,7 @@ function MyInfoDetail() {
                     sx={{
                         p: 3,
                         mb: 2,
-                        '@media (max-width: 900px)': {
+                        '@media (max-width: 600px)': {
                             p: '1.5cm',
                         },
                     }}
@@ -289,7 +289,7 @@ function MyInfoDetail() {
                             xs={12}
                             md={8}
                             sx={{
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}
@@ -353,7 +353,7 @@ function MyInfoDetail() {
                                     mt: 2,
                                     display: 'flex',
                                     gap: 1,
-                                    '@media (max-width: 900px)': {
+                                    '@media (max-width: 600px)': {
                                         gap: '1.5cm',
                                     },
                                 }}
@@ -402,7 +402,7 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 900px)': {
+                            '@media (max-width: 600px)': {
                                 p: '1.5cm',
                             },
                         }}
@@ -424,7 +424,7 @@ function MyInfoDetail() {
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}
@@ -463,7 +463,7 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 900px)': {
+                            '@media (max-width: 600px)': {
                                 p: '1.5cm',
                             },
                         }}
@@ -491,7 +491,7 @@ function MyInfoDetail() {
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}
@@ -530,7 +530,7 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 900px)': {
+                            '@media (max-width: 600px)': {
                                 p: '1.5cm',
                             },
                         }}
@@ -562,7 +562,7 @@ function MyInfoDetail() {
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}
@@ -601,7 +601,7 @@ function MyInfoDetail() {
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 900px)': {
+                            '@media (max-width: 600px)': {
                                 p: '1.5cm',
                             },
                         }}
@@ -615,7 +615,7 @@ function MyInfoDetail() {
                         <Box
                             sx={{
                                 mt: 2,
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}
@@ -643,7 +643,7 @@ function MyInfoDetail() {
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 900px)': {
+                                '@media (max-width: 600px)': {
                                     gap: '1.5cm',
                                 },
                             }}

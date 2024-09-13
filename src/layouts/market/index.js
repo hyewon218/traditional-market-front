@@ -290,7 +290,7 @@ function Market() {
             </MDBox>
 
             {/* 시장 검색 */}
-            <MDBox pt={2} pb={5}
+            <MDBox pb={2}
                    sx={{ display: 'flex', justifyContent: 'center', flexDirection: isSmallScreen ? 'column' : 'row' }}>
                 <Card sx={{
                     width: isSmallScreen ? '75%' : isMediumScreen ? '70%' : '50%',

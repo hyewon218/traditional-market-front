@@ -14,7 +14,7 @@
  */
 
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 
 // @mui material components
@@ -49,7 +49,10 @@ function TopFiveItem() {
 
     const navigate = useNavigate();
 
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+
+    const topFiveRef = useRef(null);  // 스크롤할 TOP 5 영역에 대한 ref 생성
+
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category);
@@ -69,6 +72,10 @@ function TopFiveItem() {
         getListTopFiveItem(market.marketNo, itemName).then(data => {
                 setItems(data);
                 console.log(data);
+            // 데이터가 로드된 후, 스크롤을 TOP 5 목록으로 이동
+            if (topFiveRef.current) {
+                topFiveRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
             }).catch(error => {
             console.error("TOP 5 상품 조회에 실패했습니다.", error);
         });
@@ -98,16 +105,16 @@ function TopFiveItem() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}
-                   sx={{display: 'flex', justifyContent: 'center'}}>
+            <MDBox pb={3}
+                   sx={{display: 'flex', justifyContent: 'center', mt: {xs:-1, sm:5, md:7, lg:1},}}>
                 <Card sx={{
                     width: isSmallScreen? '75%':'50%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: isSmallScreen? '10px 30px':'10px 20px',
+                    padding: isSmallScreen? '1px 20px':'10px 20px',
                 }}> <MDTypography fontWeight="bold"
-                                  sx={{fontSize: '1.5rem', pb:3, pt:3}}
+                                  sx={{fontSize: isSmallScreen? '1.0rem':'1.5rem', pb:3, pt:3}}
                                   variant="body2">
                     원하시는 상품의 카테고리를 먼저 선택해주세요!
                 </MDTypography>
@@ -116,9 +123,9 @@ function TopFiveItem() {
             </MDBox>
 
             {/* 카테고리 */}
-            <Grid container spacing={1} justifyContent="center">
+            <Grid container spacing={isSmallScreen ? 1 : 1} justifyContent="center">
                 {["과일", "채소", "육류", "생선"].map((category) => (
-                    <Grid item xs={3} md={1.0} key={category}>
+                    <Grid item xs={3} sm={3} md={2} lg={1} key={category}>
                         <MDBox>
                             <MDButton
                                 onClick={() => handleCategorySelect(category)}
@@ -127,9 +134,12 @@ function TopFiveItem() {
                                 sx={{
                                     backgroundColor: '#50bcdf',
                                     color: '#ffffff',
-                                    fontSize: '1.5rem',
-                                    padding: isSmallScreen? '10px 30px':'10px 20px',
-                                    fontFamily: 'JalnanGothic'
+                                    fontSize: isSmallScreen? '1.0rem':'1.5rem',
+                                    padding: isSmallScreen? '2px 4px':'10px 20px',
+                                    fontFamily: 'JalnanGothic',
+                                    width: '100%',
+                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                 }}
                             >
                                 {category}
@@ -149,10 +159,10 @@ function TopFiveItem() {
                     </MDBox>
                 ) : (
                     categoryItems.map((item, index) => (
-                        <Grid item xs={3} sm={3} md={2} lg={2} key={index}>
-                            <MDBox pt={1} pb={1} px={1} key={item.id}>
+                        <Grid item xs={4} sm={3} md={3} lg={2} key={index}>
+                            <MDBox pt={1} pb={1} px={1} sx={{ textAlign: 'center'}} key={item.id}>
                                 <Card>
-                                    <MDBox pt={2} pb={2} px={3}>
+                                    <MDBox pt={2} pb={2} px={1}>
                                         <Grid container>
                                             <Grid item xs={12}>
                                                 <MDTypography fontWeight="bold"
@@ -173,12 +183,11 @@ function TopFiveItem() {
             </Grid>
 
             {/* TOP 5 상품 목록 조회 */}
-
-            <Grid container pt={1} pb={3} justifyContent="center">
+            <Grid container pt={1} pb={10} justifyContent="center">
                 {items && items.length > 0 ? (
                     <>
                         {/* TOP 5 목록 텍스트 */}
-                        <MDBox pt={3} pb={3} sx={{ textAlign: 'center', width: '100%', fontSize: '2.5rem' }}>
+                        <MDBox pt={3} pb={3} sx={{ textAlign: 'center', width: '100%', fontSize: '2.5rem' }} ref={topFiveRef}>
                             <MDTypography fontWeight="bold">
                                 TOP 5 상품 목록
                             </MDTypography>
@@ -186,7 +195,7 @@ function TopFiveItem() {
 
                         {/* 상품 목록 */}
                         {items.map((item, index) => (
-                            <Grid item xs={12} sm={12} md={2.4} lg={2} key={index}>
+                            <Grid item xs={12} sm={12} md={12} lg={2} key={index}>
                                 <MDBox pt={1} pb={1} px={1} key={item.id}>
                                     <Card>
                                         <MDBox pt={2} pb={2} px={3}>
