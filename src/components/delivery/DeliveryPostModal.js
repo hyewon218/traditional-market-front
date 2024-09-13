@@ -30,7 +30,7 @@ const DeliveryPostModal = ({callbackFn}) => {
     const [deliveries, setDeliveries] = useState({...initState})
     const [isOpen, setIsOpen] = useState(true);
 
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleChangeDelivery = (e) => {
         const {name, value} = e.target;
@@ -103,14 +103,15 @@ const DeliveryPostModal = ({callbackFn}) => {
     return ReactDOM.createPortal(
         <DashboardLayout>
             <div
-                className={`fixed top-20 md:top-36 lg:top-20 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
+                className={`fixed top-36 lg:top-20 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
                 <MDBox
-                       sx={{
-                           mt: {xs: 5, sm: 5, md: 3, lg: 3},
-                       }}
-                       style={{
-                           width: isSmallScreen ? '70%' : '50%',
-                       }}>
+                    sx={{
+                        mt: {xs: 1, sm: 1, md: 3, lg: 3},
+                    }}
+                    style={{
+                        width: isSmallScreen? '90%':'80%',
+                        maxWidth: '600px',
+                    }}>
                     <Card>
                         <MDBox pt={2} pb={3} px={3}
                                style={{

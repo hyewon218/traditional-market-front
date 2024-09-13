@@ -18,6 +18,7 @@ import {getMember} from "../../api/memberApi"
 import MDPagination from "../../components/MD/MDPagination";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import {useMediaQuery} from "@mui/material";
 
 const initState = {
     no: '',
@@ -33,6 +34,8 @@ function Chat() {
 
     const navigate = useNavigate()
     const {moveToLoginReturn, isAuthorization, isAdmin} = useCustomLogin() // 로그인이 필요한 페이지
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     // 회원 정보 가져오기
     const fetchMemberInfo = () => {
@@ -135,20 +138,22 @@ function Chat() {
     return (
         <DashboardLayout>
             <MDBox
-                pb={50}
+                pb={30}
                 sx={{
-                    mt: {xs: 5, sm: 5, md: 7, lg: 1},
+                    mt: isSmallScreen? 0:3,
                 }}
             >
                 <Grid container>
-                    <Grid item xs={12} sm={12} md={9} lg={9.5}>
+                    <Grid item xs={6} sm={12} md={9} lg={9.5}>
                         <MDTypography fontWeight="bold"
-                                      sx={{ml: 4, mt: 2, fontSize: '2rem'}}
+                                      sx={{
+                                          ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:2,
+                                          fontSize: isSmallScreen? '1.2rem':'2rem'}}
                                       variant="body2">
                             채팅 상담 목록
                         </MDTypography>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={3} lg={2.5}>
+                    <Grid item xs={6} sm={12} md={3} lg={2.5}>
                         {!isAdmin && (
                             <MDBox>
                                 <MDButton
@@ -170,7 +175,7 @@ function Chat() {
             <MDBox pt={1} pb={2}>
                 {Array.isArray(chatRoom) && chatRoom.length > 0 ? (
                     chatRoom.map((chatRoom) => (
-                        <MDBox pt={2} pb={2} px={3} key={chatRoom.no}>
+                        <MDBox pt={isSmallScreen? 1:1} pb={1} px={isSmallScreen? 1:3} key={chatRoom.no}>
                             <Card
                                 sx={{
                                     backgroundColor: isAdmin ? (chatRoom.read
@@ -179,26 +184,37 @@ function Chat() {
                                 }}
                                 onClick={() => handleDetail(chatRoom)}
                             >
-                                <MDBox pt={2} pb={2} px={3}>
+                                <MDBox pt={2} pb={1} px={isSmallScreen? 2:2}>
                                     <Grid container>
-                                        <Grid item xs={8}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
+                                        <Grid item xs={5} lg={8}>
+                                            <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.8rem':'1rem'
+                                                }}
+                                                fontWeight="bold"
+                                                variant="body2">
                                                 {chatRoom.title}
                                             </MDTypography>
                                         </Grid>
                                         {isAdmin && (
-                                            <Grid item xs={2}>
+                                            <Grid item xs={3} lg={2}>
                                                 <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                    }}
                                                     fontWeight="bold"
                                                     variant="body2">
                                                     {chatRoom.username}
                                                 </MDTypography>
                                             </Grid>
                                         )}
-                                        <Grid item xs={2}>
-                                            <MDTypography fontWeight="bold"
-                                                          variant="body2">
+                                        <Grid item xs={4} lg={2}>
+                                            <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                }}
+                                                fontWeight="bold"
+                                                variant="body2">
                                                 {chatRoom.createTime}
                                             </MDTypography>
                                         </Grid>
@@ -209,7 +225,7 @@ function Chat() {
                     ))
                 ) : (
                     <MDTypography fontWeight="bold"
-                                  sx={{ml: 4, mt: 2, fontSize: '1.5rem'}}
+                                  sx={{ml: 4, mt: 2, fontSize:  isSmallScreen? '1rem':'1.5rem'}}
                                   variant="body2">
                         채팅 상담이 없습니다
                     </MDTypography>

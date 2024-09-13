@@ -22,6 +22,7 @@ import useCustomLogin from "../../../hooks/useCustomLogin";
 
 // Data
 import { loginPost, logoutPost } from "../../../api/memberApi";
+import {useMediaQuery} from "@mui/material";
 
 const initState = {
     memberId: '',
@@ -32,6 +33,8 @@ function SignIn() {
     const [loginParam, setLoginParam] = useState({ ...initState })
     const [openIdModal, setOpenIdModal] = useState(false);
     const [openPwModal, setOpenPwModal] = useState(false);
+
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const {
         moveToPath,
@@ -88,10 +91,18 @@ function SignIn() {
         return (
             <DashboardLayout>
                 <MDBox
-                    style={{ height: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    sx={{
+                        mt: {xs:-10, sm:1, md:1, lg:-2},
+                        mb: 10,
+                        px: {md: 5, lg: 3},
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '90vh',
+                    }}
                 >
                     <Grid container spacing={3} justifyContent="center">
-                        <Grid item xs={8} lg={4}>
+                        <Grid item xs={12} sm={12} md={12} lg={4}>
                             <Card>
                                 <MDBox
                                     variant="gradient"
@@ -104,13 +115,14 @@ function SignIn() {
                                     mb={1}
                                     textAlign="center"
                                 >
-                                    <MDTypography variant="h4"
+                                    <MDTypography
+                                        variant="h4"
                                         fontWeight="medium"
                                         color="white" mt={1}>
                                         로그인
                                     </MDTypography>
                                 </MDBox>
-                                <MDBox pt={4} pb={3} px={3}>
+                                <MDBox pt={3} pb={3} px={3}>
                                     <MDBox component="form" role="form" onSubmit={handleSubmit}>
                                         <MDBox mb={2}>
                                             <MDInput
@@ -132,8 +144,19 @@ function SignIn() {
                                                 fullWidth
                                             />
                                         </MDBox>
-                                        <MDBox mt={4} mb={1}>
-                                            <MDButton type="submit"
+                                        <MDBox mt={isSmallScreen? 1:4} mb={1}>
+                                            <MDButton
+                                                sx={{
+                                                    backgroundColor: '#50bcdf',
+                                                    color: '#ffffff',
+                                                    fontSize: isSmallScreen ? '0.8rem':'1rem',
+                                                    fontFamily: 'JalnanGothic',
+                                                    width: '100%',
+                                                    padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                    lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                }}
+                                                type="submit"
                                                 variant="gradient"
                                                 color="info" fullWidth>
                                                 로그인
@@ -145,38 +168,64 @@ function SignIn() {
                                                     <MDButton
                                                         component="a"
                                                         href="http://localhost:8080/oauth2/authorization/google"
+                                                        //href="http://3.36.96.0:8080/oauth2/authorization/google"
                                                         variant="outlined"
                                                         color="info"
-                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                        sx={{
+                                                            width: '150px',
+                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                            fontFamily: 'JalnanGothic',
+                                                            margin: '0 10px'
+                                                        }}
                                                     >
                                                         구글
                                                     </MDButton>
                                                     <MDButton
                                                         component="a"
                                                         href="http://localhost:8080/oauth2/authorization/naver"
+                                                        //href="http://3.36.96.0:8080/oauth2/authorization/naver"
                                                         variant="outlined"
                                                         color="info"
-                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                        sx={{
+                                                            width: '150px',
+                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                            fontFamily: 'JalnanGothic',
+                                                            margin: '0 10px'
+                                                        }}
                                                     >
                                                         네이버
                                                     </MDButton>
                                                     <MDButton
                                                         component="a"
                                                         href="http://localhost:8080/oauth2/authorization/kakao"
+                                                        //href="http://3.36.96.0:8080/oauth2/authorization/kakao"
                                                         variant="outlined"
                                                         color="info"
-                                                        sx={{ width: '150px', margin: '0 10px' }}
+                                                        sx={{
+                                                            width: '150px',
+                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                            fontFamily: 'JalnanGothic',
+                                                            margin: '0 10px'
+                                                        }}
                                                     >
                                                         카카오
                                                     </MDButton>
                                                 </MDBox>
                                             </MDTypography>
                                         </MDBox>
-                                        <MDBox mt={3} mb={1} textAlign="center">
-                                            <MDTypography variant="button"
+                                        <MDBox mt={isSmallScreen? 2:3} mb={isSmallScreen? -1:1} textAlign="center">
+                                            <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                }}
+                                                componen
+                                                variant="button"
                                                 color="text">
                                                 계정이 없으신가요?{' '}
                                                 <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                    }}
                                                     component={Link}
                                                     to="/authentication/signup"
                                                     variant="button"
@@ -187,12 +236,14 @@ function SignIn() {
                                                     회원가입
                                                 </MDTypography>
                                             </MDTypography>
-                                            <MDBox mt={2}>
-                                                <MDButton variant="text" color="info" onClick={handleOpenIdModal}>
+                                            <MDBox mt={isSmallScreen? 0:2}>
+                                                <MDButton
+                                                    variant="text" color="info" onClick={handleOpenIdModal}>
                                                     아이디 찾기
                                                 </MDButton>
                                                 {' | '}
-                                                <MDButton variant="text" color="info" onClick={handleOpenPwModal}>
+                                                <MDButton
+                                                    variant="text" color="info" onClick={handleOpenPwModal}>
                                                     비밀번호 찾기
                                                 </MDButton>
                                             </MDBox>
@@ -217,10 +268,13 @@ function SignIn() {
         return (
             <DashboardLayout>
                 <MDBox
+                    sx={{
+                        mt: {xs:-10, sm:5, md:1, lg:-1},
+                    }}
                     style={{ height: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                     <Grid container spacing={3} justifyContent="center">
-                        <Grid item xs={8} lg={4}>
+                        <Grid item xs={12} lg={4}>
                             <Card>
                                 <MDBox
                                     variant="gradient"
@@ -233,16 +287,31 @@ function SignIn() {
                                     mb={1}
                                     textAlign="center"
                                 >
-                                    <MDTypography variant="h4"
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '1rem'
+                                                : '1.3rem'
+                                        }}
                                         fontWeight="medium"
                                         color="white" mt={1}>
                                         로그아웃 하시겠습니까?
                                     </MDTypography>
                                 </MDBox>
-                                <MDBox pt={4} pb={3} px={3}>
+                                <MDBox pt={1} pb={3} px={3}>
                                     <MDBox component="form" role="form">
                                         <MDBox mt={4} mb={1}>
                                             <MDButton
+                                                sx={{
+                                                    backgroundColor: '#50bcdf',
+                                                    color: '#ffffff',
+                                                    fontSize: isSmallScreen ? '0.8rem':'1rem',
+                                                    fontFamily: 'JalnanGothic',
+                                                    width: '100%',
+                                                    padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                    lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                }}
                                                 onClick={handleClickLogout}
                                                 variant="gradient" color="info"
                                                 fullWidth>

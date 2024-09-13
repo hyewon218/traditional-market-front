@@ -430,10 +430,14 @@ function ItemDetail() {
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                padding: '4px 8px',
+                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
                                                 minWidth: 'auto',
-                                                width: '100%',
+                                                width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                padding: isSmallScreen
+                                                    ? '1px 2px'
+                                                    : '4px 8px',
+                                                lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                             }}
                                             color="info"
                                         >

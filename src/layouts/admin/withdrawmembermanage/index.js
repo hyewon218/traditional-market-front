@@ -239,7 +239,7 @@ function WithdrawMemberManage() {
         return pagination;
     };
 
-    const isMobile = useMediaQuery('(max-width:900px)');
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     return (
         <DashboardLayout>

@@ -822,7 +822,6 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
@@ -1128,7 +1127,7 @@ function DeliveryManage() {
             fontSize: '1rem',
         },
         // 모바일 스타일
-        '@media (max-width: 900px)': {
+        '@media (max-width: 600px)': {
             deliveryItem: {
                 display: 'block',
                 textAlign: 'left',
@@ -1215,7 +1214,7 @@ function DeliveryManage() {
     };
 
     // 600px 이하일 때 true를 반환
-    const isMobile = useMediaQuery('(max-width:900px)');
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     return (
         <DashboardLayout>

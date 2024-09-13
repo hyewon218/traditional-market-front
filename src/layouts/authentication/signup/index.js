@@ -610,7 +610,7 @@ function SignUp() {
     const [isCustomDomain, setIsCustomDomain] = useState(true);
     const memberEmail = `${emailId}@${domain || customDomain}`;
 
-    const isSmallScreen = useMediaQuery('(max-width:900px)');
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     // 인증번호 일치 실시간 검증
     useEffect(() => {
@@ -863,7 +863,7 @@ function SignUp() {
             </div>
             <MDBox
                 sx={{
-                    mt: {xs:5, sm:5, md:12, lg:5},
+                    mt: {xs:1, sm:1, md:1, lg:5},
                     mb: 30,
                     px: {md: 5, lg: 3},
                     display: 'flex',
@@ -902,15 +902,15 @@ function SignUp() {
                                 }}
                             >
                                 {/* 아이디와 닉네임 입력 필드 사이에 경고 문구 추가 */}
-                                <MDBox mb={isSmallScreen? 5:1} p={2}
+                                <MDBox mb={isSmallScreen? 0:1} p={2}
                                        bgcolor="warning.main"
                                        borderRadius="5px">
                                     <MDTypography
                                         variant="body2"
                                         sx={{
                                             color: '#f44336',
-                                            fontSize: '0.86rem'
-                                        }} // 빨간색으로 직접 색상 지정
+                                            fontSize: isSmallScreen? '0.65rem':'0.86rem'
+                                        }}
                                     >
                                         ※ 아이디와 닉네임에 부적절한 단어를 사용하지 마세요. 적발 시 경고
                                         없이 제재 받을 수 있습니다.
@@ -919,12 +919,15 @@ function SignUp() {
 
                                 <MDBox component="form" role="form">
                                     {/* 이메일 입력 필드 */}
-                                    <MDBox mb={{xs:5, sm:5, md:5, lg:4}}>
+                                    <MDBox mb={{xs:2, sm:5, md:5, lg:4}}>
                                         <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
                                             variant="h6">이메일</MDTypography>
                                         <Grid container spacing={1}
                                               alignItems="center">
-                                            <Grid item xs={12} sm={3} md={3} lg={3}>
+                                            <Grid item xs={4} sm={3} md={3} lg={3}>
                                                 <MDInput
                                                     type="text"
                                                     onChange={(v) => setEmailId(
@@ -934,7 +937,7 @@ function SignUp() {
                                                 />
                                             </Grid>
                                             @
-                                            <Grid item xs={12} sm={3} md={3} lg={3}>
+                                            <Grid item xs={3.5} sm={3} md={3} lg={3}>
                                                 <MDInput
                                                     type="text"
                                                     value={isCustomDomain
@@ -945,7 +948,7 @@ function SignUp() {
                                                     disabled={!isCustomDomain}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={2.5} md={2.5} lg={2.5}>
+                                            <Grid item xs={3.5} sm={2.5} md={2.5} lg={2.5}>
                                                 <select
                                                     onChange={handleDomainChange}
                                                     value={domain}
@@ -982,7 +985,7 @@ function SignUp() {
                                                     {emailCheckError}
                                                 </MDTypography>
                                             )}
-                                            <Grid item xs={3} sm={3} md={3} lg={3}>
+                                            <Grid item xs={12} sm={3} md={3} lg={3}>
                                                 <MDButton
                                                     onClick={handleEmailCheck}
                                                     variant="gradient"
@@ -992,10 +995,12 @@ function SignUp() {
                                                     sx={{
                                                         backgroundColor: '#50bcdf',
                                                         color: '#ffffff',
-                                                        fontSize: '1rem',
+                                                        fontSize: isSmallScreen ? '0.8rem':'1rem',
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '10px 8px',
-                                                        width: '100%'
+                                                        width: '100%',
+                                                        padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                        lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                 >
                                                     이메일 중복 확인
@@ -1005,12 +1010,15 @@ function SignUp() {
                                     </MDBox>
 
                                     {/* 인증번호 입력 필드 */}
-                                    <MDBox mb={{xs:5, sm:5, md:5, lg:4}}>
+                                    <MDBox mb={{xs:2, sm:5, md:5, lg:4}}>
                                         <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
                                             variant="h6">인증번호</MDTypography>
                                         <Grid container spacing={1}
                                               alignItems="center">
-                                            <Grid item xs={5} sm={5} md={5} lg={5}>
+                                            <Grid item xs={6} sm={5} md={5} lg={5}>
                                                 <MDInput
                                                     type="text"
                                                     onChange={(v) => setEmailVerificationCode(
@@ -1019,11 +1027,8 @@ function SignUp() {
                                                     error={!!verificationError}
                                                     fullWidth
                                                     sx={{
-                                                        borderColor: isVerified
-                                                            ? 'success'
-                                                            : (verificationError
-                                                                ? 'error'
-                                                                : 'inherit'),
+                                                        borderColor: isVerified ? 'success'
+                                                            : (verificationError ? 'error' : 'inherit'),
                                                     }}
                                                 />
                                                 {emailCodeSending && (
@@ -1048,7 +1053,7 @@ function SignUp() {
                                                     </MDTypography>
                                                 )}
                                             </Grid>
-                                            <Grid item xs={2.5} sm={2.5} md={2.5} lg={2.5}>
+                                            <Grid item xs={6} sm={2.5} md={2.5} lg={2.5}>
                                                 <MDButton
                                                     onClick={handleSendEmailCode}
                                                     variant="gradient"
@@ -1058,11 +1063,13 @@ function SignUp() {
                                                     sx={{
                                                         backgroundColor: '#50bcdf',
                                                         color: '#ffffff',
-                                                        fontSize: '1rem',
+                                                        fontSize: isSmallScreen ? '0.8rem':'1rem',
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '10px 8px',
                                                         width: '100%',
-                                                        marginLeft: '10px'
+                                                        padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                        lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                        ml: isSmallScreen? 0: '10px'
                                                     }}
                                                 >
                                                     인증번호 전송
@@ -1072,12 +1079,15 @@ function SignUp() {
                                     </MDBox>
 
                                     {/* 아이디 입력 필드 */}
-                                    <MDBox mb={{xs:5, sm:5, md:5, lg:4}}>
+                                    <MDBox mb={{xs:2, sm:5, md:5, lg:4}}>
                                         <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
                                             variant="h6">아이디</MDTypography>
                                         <Grid container spacing={1}
                                               alignItems="center">
-                                            <Grid item xs={5} sm={5} md={5} lg={5}>
+                                            <Grid item xs={6} sm={5} md={5} lg={5}>
                                                 <ProfanityFilterMDInput
                                                     type="text"
                                                     onChange={(v) => setMemberId(
@@ -1101,7 +1111,7 @@ function SignUp() {
                                                     </MDTypography>
                                                 )}
                                             </Grid>
-                                            <Grid item xs={3} sm={3} md={3} lg={3}>
+                                            <Grid item xs={6} sm={3} md={3} lg={3}>
                                                 <MDButton
                                                     onClick={handleIdCheck}
                                                     variant="gradient"
@@ -1111,11 +1121,13 @@ function SignUp() {
                                                     sx={{
                                                         backgroundColor: '#50bcdf',
                                                         color: '#ffffff',
-                                                        fontSize: '1rem',
+                                                        fontSize: isSmallScreen ? '0.8rem':'1rem',
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '10px 8px',
                                                         width: '100%',
-                                                        marginLeft: '10px'
+                                                        padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                                        lineHeight: isSmallScreen ? 2.5 : 2,
+                                                        minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                        ml: isSmallScreen? 0: '10px'
                                                     }}
                                                 >
                                                     아이디 중복 확인
@@ -1126,20 +1138,14 @@ function SignUp() {
 
                                     {/* 비밀번호 입력 필드 */}
                                     <MDBox
-                                        mb={{xs: 5, sm: 5, md: 5, lg: 4}}
-                                        /*sx={{
-                                            width: {
-                                                xs: '100%',
-                                                sm: '80%',
-                                                md: '60%',
-                                                lg: '50%'
-                                            }, mx: 'auto'
-                                        }} // 화면 크기에 따라 너비 조정*/
-                                    >
+                                        mb={{xs:2, sm:5, md:5, lg:4}}>
                                         <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
                                             variant="h6">비밀번호</MDTypography>
                                         <Grid container spacing={1}>
-                                            <Grid item xs={8} sm={8} md={8} lg={8}>
+                                            <Grid item xs={12} sm={8} md={8} lg={8}>
                                                 <MDInput
                                                     type="password"
                                                     onChange={(v) => setMemberPw(
@@ -1202,12 +1208,14 @@ function SignUp() {
                                     </MDBox>
 
                                     {/* 비밀번호 확인 필드 */}
-                                    <MDBox mb={{xs: 5, sm: 5, md: 5, lg: 4}}>
-                                        <MDTypography variant="h6">비밀번호
-                                            확인</MDTypography>
+                                    <MDBox mb={{xs:2, sm:5, md:5, lg:4}}>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
+                                            variant="h6">비밀번호 확인</MDTypography>
                                         <Grid container spacing={1}>
-                                            <Grid item xs={8} sm={8} md={8}
-                                                  lg={8}>
+                                            <Grid item xs={12} sm={8} md={9} lg={8}>
                                                 <MDInput
                                                     type="password"
                                                     onChange={(v) => setConfirmPw(
@@ -1235,19 +1243,27 @@ function SignUp() {
                                     </MDBox>
 
                                     {/* 닉네임 입력 필드 */}
-                                    <MDBox mb={{xs: 5, sm: 5, md: 5, lg: 4}}>
+                                    <MDBox mb={{xs: 3, sm: 5, md: 5, lg: 4}}>
                                         <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.7rem' : '1rem'
+                                            }}
                                             variant="h6">닉네임</MDTypography>
-                                        <ProfanityFilterMDInput
-                                            type="text"
-                                            onChange={(v) => setMemberNickname(
-                                                v.target.value)}
-                                            placeholder="닉네임 입력"
-                                            fullWidth
-                                        />
+                                        <Grid container spacing={1}>
+                                            <Grid item xs={12} sm={8} md={9} lg={8}>
+                                                <ProfanityFilterMDInput
+                                                    type="text"
+                                                    onChange={(v) => setMemberNickname(
+                                                        v.target.value)}
+                                                    placeholder="닉네임 입력"
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                        </Grid>
                                     </MDBox>
 
-                                    <MDBox mt={4} mb={2}>
+                                    <MDBox mt={2} mb={1}>
                                         <MDButton
                                             onClick={handleSignUp}
                                             variant="gradient"
@@ -1256,10 +1272,12 @@ function SignUp() {
                                             sx={{
                                                 backgroundColor: '#50bcdf',
                                                 color: '#ffffff',
-                                                fontSize: '1.1rem',
+                                                fontSize: isSmallScreen ? '0.9rem' :'1.1rem',
                                                 fontFamily: 'JalnanGothic',
-                                                padding: '10px 8px',
                                                 width: '100%',
+                                                padding: isSmallScreen ? '2px 4px' : '10px 8px',
+                                                lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                             }}
                                         >
                                             회원가입
@@ -1267,10 +1285,17 @@ function SignUp() {
                                     </MDBox>
 
                                     <MDBox mb={1} textAlign="center">
-                                        <MDTypography variant="button"
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.7rem':'1rem'
+                                            }}
+                                            variant="button"
                                                       color="text">
                                             이미 계정이 있으신가요?{' '}
                                             <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                }}
                                                 component={Link}
                                                 to="/authentication/sign-in"
                                                 variant="button"

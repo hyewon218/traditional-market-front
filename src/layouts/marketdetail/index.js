@@ -539,15 +539,25 @@ function MarketDetail() {
                         <Card>
                             <MDBox pt={2} pb={2} px={2.5}>
                                 <Grid container>
-                                    <Grid item xs={6}>
-                                        <MDTypography fontWeight="bold"
-                                                      variant="body2">
+                                    <Grid item xs={3.5}>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.9rem' : '1rem'
+                                            }}
+                                            fontWeight="bold"
+                                            variant="body2">
                                             {market.marketName}
                                         </MDTypography>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <MDTypography variant="body2"
-                                                      textAlign="right">
+                                    <Grid item xs={8.5}>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.8rem' : '1rem'
+                                            }}
+                                            variant="body2"
+                                            textAlign="right">
                                             {market.marketAddr}
                                         </MDTypography>
                                     </Grid>
@@ -584,8 +594,14 @@ function MarketDetail() {
                                                     variant="gradient"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     color="info">좋아요 👍🏻
                                                 </MDButton>
@@ -596,8 +612,14 @@ function MarketDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleModifyMarket(
                                                         market)}>시장 수정
@@ -609,8 +631,14 @@ function MarketDetail() {
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleDeleteMarket(
                                                         market.marketNo)}>시장 삭제
@@ -622,23 +650,34 @@ function MarketDetail() {
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleAddShop(
                                                         market)}>상점 추가
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 3 : 1.4}>
-
+                                                  xs={isSmallScreen ? 3 : 1.2}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="primary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openParkingModal}
                                                 >
@@ -646,14 +685,20 @@ function MarketDetail() {
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 3 : 1.5}>
+                                                  xs={isSmallScreen ? 3 : 1.4}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="primary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openTransportModal}
                                                 >
@@ -661,31 +706,40 @@ function MarketDetail() {
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 3 : 1.4}>
+                                                  xs={isSmallScreen ? 3 : 1.2}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="secondary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openDirectionsModal}>
                                                     길찾기
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 3 : 1.7}>
+                                                  xs={isSmallScreen ? 3 : 2}>
                                                 <MDButton
                                                     onClick={handleGetTopFiveItemPage}
                                                     variant="gradient"
                                                     sx={{
-                                                        backgroundColor: '#50bcdf',
-                                                        color: '#ffffff',
-                                                        fontSize: '0.75rem',
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     color="warning"
                                                 >상품별순위
@@ -695,31 +749,40 @@ function MarketDetail() {
                                     </>
                                 ) : (
                                     <>
-                                        <Grid container spacing={isSmallScreen ? 1 : 1}>
-                                            <Grid item
-                                                  xs={isSmallScreen ? 2 : 2}>
+                                        <Grid container spacing={isSmallScreen ? 5 : 0.2}>
+                                            <Grid item xs={isSmallScreen ? 2 : 1.5}>
                                                 <MDButton
                                                     onClick={handlePostOrCancelLike}
                                                     variant="gradient"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     color="info">좋아요 👍🏻
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 2 : 2}>
+                                                  xs={isSmallScreen ? 2 : 1.15}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="primary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openParkingModal}
                                                 >
@@ -727,15 +790,20 @@ function MarketDetail() {
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 2 : 2}>
+                                                  xs={isSmallScreen ? 2 : 1.4}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="secondary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openTransportModal}
                                                 >
@@ -743,15 +811,20 @@ function MarketDetail() {
                                                 </MDButton>
                                             </Grid>
                                             <Grid item
-                                                  xs={isSmallScreen ? 2 : 2}>
+                                                  xs={isSmallScreen ? 2 : 1.15}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="secondary"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: '1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openDirectionsModal}>
                                                     길찾기
@@ -764,13 +837,18 @@ function MarketDetail() {
                                                     variant="gradient"
                                                     color="warning"
                                                     sx={{
-                                                        fontSize: '1rem',
                                                         fontFamily: 'JalnanGothic',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                 >
-                                                    🔥상품별 가격 순위
+                                                    🔥상품별가격순위
                                                 </MDButton>
                                             </Grid>
                                         </Grid>

@@ -31,6 +31,8 @@ const DeliveryListModal = ({callbackFn}) => {
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
 
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+
     const handleGetDeliveries = (pageNum) => {
         console.log('handleGetDeliveries');
         const pageParam = {page: pageNum, size: 2};
@@ -150,14 +152,14 @@ const DeliveryListModal = ({callbackFn}) => {
             }
 
             <div
-                className={`fixed top-20 md:top-36 lg:top-20 left-0 z-[1050] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}
+                className={`fixed top-36 lg:top-20 left-0 z-[1050] flex h-full w-full justify-center bg-gray-600 bg-opacity-75`}
             >
                 <MDBox
                     sx={{
-                        mt: {xs: 5, sm: 5, md: 3, lg: 3},
+                        mt: {xs: 1, sm: 1, md: 3, lg: 3},
                     }}
                        style={{
-                           width: '80%',
+                           width: isSmallScreen? '90%':'80%',
                            maxWidth: '600px',
                        }}>
                     <Card>
@@ -182,8 +184,10 @@ const DeliveryListModal = ({callbackFn}) => {
                                 <MDTypography
                                     fontWeight="bold"
                                     variant="body2"
-                                    fontSize="25px"
                                     textAlign="center"
+                                    sx={{
+                                        fontSize:  isSmallScreen ? '1.3rem':'1.8rem',
+                                    }}
                                 >
                                     배송지 목록
                                 </MDTypography>
@@ -215,12 +219,14 @@ const DeliveryListModal = ({callbackFn}) => {
                                                     && deliveries.map(
                                                         delivery =>
                                                             <li key={delivery.deliveryNo}>
-                                                                <MDBox pt={2}>
+                                                                <MDBox pt={2} ml={isSmallScreen? -2:0}>
                                                                     <Grid container>
-                                                                        <Grid item xs={9.8} sm={9.8} md={9.8} lg={9.8}>
+                                                                        <Grid item xs={9} sm={9.8} md={9.8} lg={10}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
-                                                                                sx={{fontSize: '1.1rem'}}
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen ? '0.9rem':'1.1rem',
+                                                                                }}
                                                                                 variant="body2">
                                                                                 {delivery.receiver
                                                                                     + ' '
@@ -232,7 +238,7 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                     && (
                                                                                         <span
                                                                                             style={{
-                                                                                                fontSize: '0.9rem',
+                                                                                                fontSize: isSmallScreen ? '0.7rem':'0.9rem',
                                                                                                 color: "deeppink"
                                                                                             }}>
                                                                                         기본 배송지
@@ -241,15 +247,19 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                             </MDTypography>
                                                                         </Grid>
 
-                                                                        <Grid item xs={2.2} sm={2.2} md={2.2} lg={2.2}>
+                                                                        <Grid item xs={3} sm={2.2} md={2.2} lg={2}>
                                                                             <MDButton
                                                                                 onClick={() => handleSelectDelivery(delivery)}
                                                                                 variant="gradient"
                                                                                 color="success"
                                                                                 sx={{
                                                                                     fontFamily: 'JalnanGothic',
-                                                                                    fontSize: '1rem',
-                                                                                    padding: '4px 8px',
+                                                                                    fontSize: isSmallScreen ? '0.7rem':'1rem',
+                                                                                    padding: isSmallScreen ? '1px 2px':'4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                                                    width: isSmallScreen ? '50px' : '70px',
+                                                                                    minWidth: 'auto'
                                                                                 }}
                                                                             >
                                                                                 선택
@@ -258,8 +268,11 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                     </Grid>
 
                                                                     <Grid container>
-                                                                        <Grid item xs={12} md={5} sx={{mt: -2}}>
+                                                                        <Grid item xs={12} md={5} sx={{mt: -1}}>
                                                                             <MDTypography
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen ? '0.8rem':'1rem',
+                                                                                }}
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
                                                                                 {delivery.phone}
@@ -269,6 +282,9 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                     <Grid container>
                                                                         <Grid item xs={12} md={12}>
                                                                             <MDTypography
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen ? '0.8rem':'1rem',
+                                                                                }}
                                                                                 fontWeight="bold"
                                                                                 variant="body2">
                                                                                 {delivery.roadAddr
@@ -290,9 +306,16 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                 variant="gradient"
                                                                                 color="light"
                                                                                 sx={{
+                                                                                    color: 'gray',
                                                                                     fontFamily: 'JalnanGothic',
-                                                                                    fontSize: '0.8rem',
-                                                                                    padding: '4px 8px',
+                                                                                    fontSize: isSmallScreen ? '0.7rem':'0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen ? '30px' : '60px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                                                 }}
                                                                             >
                                                                                 수정
@@ -305,9 +328,16 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                 variant="gradient"
                                                                                 color="light"
                                                                                 sx={{
+                                                                                    color: 'gray',
                                                                                     fontFamily: 'JalnanGothic',
-                                                                                    fontSize: '0.8rem',
-                                                                                    padding: '4px 8px',
+                                                                                    fontSize: isSmallScreen ? '0.7rem':'0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen ? '30px' : '60px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                                                 }}
                                                                             >
                                                                                 삭제
@@ -321,8 +351,14 @@ const DeliveryListModal = ({callbackFn}) => {
                                                                                 color="warning"
                                                                                 sx={{
                                                                                     fontFamily: 'JalnanGothic',
-                                                                                    fontSize: '0.8rem',
-                                                                                    padding: '4px 8px',
+                                                                                    fontSize: isSmallScreen ? '0.7rem':'0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen ? '100px' : '150px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                                                 }}
                                                                             >
                                                                                 기본배송지
