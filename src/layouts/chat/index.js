@@ -139,15 +139,12 @@ function Chat() {
         <DashboardLayout>
             <MDBox
                 pb={30}
-                sx={{
-                    mt: isSmallScreen? 0:3,
-                }}
             >
                 <Grid container>
                     <Grid item xs={6} sm={12} md={9} lg={9.5}>
                         <MDTypography fontWeight="bold"
                                       sx={{
-                                          ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:2,
+                                          ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
                                           fontSize: isSmallScreen? '1.2rem':'2rem'}}
                                       variant="body2">
                             채팅 상담 목록

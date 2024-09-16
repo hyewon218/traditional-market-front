@@ -423,20 +423,20 @@ function ItemDetail() {
                                         marginLeft: '8px'
                                     }}
                                 >{likes} LIKES</MDTypography>
-                                <Grid container spacing={isSmallScreen ? 1 : 0.5}>
-                                    <Grid item xs={isSmallScreen ? 3 : 2}>
+                                <Grid container spacing={isSmallScreen ? 0 : 0.5}>
+                                    <Grid item xs={isSmallScreen ? 3 : 1.3}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                fontSize: isSmallScreen ? '0.7rem':'0.9rem',
                                                 minWidth: 'auto',
-                                                width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
                                                 padding: isSmallScreen
                                                     ? '1px 2px'
                                                     : '4px 8px',
-                                                lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                 minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                             }}
                                             color="info"
@@ -445,16 +445,20 @@ function ItemDetail() {
                                         </MDButton>
                                     </Grid>
                                     {showButtons ? (
-                                        <Grid item xs={isSmallScreen ? 3 : 2}>
+                                        <Grid item xs={isSmallScreen ? 3 : 1.3}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                    padding: '4px 8px',
+                                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
                                                     minWidth: 'auto',
-                                                    width: '100%',
+                                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                    padding: isSmallScreen
+                                                        ? '1px 2px'
+                                                        : '4px 8px',
+                                                    lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                 }}
                                                 onClick={() => handleModifyItem(
                                                     item)}
@@ -464,16 +468,20 @@ function ItemDetail() {
                                         </Grid>
                                     ) : null}
                                     {isAdmin && (
-                                        <Grid item xs={isSmallScreen ? 3 : 2}>
+                                        <Grid item xs={isSmallScreen ? 3 : 1.3}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                    padding: '4px 8px',
+                                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
                                                     minWidth: 'auto',
-                                                    width: '100%',
+                                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                    padding: isSmallScreen
+                                                        ? '1px 2px'
+                                                        : '4px 8px',
+                                                    lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                 }}
                                                 onClick={() => handleDeleteItem(
                                                     item.itemNo)}
@@ -489,11 +497,11 @@ function ItemDetail() {
                 </Grid>
 
                 {/*상품 정보*/}
-                <Grid item xs={12} sm={12} md={12} lg={5} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={12} md={12} lg={5} sx={{ mb: 1 }}>
                     <MDBox pb={2}>
                         <Card>
                             <MDBox component="form" role="form">
-                                <MDBox pt={2} pb={2} px={3}>
+                                <MDBox pt={2} pb={1} px={3}>
                                     <Grid container>
                                         <Grid item xs={6}>
                                             <MDTypography fontWeight="bold"
@@ -520,7 +528,7 @@ function ItemDetail() {
                                         <MDTypography
                                             variant="body2"
                                             sx={{
-                                                fontSize: isSmallScreen ? '1.1rem':'1.35rem',
+                                                fontSize: isSmallScreen ? '0.8rem':'1.1rem',
                                                 marginBottom: '10px'
                                             }}
                                         >{item.itemDetail}</MDTypography>

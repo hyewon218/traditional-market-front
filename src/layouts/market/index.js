@@ -195,7 +195,7 @@ function Market() {
         setPage(0); // 페이지 번호 초기화
         if (category === "전체") {
             setSelectedCategory('');
-            fetchMarkets(); // 전체 목록 로드
+            //fetchMarkets(); // 전체 목록 로드
         } else {
             setSelectedCategory(category);
             setIsSearchActive(false); // 검색 비활성화
@@ -387,12 +387,17 @@ function Market() {
                                                     {market.marketName}
                                                 </MDTypography>
                                             </Grid>
-                                            <Grid item xs={4}>
-                                                <MDTypography variant="body2"
+                                            {/*<Grid item xs={4}>
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen
+                                                            ? '0.5rem' : '1rem'
+                                                    }}
+                                                    variant="body2"
                                                               textAlign="right">
                                                     {market.marketDetail}
                                                 </MDTypography>
-                                            </Grid>
+                                            </Grid>*/}
                                         </Grid>
                                         <Grid container>
                                             <Grid item xs={9} >
@@ -439,7 +444,7 @@ function Market() {
                         <MDTypography
                             variant="body2"
                             textAlign="center"
-                            sx={{fontSize: '1.28rem', pt: 2}}
+                            sx={{fontSize: isSmallScreen ? '1.0rem':'1.28rem', pt: 2}}
                         >
                             {isSearchActive
                                 ? '검색한 시장이 존재하지 않습니다.'

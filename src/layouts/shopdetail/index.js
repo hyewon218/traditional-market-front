@@ -284,14 +284,14 @@ function ShopDetail() {
         if (category === "전체") {
             setIsCategoryFiltered(false); // 필터링 해제
             setItemPage(0); // 페이지 초기화
-            handleGetItems(0);
+            //handleGetItems(0);
         } else {
             const mappedCategory = categoryMapping[category] || '';
             setSelectedCategory(mappedCategory);
-            console.log("mappedCategory!???!?" + mappedCategory);
+            //console.log("mappedCategory!???!?" + mappedCategory);
             setIsCategoryFiltered(true); // 필터 활성화
             setItemPage(0); // 페이지 초기화
-            handleGetCategoryItems(0); // 카테고리 필터링된 목록을 0 페이지부터 가져오기
+            //handleGetCategoryItems(0); // 카테고리 필터링된 목록을 0 페이지부터 가져오기
         }
     };
 
@@ -456,20 +456,20 @@ function ShopDetail() {
                                 >{likes} LIKES
                                 </MDTypography>
 
-                                <Grid container spacing={isSmallScreen ? 1 : 0.5}>
-                                    <Grid item xs={isSmallScreen ? 3 : 2}>
+                                <Grid container spacing={isSmallScreen ? 0 : 0}>
+                                    <Grid item xs={isSmallScreen ? 2.7 : 1.5}>
                                         <MDButton
                                             onClick={handlePostOrCancelLike}
                                             variant="gradient"
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                fontSize: isSmallScreen ? '0.7rem':'0.9rem',
                                                 minWidth: 'auto',
-                                                width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                                width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
                                                 padding: isSmallScreen
                                                     ? '1px 2px'
                                                     : '4px 8px',
-                                                lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                 minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                             }}
                                             color="info"
@@ -478,30 +478,40 @@ function ShopDetail() {
                                     </Grid>
                                     {showButtons && (
                                         <>
-                                            <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
+                                            <Grid item xs={isSmallScreen ? 2.7 : 1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="light"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleModifyShop(shop)}
                                                 >
                                                     상점 수정
                                                 </MDButton>
                                             </Grid>
-                                            <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
+                                            <Grid item xs={isSmallScreen ? 2.7 : 1.5}>
                                                 <MDButton
                                                     variant="gradient"
                                                     color="success"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                        padding: '4px 8px',
-                                                        width: '100%'
+                                                        fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                        minWidth: 'auto',
+                                                        width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                        padding: isSmallScreen
+                                                            ? '1px 2px'
+                                                            : '4px 8px',
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleAddItem(shop)}
                                                 >
@@ -511,15 +521,20 @@ function ShopDetail() {
                                         </>
                                     )}
                                     {isAdmin && (
-                                        <Grid item xs={isSmallScreen ? 3 : 3} sm={2}>
+                                        <Grid item xs={isSmallScreen ? 2.5 : 1.5}>
                                             <MDButton
                                                 variant="gradient"
                                                 color="light"
                                                 sx={{
                                                     fontFamily: 'JalnanGothic',
-                                                    fontSize: isSmallScreen ? '0.7rem' :'1rem',
-                                                    padding: '4px 8px',
-                                                    width: '100%'
+                                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                    minWidth: 'auto',
+                                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                    padding: isSmallScreen
+                                                        ? '1px 2px'
+                                                        : '4px 8px',
+                                                    lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                 }}
                                                 onClick={() => handleDeleteShop(shop.shopNo)}
                                             >
@@ -536,7 +551,7 @@ function ShopDetail() {
 
                 {/* 지도 */}
                 <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
-                    <Card style={{height: '270px'}}>
+                    <Card style={{height: isSmallScreen ? '150px' :'270px'}}>
                         <MDBox component="form" role="form">
                             <ShopMapComponent
                                 containerId="shop-map" // 지도 컨테이너 ID
@@ -581,7 +596,7 @@ function ShopDetail() {
                 {(isCategoryFiltered && filteredItems.length === 0) ? (
                     <Grid item xs={12}>
                         <MDTypography variant="body2" textAlign="center"
-                                      sx={{fontSize: '1.28rem', pt: 2}}>
+                                      sx={{fontSize: isSmallScreen ? '0.9rem':'1.28rem', pt: 2}}>
                             선택한 카테고리 내 상품이 존재하지 않습니다.
                         </MDTypography>
                     </Grid>
@@ -596,6 +611,7 @@ function ShopDetail() {
                                         <Grid container>
                                             <Grid item xs={6}>
                                                 <MDTypography
+                                                    sx={{fontSize: isSmallScreen ? '1.0rem':'1.28rem'}}
                                                     fontWeight="bold"
                                                     variant="body2">
                                                     {item.itemName}
@@ -603,6 +619,7 @@ function ShopDetail() {
                                             </Grid>
                                             <Grid item xs={6}>
                                                 <MDTypography
+                                                    sx={{fontSize: isSmallScreen ? '1.0rem':'1.28rem'}}
                                                     variant="body2"
                                                     textAlign="right">
                                                     {item.price}
@@ -612,6 +629,7 @@ function ShopDetail() {
                                         <Grid container>
                                             <Grid item xs={6}>
                                                 <MDTypography
+                                                    sx={{fontSize: isSmallScreen ? '0.9rem':'1.0rem'}}
                                                     variant="body2">{item.itemDetail}</MDTypography>
                                             </Grid>
                                             <Grid item xs={6} sx={{textAlign: 'right'}}>

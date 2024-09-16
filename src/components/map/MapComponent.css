@@ -1,14 +1,14 @@
 #map {
   width: 100%;
-  height: 295px; /* Default height slightly reduced */
-  min-height: 230px;
+  height: 290px; /* Default height slightly reduced */
+  min-height: 180px;
   margin-left: 0;
 }
 
 /* Adjust the map's height and margins on smaller screens */
 @media (max-width: 600px) {
   #map {
-    height: 290px; /* Reduced height for medium screens */
+    height: 180px; /* Reduced height for medium screens */
     margin-left: 0;
   }
 }
