@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
+import {useMediaQuery} from "@mui/material";
 
 const ShopMapComponent = ({ containerId, locations, title }) => {
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+
     useEffect(() => {
         const initializeMap = (containerId, locations, title) => {
             if (!window.naver || !window.naver.maps) {
@@ -25,10 +28,13 @@ const ShopMapComponent = ({ containerId, locations, title }) => {
                 });
 
                 const infoWindowContent = `
-                    <div style="padding:10px;min-width:200px;line-height:150%;">
-                        <h3>${location.info}</h3>
-                        <h3>전화번호 : ${location.tel}</h3>
-                    </div>
+                 <div style="padding: ${isSmallScreen ? '5px' : '10px'}; 
+                                min-width: ${isSmallScreen ? '100px' : '200px'}; 
+                                line-height: ${isSmallScreen ? '1.2' : '1.3'}; 
+                                font-family: 'JalnanGothic';">
+                    <h3 style="font-size:${isSmallScreen ? '0.7em' : '1.1em'};">${location.info}</h3>
+                    <h3 style="font-size:${isSmallScreen ? '0.6em' : '1.1em'};">전화번호 : ${location.tel}</h3>
+                  </div>
                 `;
 
                 const infoWindow = new window.naver.maps.InfoWindow({
@@ -75,7 +81,7 @@ const ShopMapComponent = ({ containerId, locations, title }) => {
     return (
         <div
             id={containerId}
-            style={{ width: '100%', height: '270px', borderRadius: '13px'}}
+            style={{ width: '100%', height: isSmallScreen ? '150px':'270px', borderRadius: '13px'}}
 
         ></div>
     );

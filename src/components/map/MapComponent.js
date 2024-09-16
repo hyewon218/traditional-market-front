@@ -250,49 +250,49 @@ const MapComponent = ({marketAddr, marketName}) => {
     return (
         <div>
             <Grid container>
-                <Grid item xs={7} md={9.1} lg={8}>
+                <Grid item xs={7} md={9} lg={9}>
                     <div style={{borderRadius: '12px'}} id="map" className="map"></div>
                 </Grid>
-                <Grid item xs={5} md={2.9} lg={4}>
+                <Grid item xs={5} md={3} lg={3}>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '1rem':'1.1rem', mb: 1}}
+                        sx={{fontSize: isSmallScreen? '1rem':'1.1rem', mb: isSmallScreen? 0:1}}
                         textAlign="right">
                         날씨 정보
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
                         textAlign="right">
                         <p id="current-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
                         textAlign="right">
                         <p id="feels-like"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
                         textAlign="right">
                         <p id="min-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
                         textAlign="right">
                         <p id="max-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
                         textAlign="right">
                         <p id="humidity"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.8rem':'0.9rem', mb: -1}}
+                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -3:-1}}
                         textAlign="right">
                         <p id="weather-description"></p>
                     </MDTypography>
@@ -300,7 +300,7 @@ const MapComponent = ({marketAddr, marketName}) => {
                         variant="body2">
                         <p id="weather-image-container" style={{
                             width: '50px',
-                            height: '30px',
+                            height: isSmallScreen? '30px':'30px',
                             marginLeft: 'auto'
                         }}></p>
                     </MDTypography>

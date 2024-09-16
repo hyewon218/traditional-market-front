@@ -101,15 +101,9 @@ function MarketDetail() {
     const [startLocation, setStartLocation] = useState(''); // 출발지 입력값
     const [directionsType, setDirectionsType] = useState(''); // 도보, 대중교통, 자차 구분
 
-
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
-//    useEffect(() => {
-//        handleCountLikes();
-//        handleGetShops();
-//        handleCheckLike();
-//    }, []);
 
     useEffect(() => {
         handleCountLikes();
@@ -260,14 +254,14 @@ function MarketDetail() {
         if (category === "전체") {
             setIsCategoryFiltered(false); // 필터링 해제
             setShopPage(0); // 페이지 초기화
-            handleGetShops(0);
+            //handleGetShops(shopPage);
         } else {
             const mappedCategory = categoryMapping[category] || '';
             setSelectedCategory(mappedCategory);
-            console.log("mappedCategory!???!?" + mappedCategory);
+            //console.log("mappedCategory!???!?" + mappedCategory);
             setIsCategoryFiltered(true); // 필터 활성화
             setShopPage(0); // 페이지 초기화
-            handleGetCategoryShops(0); // 카테고리 필터링된 목록을 0 페이지부터 가져오기
+            //handleGetCategoryShops(shopPage);
         }
     };
 
@@ -534,7 +528,7 @@ function MarketDetail() {
             </MDBox>
 
             <Grid container spacing={isSmallScreen ? -1 : 2}>
-                <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb:isSmallScreen ? 1.5 : 3 }}>
                     <MDBox>
                         <Card>
                             <MDBox pt={2} pb={2} px={2.5}>
@@ -576,18 +570,21 @@ function MarketDetail() {
                                     </Grid>
                                 </Grid>
                                 <MDTypography
+                                    sx={{
+                                        fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+                                    }}
                                     variant="body2">{market.marketDetail}</MDTypography>
                                 <MDTypography
                                     variant="body2"
                                     sx={{
-                                        fontSize: '0.75rem',
-                                        marginLeft: '8px'
+                                        fontSize: isSmallScreen ? '0.6rem':'0.75rem',
+                                        marginLeft: isSmallScreen ? '3px':'8px'
                                     }}
                                 >{likes} LIKES</MDTypography>
 
                                 {isAdmin ? (
                                     <>
-                                        <Grid container spacing={isSmallScreen ? 1 : 0.2} >
+                                        <Grid container spacing={isSmallScreen ? 0 : 0.2} >
                                             <Grid item xs={isSmallScreen ? 3 : 1.5}>
                                                 <MDButton
                                                     onClick={handlePostOrCancelLike}
@@ -600,7 +597,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     color="info">좋아요 👍🏻
@@ -618,7 +615,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleModifyMarket(
@@ -637,7 +634,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleDeleteMarket(
@@ -656,7 +653,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={() => handleAddShop(
@@ -676,7 +673,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openParkingModal}
@@ -697,7 +694,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openTransportModal}
@@ -718,7 +715,7 @@ function MarketDetail() {
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     onClick={openDirectionsModal}>
@@ -732,13 +729,13 @@ function MarketDetail() {
                                                     variant="gradient"
                                                     sx={{
                                                         fontFamily: 'JalnanGothic',
-                                                        fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                        fontSize: isSmallScreen ? '0.65rem':'0.9rem',
                                                         minWidth: 'auto',
                                                         width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                     color="warning"
@@ -840,15 +837,23 @@ function MarketDetail() {
                                                         fontFamily: 'JalnanGothic',
                                                         fontSize: isSmallScreen ? '0.6rem':'0.9rem',
                                                         minWidth: 'auto',
-                                                        width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+                                                        width: isSmallScreen ? '70px' : 'auto',
                                                         padding: isSmallScreen
                                                             ? '1px 2px'
                                                             : '4px 8px',
-                                                        lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                        lineHeight:  isSmallScreen ? 1.5:2,
                                                         minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                     }}
                                                 >
-                                                    🔥상품별가격순위
+                                                    {isSmallScreen ? (
+                                                        <>
+                                                            🔥 상품별<br />가격 순위
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            🔥 상품별 가격 순위
+                                                        </>
+                                                    )}
                                                 </MDButton>
                                             </Grid>
                                         </Grid>
@@ -862,18 +867,8 @@ function MarketDetail() {
                 {/*지도*/}
                 <Grid item xs={12} sm={12} md={12} lg={6} sx={{ mb: 3 }}>
                     <MDBox>
-                        <Card style={{height: {
-                                xs: '295px',
-                                sm: '295px',
-                                md: '295px',
-                                lg: '295px'
-                            },}}>
-                            <MDBox component="form" role="form"  style={{height: {
-                                    xs: '295px',
-                                    sm: '295px',
-                                    md: '295px',
-                                    lg: '295px'
-                                },}} >
+                        <Card>
+                            <MDBox component="form" role="form">
                                 <MapComponent marketAddr={market.marketAddr}
                                               marketName={market.marketName}/>
                             </MDBox>
