@@ -273,6 +273,24 @@ function NoticeManage() {
     };
 
     const isMobile = useMediaQuery('(max-width:600px)');
+    console.log('isMobile : ', isMobile);
+
+    useEffect(() => {
+        const handleResize = () => {
+          console.log('현재 너비:', window.innerWidth);
+        };
+
+        // 컴포넌트가 처음 마운트될 때 현재 너비를 출력
+        handleResize();
+
+        // 리사이즈 이벤트 리스너 추가
+        window.addEventListener('resize', handleResize);
+
+        // 컴포넌트가 언마운트될 때 리스너 제거
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
 
     return (
          <DashboardLayout>

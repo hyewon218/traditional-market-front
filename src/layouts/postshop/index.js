@@ -184,6 +184,7 @@ function PostShop() {
 
         } catch (error) {
             console.error("상점 추가 오류: ", error);
+            alert(error.response.data);
         }
     };
 

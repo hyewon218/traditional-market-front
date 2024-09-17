@@ -195,7 +195,7 @@ function Market() {
         setPage(0); // 페이지 번호 초기화
         if (category === "전체") {
             setSelectedCategory('');
-            //fetchMarkets(); // 전체 목록 로드
+//            fetchMarkets(); // 전체 목록 로드
         } else {
             setSelectedCategory(category);
             setIsSearchActive(false); // 검색 비활성화
@@ -242,6 +242,7 @@ function Market() {
 
     // 스크롤 로직 초기화
     const observer = React.useRef();
+
     const lastMarketElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
@@ -373,7 +374,7 @@ function Market() {
                 {renderMarkets.length > 0 ? (
                     renderMarkets.map((market, index) => (
                         <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
-                            <MDBox pb={2}  key={market.id}>
+                            <MDBox pb={2}  key={market.id} ref={index === renderMarkets.length - 1 ? lastMarketElementRef : null}>
                                 <Card sx={{
                                     width: '90%',
                                     maxWidth: '350px',

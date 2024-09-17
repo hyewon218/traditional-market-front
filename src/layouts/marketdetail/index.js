@@ -472,6 +472,7 @@ function MarketDetail() {
 
     // 무한 스크롤 로직
     const observer = useRef();
+
     const lastShopElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
@@ -923,81 +924,86 @@ function MarketDetail() {
                     </Grid>
                 ) : (
                     (isCategoryFiltered ? filteredShops : shops).map(
-                        (shop, index) => (
-                            <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
-                                <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
-                                    <Card sx={{
-                                        width: '100%',
-                                        maxWidth: '380px',
-                                        mx: 'auto'
-                                    }}>
-                                        <MDBox pt={2} pb={2} px={3}>
-                                            <Grid container>
-                                                <Grid item xs={6}>
-                                                    <MDTypography
-                                                        fontWeight="bold"
-                                                        sx={{
-                                                            fontSize: '0.9rem',
-                                                            minWidth: '100px',
-                                                        }}
-                                                        variant="body2">
-                                                        {shop.shopName}
-                                                    </MDTypography>
+                        (shop, index) => {
+                            // 마지막 상점 요소에 lastShopElementRef 연결
+                            const isLastElement = index === (isCategoryFiltered ? filteredShops : shops).length - 1;
+
+                            return (
+                                <Grid item xs={12} sm={6} md={6} lg={3} key={index}
+                                      ref={isLastElement ? lastShopElementRef : null}>
+                                    <MDBox pt={1} pb={1} px={1} key={shop.shopNo}>
+                                        <Card sx={{
+                                            width: '100%',
+                                            maxWidth: '380px',
+                                            mx: 'auto'
+                                        }}>
+                                            <MDBox pt={2} pb={2} px={3}>
+                                                <Grid container>
+                                                    <Grid item xs={6}>
+                                                        <MDTypography
+                                                            fontWeight="bold"
+                                                            sx={{
+                                                                fontSize: '0.9rem',
+                                                                minWidth: '100px',
+                                                            }}
+                                                            variant="body2">
+                                                            {shop.shopName}
+                                                        </MDTypography>
+                                                    </Grid>
+                                                    <Grid item xs={6}>
+                                                        <MDTypography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.9rem',
+                                                                minWidth: '100px',
+                                                            }}
+                                                            textAlign="right">
+                                                            {shop.tel}
+                                                        </MDTypography>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item xs={6}>
-                                                    <MDTypography
-                                                        variant="body2"
-                                                        sx={{
-                                                            fontSize: '0.9rem',
-                                                            minWidth: '100px',
-                                                        }}
-                                                        textAlign="right">
-                                                        {shop.tel}
-                                                    </MDTypography>
+                                                <Grid container>
+                                                    <Grid item xs={9}>
+                                                        <MDTypography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.9rem',
+                                                                minWidth: '100px',
+                                                            }}
+                                                        >
+                                                            {shop.sellerName}
+                                                        </MDTypography>
+                                                    </Grid>
+                                                    <Grid item xs={3}>
+                                                        <Button
+                                                            onClick={() => handleDetail(shop)}
+                                                            sx={{
+                                                                padding: '0px 8px',
+                                                                mr: '-10px',
+                                                                mt: '-10px',
+                                                                fontFamily: 'JalnanGothic',
+                                                            }}
+                                                        >상세보기
+                                                        </Button>
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                            <Grid container>
-                                                <Grid item xs={9}>
-                                                    <MDTypography
-                                                        variant="body2"
-                                                        sx={{
-                                                            fontSize: '0.9rem',
-                                                            minWidth: '100px',
-                                                        }}
-                                                    >
-                                                        {shop.sellerName}
-                                                    </MDTypography>
-                                                </Grid>
-                                                <Grid item xs={3}>
-                                                    <Button
-                                                        onClick={() => handleDetail(shop)}
-                                                        sx={{
-                                                            padding: '0px 8px',
-                                                            mr: '-10px',
-                                                            mt: '-10px',
-                                                            fontFamily: 'JalnanGothic',
-                                                        }}
-                                                    >상세보기
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>
-                                            <div
-                                                className="w-full justify-center flex flex-col m-auto items-center">
-                                                {shop.imageList.map(
-                                                    (imgUrl, i) => (
-                                                        <img alt="product"
-                                                             key={i}
-                                                             width={250}
-                                                             src={`${imgUrl.imageUrl}`}
-                                                             onClick={() => handleDetail(shop)}
-                                                             style={{cursor: 'pointer' }}/>
-                                                    ))}
-                                            </div>
-                                        </MDBox>
-                                    </Card>
-                                </MDBox>
-                            </Grid>
-                        ))
+                                                <div className="w-full justify-center flex flex-col m-auto items-center">
+                                                    {shop.imageList.map(
+                                                        (imgUrl, i) => (
+                                                            <img alt="product"
+                                                                 key={i}
+                                                                 width={250}
+                                                                 src={`${imgUrl.imageUrl}`}
+                                                                 onClick={() => handleDetail(shop)}
+                                                                 style={{cursor: 'pointer' }}/>
+                                                        ))}
+                                                </div>
+                                            </MDBox>
+                                        </Card>
+                                    </MDBox>
+                                </Grid>
+                            );
+                        })
                 )}
             </Grid>
 
