@@ -247,7 +247,7 @@ function Alarm() {
                           variant="body2">
                 알람 목록
             </MDTypography>
-            <MDBox pt={1} pb={2}>
+            <MDBox pt={1} pb={20}>
                 {alarms.length > 0 ? (
                     alarms.map((notification) => (
                         <MDBox pt={isSmallScreen? 1:1} pb={1} px={isSmallScreen? 1:3} key={notification.id}>
@@ -259,7 +259,7 @@ function Alarm() {
                                   onClick={() => handleAlarmClick(
                                       notification)}
                             >
-                                <MDBox pt={2} pb={1} px={isSmallScreen? 2:2}>
+                                <MDBox pt={2} pb={2} px={isSmallScreen? 2:2}>
                                     <Grid container>
                                         <Grid item xs={8} lg={8}>
                                             <MDTypography
@@ -276,7 +276,7 @@ function Alarm() {
                                         <Grid item xs={4} lg={4}>
                                             <MDTypography
                                                 sx={{
-                                                    fontSize: isSmallScreen? '0.7rem':'1rem'
+                                                    fontSize: isSmallScreen? '0.55rem':'1rem'
                                                 }}
                                                 fontWeight="bold"
                                                 variant="body2"
@@ -291,7 +291,11 @@ function Alarm() {
                     ))
                 ) : (
                     <MDTypography fontWeight="bold"
-                                  sx={{ml: 4, mt: 2, fontSize: '1.5rem'}}
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 2,
+                                      fontSize: isSmallScreen ? '0.9rem' : '1.5rem'
+                                  }}
                                   variant="body2">
                         알람이 없습니다
                     </MDTypography>
