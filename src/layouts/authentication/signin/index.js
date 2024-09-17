@@ -72,7 +72,7 @@ function SignIn() {
             .catch((error) => {
                 // 예외 처리
                 console.error("로그인 오류:", error);
-                alert("아이디 또는 비밀번호가 틀렸습니다.");
+                alert(error.response.data);
             });
     }
 

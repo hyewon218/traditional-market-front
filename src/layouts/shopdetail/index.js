@@ -246,7 +246,7 @@ function ShopDetail() {
 
     // 상점 내 상품 목록
     const handleGetItems = (pageNum = 0) => {
-        const pageParam = { page: pageNum, size: 8 };
+        const pageParam = { page: pageNum, size: 100 };
         getItemList(shop.shopNo, pageParam).then(data => {
             if (pageNum === 0) {
                 // 페이지 번호가 0일 때만 상품 목록을 초기화합니다.
@@ -312,7 +312,7 @@ function ShopDetail() {
     /*상점 내 상품 카테고리 조회*/
     const handleGetCategoryItems = (pageNum = 0) => { // 시장 내 상점 카테고리 조회
         console.log('handleGetCategoryItems');
-        const pageParam = { page: pageNum, size: 8 };
+        const pageParam = { page: pageNum, size: 100 };
         getListCategoryByShop(shop.shopNo, pageParam, selectedCategory).then(data => {
             console.log('data : ', data);
             if (pageNum === 0) {
