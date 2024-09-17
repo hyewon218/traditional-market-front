@@ -1,3 +1,18 @@
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.1.0
+ =========================================================
+
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+ Coded by www.creative-tim.com
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
+
 import * as React from "react"
 import {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
@@ -138,10 +153,10 @@ function Chat() {
     return (
         <DashboardLayout>
             <MDBox
-                pb={30}
+                pb={35}
             >
                 <Grid container>
-                    <Grid item xs={6} sm={12} md={9} lg={9.5}>
+                    <Grid item xs={8} sm={12} md={9} lg={9.5}>
                         <MDTypography fontWeight="bold"
                                       sx={{
                                           ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
@@ -150,7 +165,7 @@ function Chat() {
                             채팅 상담 목록
                         </MDTypography>
                     </Grid>
-                    <Grid item xs={6} sm={12} md={3} lg={2.5}>
+                    <Grid item xs={3.5} sm={12} md={3} lg={2.5}>
                         {!isAdmin && (
                             <MDBox>
                                 <MDButton
@@ -158,8 +173,13 @@ function Chat() {
                                     variant="gradient"
                                     size="large"
                                     sx={{
-                                        ...buttonStyle,
-                                        mt: 1,
+                                        backgroundColor: '#50bcdf',
+                                        color: '#ffffff',
+                                        fontSize: isSmallScreen? '0.8rem':'1.5rem',
+                                        fontFamily: 'JalnanGothic',
+                                        padding: isSmallScreen? '2px 4px':'20px 40px',
+                                        width: '100%',
+                                        mt: isSmallScreen? -2:2,
                                     }}
                                 >
                                     채팅 상담하기
@@ -181,7 +201,7 @@ function Chat() {
                                 }}
                                 onClick={() => handleDetail(chatRoom)}
                             >
-                                <MDBox pt={2} pb={1} px={isSmallScreen? 2:2}>
+                                <MDBox pt={2} pb={2} px={isSmallScreen? 2:2}>
                                     <Grid container>
                                         <Grid item xs={5} lg={8}>
                                             <MDTypography
@@ -222,9 +242,13 @@ function Chat() {
                     ))
                 ) : (
                     <MDTypography fontWeight="bold"
-                                  sx={{ml: 4, mt: 2, fontSize:  isSmallScreen? '1rem':'1.5rem'}}
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 2,
+                                      fontSize: isSmallScreen ? '0.9rem' : '1.5rem'
+                                  }}
                                   variant="body2">
-                        채팅 상담이 없습니다
+                        채팅 상담이 없습니다.
                     </MDTypography>
                 )}
             </MDBox>
