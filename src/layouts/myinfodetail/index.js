@@ -1,6 +1,27 @@
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.1.0
+ =========================================================
+
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+ Coded by www.creative-tim.com
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, Typography, Button, Box, Grid, Modal, TextField } from '@mui/material';
+import {
+    Card,
+    Grid,
+    Modal,
+    TextField,
+    useMediaQuery
+} from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import ProfanityFilterMDInput from '../../components/common/ProfanityFilter'; // 비속어 필터
@@ -9,6 +30,9 @@ import { containsProfanity } from '../../components/common/profanityUtils'; // �
 // Data
 import { getMember, putNickname, putPassword, postSendEmailCode, postVerifyCode, deleteMember, getRemainingTime } from '../../api/memberApi';
 import { postCheckAdminPw } from '../../api/adminApi';
+import MDTypography from "../../components/MD/MDTypography";
+import MDButton from "../../components/MD/MDButton";
+import MDBox from "../../components/MD/MDBox";
 
 function MyInfoDetail() {
     const { state } = useLocation();
@@ -25,8 +49,8 @@ function MyInfoDetail() {
     const [verificationCode, setVerificationCode] = useState('');
     const [isVerified, setIsVerified] = useState(false);
     const [verificationError, setVerificationError] = useState('');
-
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     // 회원 정보 불러오기
     useEffect(() => {
@@ -247,169 +271,221 @@ function MyInfoDetail() {
 
     return (
         <DashboardLayout>
-            <Box sx={{ p: 3 }}>
-                <Typography
-                    fontWeight="bold"
-                    sx={{ fontSize: '2.5rem' }}
-                    variant="body2"
-                >
-                    내 정보
-                </Typography>
-                <Box
-                    sx={{
-                        mt: 2,
+            <Grid container>
+                <Grid item xs={4} lg={4}>
+                    <MDTypography fontWeight="bold"
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 3,
+                                      fontSize: isSmallScreen ? '1.2rem' : '2rem'
+                                  }}
+                                  variant="body2">
+                        내 정보
+                    </MDTypography>
+                </Grid>
+                <Grid item xs={8} lg={8}>
+                    <MDBox sx={{
+                        pr: isSmallScreen ? 2 : 3,
+                        width: '100%',
+                        mt: isSmallScreen? 0 : 4,
                         display: 'flex',
-                        gap: 1,
-                        '@media (max-width: 600px)': {
-                            gap: '1.5cm',
-                        },
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleBack}
-                        startIcon={<KeyboardArrowLeftIcon />}
-                    >
-                        돌아가기
-                    </Button>
-                </Box>
-                <Card
-                    sx={{
-                        p: 3,
-                        mb: 2,
-                        '@media (max-width: 600px)': {
-                            p: '1.5cm',
-                        },
-                    }}
-                >
-                    <Grid container spacing={2}>
-                        <Grid
-                            item
-                            xs={12}
-                            md={8}
+                        justifyContent: 'right',
+                    }}>
+                        <MDButton
                             sx={{
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
-                            }}
+                                fontFamily: 'JalnanGothic',
+                                fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                minWidth: 'auto',
+                                width: isSmallScreen ? '100px' : 'auto', // 가로 너비를 줄임
+                                padding: isSmallScreen
+                                    ? '1px 2px'
+                                    : '4px 8px',
+                                lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                        }}
+                            variant="contained"
+                            color="white"
+                            onClick={handleBack}
+                            startIcon={<KeyboardArrowLeftIcon/>}
                         >
-                            <Typography variant="body1" paragraph>
-                                <strong>회원 ID</strong> : {member.memberId}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>이메일</strong> : {member.memberEmail}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>닉네임</strong> :{' '}
-                                {member.memberNickname
-                                    ? member.nicknameWithRandomTag
-                                    : '설정된 닉네임이 없습니다'}
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={() => handleGetRemainingTime(member.memberNo)}
-                                    sx={{ ml: 2 }}
-                                >
-                                    닉네임 변경까지 남은 시간
-                                </Button>
-                                <span
-                                    style={{
-                                        color: 'red',
-                                        fontWeight: 'bold',
-                                        marginLeft: '10px',
-                                    }}
-                                >
-                                    *닉네임은 한달에 한번 변경 가능합니다.
+                            돌아가기
+                        </MDButton>
+                    </MDBox>
+                </Grid>
+            </Grid>
+
+            <MDBox pt={0} pb={20}>
+                <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}>
+                    <Card>
+                        <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
+                            <Grid container spacing={2}>
+                                 <Grid item xs={12} md={8}>
+                                    <MDTypography
+                                        sx={{ fontSize: isSmallScreen ? '0.8rem':'1rem' }}
+                                        variant="body1" paragraph>
+                                       회원 ID : {member.memberId}
+                                    </MDTypography>
+                                    <MDTypography
+                                        sx={{ fontSize: isSmallScreen ? '0.8rem':'1rem' }}
+                                        variant="body1" paragraph>
+                                       이메일 : {member.memberEmail}
+                                    </MDTypography>
+                                    <MDTypography
+                                        sx={{ fontSize: isSmallScreen ? '0.8rem':'1rem' }}
+                                        variant="body1" paragraph>
+                                        닉네임 :{' '}
+                                        {member.memberNickname
+                                            ? member.nicknameWithRandomTag
+                                            : '설정된 닉네임이 없습니다'}
+                                        <MDButton
+                                            variant="contained"
+                                            color="light"
+                                            onClick={() => handleGetRemainingTime(member.memberNo)}
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                minWidth: 'auto',
+                                                width: isSmallScreen ? '110px' : 'auto', // 가로 너비를 줄임
+                                                padding: isSmallScreen
+                                                    ? '1px 2px'
+                                                    : '4px 8px',
+                                                lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                            }}
+                                        >
+                                            닉네임 변경까지 남은 시간
+                                        </MDButton>
+                                        <span
+                                            style={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                color: 'red',
+                                                marginLeft: '10px',
+                                            }}
+                                        >*닉네임은 한달에 한번 변경 가능합니다.
                                 </span>
-                            </Typography>
-                            {member.warningStartDate && (
-                                <Typography variant="body1" paragraph>
-                                    <strong>제재일</strong> :{' '}
-                                    {formatCreateTime(member.warningStartDate) +
-                                        ' (제재 해제일 : ' +
-                                        calculateExpirationDate(
-                                            member.warningStartDate
-                                        ) +
-                                        ')'}
-                                    <span
-                                        style={{
-                                            display: 'block',
-                                            color: 'red',
-                                            fontWeight: 'bold',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        *운영정책 위반으로 댓글 및 일대일 채팅상담이
-                                        제한됩니다.
+                                    </MDTypography>
+                                    {member.warningStartDate && (
+                                        <MDTypography variant="body1" paragraph>
+                                           제재일 :{' '}
+                                            {formatCreateTime(
+                                                    member.warningStartDate) +
+                                                ' (제재 해제일 : ' +
+                                                calculateExpirationDate(
+                                                    member.warningStartDate
+                                                ) +
+                                                ')'}
+                                            <span
+                                                style={{
+                                                    fontFamily: 'JalnanGothic',
+                                                    fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                    display: 'block',
+                                                    color: 'red',
+                                                    fontWeight: 'bold',
+                                                    marginTop: '10px',
+                                                }}
+                                            >*운영정책 위반으로 댓글 및 일대일 채팅상담이 제한됩니다.
                                     </span>
-                                </Typography>
-                            )}
-                            <Typography variant="body1" paragraph>
-                                <strong>가입일</strong> : {formatCreateTime(member.createTime)}
-                            </Typography>
-                            <Box
-                                sx={{
-                                    mt: 2,
-                                    display: 'flex',
-                                    gap: 1,
-                                    '@media (max-width: 600px)': {
-                                        gap: '1.5cm',
-                                    },
-                                }}
-                            >
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={handleOpenNicknameModal}
-                                >
-                                    닉네임 변경
-                                </Button>
-                                {member.providerType === 'LOCAL' && (
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        onClick={handleOpenPasswordModal}
-                                    >
-                                        비밀번호 변경
-                                    </Button>
-                                )}
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={handleOpenDeleteModal}
-                                >
-                                    회원 탈퇴
-                                </Button>
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Card>
+                                        </MDTypography>
+                                    )}
+                                    <MDTypography
+                                        sx={{ fontSize: isSmallScreen ? '0.8rem':'1rem' }}
+                                        variant="body1" paragraph>
+                                        가입일 : {formatCreateTime(member.createTime)}
+                                    </MDTypography>
+                                    <Grid container spacing={isSmallScreen ? 0 : 0}>
+                                        <Grid item xs={isSmallScreen ? 3.2 : 1.4}>
+                                            <MDButton
+                                                variant="contained"
+                                                color="success"
+                                                onClick={handleOpenNicknameModal}
+                                                sx={{
+                                                    fontFamily: 'JalnanGothic',
+                                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                    minWidth: 'auto',
+                                                    width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+                                                    padding: isSmallScreen
+                                                        ? '1px 2px'
+                                                        : '4px 8px',
+                                                    lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                }}
+                                            >
+                                                닉네임 변경
+                                            </MDButton>
+                                        </Grid>
+                                        {member.providerType === 'LOCAL'
+                                            && (
+                                                <Grid item xs={isSmallScreen ? 4.1 : 1.6}>
+                                                    <MDButton
+                                                        variant="contained"
+                                                        color="success"
+                                                        onClick={handleOpenPasswordModal}
+                                                        sx={{
+                                                            fontFamily: 'JalnanGothic',
+                                                            fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                            minWidth: 'auto',
+                                                            width: isSmallScreen ? '90px' : 'auto', // 가로 너비를 줄임
+                                                            padding: isSmallScreen
+                                                                ? '1px 2px'
+                                                                : '4px 8px',
+                                                            lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                        }}
+                                                    >
+                                                        비밀번호 변경
+                                                    </MDButton>
+                                                </Grid>
+                                            )}
+                                        <Grid item xs={isSmallScreen ? 3 : 1.5}>
+                                            <MDButton
+                                                variant="contained"
+                                                color="error"
+                                                onClick={handleOpenDeleteModal}
+                                                sx={{
+                                                    fontFamily: 'JalnanGothic',
+                                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                    minWidth: 'auto',
+                                                    width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+                                                    padding: isSmallScreen
+                                                        ? '1px 2px'
+                                                        : '4px 8px',
+                                                    lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                }}
+                                            >
+                                                회원 탈퇴
+                                            </MDButton>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </MDBox>
+                    </Card>
+                </MDBox>
 
                 {/* 닉네임 변경 모달 */}
                 <Modal
                     open={showNicknameModal}
                     onClose={() => setShowNicknameModal(false)}
                 >
-                    <Box
+                    <MDBox
                         sx={{
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 400,
+                            width: isSmallScreen? 300 : 400,
                             bgcolor: 'background.paper',
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 600px)': {
-                                p: '1.5cm',
-                            },
                         }}
                     >
-                        <Typography variant="h6" component="h2">
+                        <MDTypography
+                            variant="h6" component="h2">
                             닉네임 변경
-                        </Typography>
+                        </MDTypography>
                         <ProfanityFilterMDInput
                             fullWidth
                             margin="normal"
@@ -418,33 +494,52 @@ function MyInfoDetail() {
                             onChange={(e) => setNickname(e.target.value)}
                             required
                         />
-                        <Box
+                        <MDBox
                             sx={{
                                 mt: 2,
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
                             }}
                         >
-                            <Button
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={handleNicknameChange}
                             >
                                 변경
-                            </Button>
-                            <Button
+                            </MDButton>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={() => setShowNicknameModal(false)}
                             >
                                 취소
-                            </Button>
-                        </Box>
-                    </Box>
+                            </MDButton>
+                        </MDBox>
+                    </MDBox>
                 </Modal>
 
                 {/* 비밀번호 확인 모달 */}
@@ -452,25 +547,22 @@ function MyInfoDetail() {
                     open={showPasswordModal}
                     onClose={() => setShowPasswordModal(false)}
                 >
-                    <Box
+                    <MDBox
                         sx={{
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 400,
+                            width: isSmallScreen? 300 : 400,
                             bgcolor: 'background.paper',
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 600px)': {
-                                p: '1.5cm',
-                            },
                         }}
                     >
-                        <Typography variant="h6" component="h2">
+                        <MDTypography variant="h6" component="h2">
                             비밀번호 확인
-                        </Typography>
+                        </MDTypography>
                         <TextField
                             fullWidth
                             margin="normal"
@@ -481,37 +573,56 @@ function MyInfoDetail() {
                             required
                         />
                         {errorMessage && (
-                            <Typography color="error" variant="body2">
+                            <MDTypography color="error" variant="body2">
                                 {errorMessage}
-                            </Typography>
+                            </MDTypography>
                         )}
-                        <Box
+                        <MDBox
                             sx={{
                                 mt: 2,
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
                             }}
                         >
-                            <Button
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={handleCheckPassword}
                             >
                                 확인
-                            </Button>
-                            <Button
+                            </MDButton>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={() => setShowPasswordModal(false)}
                             >
                                 취소
-                            </Button>
-                        </Box>
-                    </Box>
+                            </MDButton>
+                        </MDBox>
+                    </MDBox>
                 </Modal>
 
                 {/* 비밀번호 변경 모달 */}
@@ -519,25 +630,23 @@ function MyInfoDetail() {
                     open={showChangePwdModal}
                     onClose={() => setShowChangePwdModal(false)}
                 >
-                    <Box
+                    <MDBox
                         sx={{
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 400,
+                            width: isSmallScreen? 300 : 400,
                             bgcolor: 'background.paper',
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 600px)': {
-                                p: '1.5cm',
-                            },
                         }}
                     >
-                        <Typography variant="h6" component="h2">
+                        <MDTypography
+                            variant="h6" component="h2">
                             비밀번호 변경
-                        </Typography>
+                        </MDTypography>
                         <TextField
                             fullWidth
                             margin="normal"
@@ -556,33 +665,52 @@ function MyInfoDetail() {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
-                        <Box
+                        <MDBox
                             sx={{
                                 mt: 2,
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
                             }}
                         >
-                            <Button
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={handleChangePassword}
                             >
                                 변경
-                            </Button>
-                            <Button
+                            </MDButton>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={() => setShowChangePwdModal(false)}
                             >
                                 취소
-                            </Button>
-                        </Box>
-                    </Box>
+                            </MDButton>
+                        </MDBox>
+                    </MDBox>
                 </Modal>
 
                 {/* 회원 탈퇴 모달 */}
@@ -590,34 +718,28 @@ function MyInfoDetail() {
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                 >
-                    <Box
+                    <MDBox
                         sx={{
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 400,
+                            width: isSmallScreen? 300 : 400,
                             bgcolor: 'background.paper',
                             borderRadius: 1,
                             boxShadow: 24,
                             p: 4,
-                            '@media (max-width: 600px)': {
-                                p: '1.5cm',
-                            },
                         }}
                     >
-                        <Typography variant="h6" component="h2">
+                        <MDTypography variant="h6" component="h2">
                             회원 탈퇴
-                        </Typography>
-                        <Typography variant="body1">
+                        </MDTypography>
+                        <MDTypography variant="body1">
                             탈퇴를 위해 인증번호를 입력하세요.
-                        </Typography>
-                        <Box
+                        </MDTypography>
+                        <MDBox
                             sx={{
                                 mt: 2,
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
                             }}
                         >
                             <TextField
@@ -629,44 +751,74 @@ function MyInfoDetail() {
                                 error={!!verificationError}
                                 helperText={verificationError}
                             />
-                            <Button
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '120px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="dark"
                                 onClick={handleSendEmailCode}
                             >
                                 인증번호 전송
-                            </Button>
-                        </Box>
-                        <Box
+                            </MDButton>
+                        </MDBox>
+                        <MDBox
                             sx={{
                                 mt: 2,
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 gap: 1,
-                                '@media (max-width: 600px)': {
-                                    gap: '1.5cm',
-                                },
                             }}
                         >
-                            <Button
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
                                 color="error"
                                 onClick={handleDeleteMember}
                                 disabled={!isVerified}
                             >
                                 탈퇴
-                            </Button>
-                            <Button
+                            </MDButton>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
                                 variant="contained"
-                                color="error"
+                                color="info"
                                 onClick={() => setShowDeleteModal(false)}
                             >
                                 취소
-                            </Button>
-                        </Box>
-                    </Box>
+                            </MDButton>
+                        </MDBox>
+                    </MDBox>
                 </Modal>
-            </Box>
+            </MDBox>
         </DashboardLayout>
     );
 }
