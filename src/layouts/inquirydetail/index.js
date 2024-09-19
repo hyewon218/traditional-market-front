@@ -18,10 +18,13 @@ import {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 
 // @mui/material components
+import MDTypography from "../../components/MD/MDTypography";
+import MDBox from "../../components/MD/MDBox";
+import MDButton from "../../components/MD/MDButton";
+import * as React from "react";
+import {useMediaQuery} from "@mui/material";
+import MDInput from "../../components/MD/MDInput";
 import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -57,6 +60,7 @@ function InquiryDetail() {
     const [imageFiles, setImageFiles] = useState([]); // 실제 파일 상태 관리
     const [answerData, setAnswerData] = useState(initState); // 답변 데이터를 저장할 상태 추가
     const {isAdmin} = useCustomLogin();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         // 컴포넌트가 마운트될 때 문의사항 답변을 가져옵니다.
@@ -162,194 +166,254 @@ function InquiryDetail() {
 
     return (
         <DashboardLayout>
-            <Box sx={{p: 3}}>
-                <Box sx={{mt: 2, display: 'flex', gap: 1}}>
-                    <Button variant="contained" color="error"
+            <Grid container>
+                <Grid item xs={6} lg={4}>
+                    <MDTypography fontWeight="bold"
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 3,
+                                      fontSize: isSmallScreen ? '1.2rem'
+                                          : '2rem'
+                                  }}
+                                  variant="body2">
+                        문의사항 상세
+                    </MDTypography>
+                </Grid>
+                <Grid item xs={6} lg={8}>
+                    <MDBox sx={{
+                        pr: isSmallScreen ? 2 : 3,
+                        width: '100%',
+                        mt: isSmallScreen ? 0 : 4,
+                        display: 'flex',
+                        justifyContent: 'right',
+                    }}>
+                        <MDButton
+                            sx={{
+                                fontFamily: 'JalnanGothic',
+                                fontSize: isSmallScreen ? '0.7rem' : '0.9rem',
+                                minWidth: 'auto',
+                                width: isSmallScreen ? '100px' : 'auto', // 가로 너비를 줄임
+                                padding: isSmallScreen
+                                    ? '1px 2px'
+                                    : '4px 8px',
+                                lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                            }}
+                            variant="contained"
+                            color="white"
                             onClick={handleBack}
-                            startIcon={<KeyboardArrowLeftIcon/>}>
-                        돌아가기
-                    </Button>
-                </Box>
-                {/* 문의사항 기본 정보 */}
-                <Card sx={{p: 3, mb: 2}}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                            <Typography variant="body1" paragraph>
-                                <strong>문의사항 제목:</strong> {inquiry.inquiryTitle}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>문의사항
-                                    작성자:</strong> {inquiry.inquiryWriter}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>작성 시간:</strong> {formatCreateTime(
-                                inquiry.createTime)}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>문의사항
-                                    내용:</strong> {inquiry.inquiryContent}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                <strong>답변 상태:</strong> {inquiry.inquiryState}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                                gap: 2
-                            }}>
-                                {inquiry.imageList.map((img, index) => (
-                                    <img
-                                        key={index}
-                                        src={img.imageUrl}
-                                        alt={`inquiry-image-${index}`}
-                                        width="70%"
-                                        style={{marginBottom: '10px'}}
-                                    />
-                                ))}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Card>
+                            startIcon={<KeyboardArrowLeftIcon/>}
+                        >
+                            돌아가기
+                        </MDButton>
+                    </MDBox>
+                </Grid>
+            </Grid>
 
-                {/* 답변이 있는 경우 답변 출력 */}
-                {answerData.answerNo && (
-                    <Card sx={{p: 3, mb: 2}}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} md={8}>
-                                <Typography variant="body1" paragraph>
-                                    <strong>답변 작성자:</strong> {answerData.answerWriter}
-                                </Typography>
-                                <Typography variant="body1" paragraph>
-                                    <strong>답변 작성 시간:</strong> {formatCreateTime(answerData.createTime)}
-                                </Typography>
-                                <Typography variant="body1" paragraph>
-                                    <strong>답변 내용:</strong> {answerData.answerContent}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} md={4}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'flex-start',
-                                    gap: 2
-                                }}>
-                                    {Array.isArray(answerData.imageList) && answerData.imageList.map(
-                                        (img, index) => (
+            <MDBox pt={0} pb={20}>
+                <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}>
+                    {/* 문의사항 기본 정보 */}
+                    <Card>
+                        <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={8}>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>문의사항
+                                            제목:</strong> {inquiry.inquiryTitle}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>문의사항
+                                            작성자:</strong> {inquiry.inquiryWriter}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>작성
+                                            시간:</strong> {formatCreateTime(
+                                        inquiry.createTime)}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>문의사항
+                                            내용:</strong> {inquiry.inquiryContent}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>답변
+                                            상태:</strong> {inquiry.inquiryState}
+                                    </MDTypography>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <MDBox sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        gap: 2
+                                    }}>
+                                        {inquiry.imageList.map((img, index) => (
                                             <img
                                                 key={index}
                                                 src={img.imageUrl}
-                                                alt={`answer-image-${index}`}
+                                                alt={`inquiry-image-${index}`}
                                                 width="70%"
                                                 style={{marginBottom: '10px'}}
                                             />
-                                        )
-                                    )}
-                                </Box>
+                                        ))}
+                                    </MDBox>
+                                </Grid>
                             </Grid>
-                        </Grid>
+                        </MDBox>
                     </Card>
+                </MDBox>
+
+                {/* 답변이 있는 경우 답변 출력 */}
+                {answerData.answerNo && (
+                    <MDBox pt={isSmallScreen ? 1 : 1} pb={1}
+                           px={isSmallScreen ? 1 : 3}>
+                        <Card sx={{p: 3, mb: 2}}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={8}>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>답변
+                                            작성자:</strong> {answerData.answerWriter}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>답변 작성
+                                            시간:</strong> {formatCreateTime(
+                                        answerData.createTime)}
+                                    </MDTypography>
+                                    <MDTypography variant="body1" paragraph>
+                                        <strong>답변
+                                            내용:</strong> {answerData.answerContent}
+                                    </MDTypography>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <MDBox sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        gap: 2
+                                    }}>
+                                        {Array.isArray(answerData.imageList)
+                                            && answerData.imageList.map(
+                                                (img, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={img.imageUrl}
+                                                        alt={`answer-image-${index}`}
+                                                        width="70%"
+                                                        style={{marginBottom: '10px'}}
+                                                    />
+                                                )
+                                            )}
+                                    </MDBox>
+                                </Grid>
+                            </Grid>
+                        </Card>
+                    </MDBox>
                 )}
 
                 {/* 관리자일 경우 답변하기 버튼 (답변이 없는 경우에만 표시) */}
                 {isAdmin && !answerData.answerNo && (
-                    <Box sx={{
+                    <MDBox sx={{
                         display: 'flex',
                         justifyContent: 'flex-start',
                         mb: 2
                     }}>
-                        <Button
+                        <MDButton
                             variant="contained"
                             color="error"
                             onClick={handleAnswerClick}
                         >
                             답변하기
-                        </Button>
-                    </Box>
+                        </MDButton>
+                    </MDBox>
                 )}
 
                 {/* 답변 폼 */}
                 {showAnswerForm && (
-                    <Card sx={{p: 3, mb: 2}}>
-                        <Box component="form" onSubmit={handleAddInquiryAnswer}>
-                            <Typography variant="body1" paragraph>
-                                <strong>답변 내용:</strong>
-                            </Typography>
-                            <textarea
-                                name="answerContent"
-                                rows="5"
-                                cols="100"
-                                placeholder="답변 내용을 입력하세요"
-                                style={{width: '100%', marginBottom: '10px'}}
-                                value={inquiryAnswer.answerContent}
-                                onChange={handleChangeInquiryAnswer}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleFileChange}
-                                style={{marginBottom: '10px'}}
-                            />
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2
-                            }}>
-                                {previewImages.map((src, index) => (
-                                    <Box key={index}
-                                         sx={{position: 'relative'}}>
-                                        <img
-                                            src={src}
-                                            alt={`preview-${index}`}
-                                            style={{
-                                                maxWidth: '150px',
-                                                maxHeight: '150px',
-                                            }}
-                                        />
-                                        <IconButton
-                                            sx={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 0
-                                            }}
-                                            onClick={() => handleRemoveImage(
-                                                index)}
-                                        >
-                                            <KeyboardArrowRightIcon/>
-                                        </IconButton>
-                                    </Box>
-                                ))}
-                            </Box>
-                            <Button variant="contained" color="error"
-                                    type="submit">
-                                답변 등록
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                sx={{ml: 2}}
-                                onClick={() => setShowAnswerForm(false)}
-                            >
-                                취소
-                            </Button>
-                        </Box>
-                    </Card>
+                    <MDBox pt={isSmallScreen ? 1 : 1} pb={1}
+                           px={isSmallScreen ? 1 : 3}>
+                        <Card sx={{p: 3, mb: 2}}>
+                            <MDBox component="form"
+                                   onSubmit={handleAddInquiryAnswer}>
+                                <MDTypography variant="body1" paragraph>
+                                    <strong>답변 내용:</strong>
+                                </MDTypography>
+                                <textarea
+                                    name="answerContent"
+                                    rows="5"
+                                    cols="100"
+                                    placeholder="답변 내용을 입력하세요"
+                                    style={{
+                                        width: '100%',
+                                        marginBottom: '10px'
+                                    }}
+                                    value={inquiryAnswer.answerContent}
+                                    onChange={handleChangeInquiryAnswer}
+                                />
+                                <MDInput
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleFileChange}
+                                    style={{marginBottom: '10px'}}
+                                />
+                                <MDBox sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2
+                                }}>
+                                    {previewImages.map((src, index) => (
+                                        <MDBox key={index}
+                                               sx={{position: 'relative'}}>
+                                            <img
+                                                src={src}
+                                                alt={`preview-${index}`}
+                                                style={{
+                                                    maxWidth: '150px',
+                                                    maxHeight: '150px',
+                                                }}
+                                            />
+                                            <IconButton
+                                                sx={{
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    right: 0
+                                                }}
+                                                onClick={() => handleRemoveImage(
+                                                    index)}
+                                            >
+                                                <KeyboardArrowRightIcon/>
+                                            </IconButton>
+                                        </MDBox>
+                                    ))}
+                                </MDBox>
+                                <MDButton variant="contained" color="error"
+                                          type="submit">
+                                    답변 등록
+                                </MDButton>
+                                <MDButton
+                                    variant="contained"
+                                    color="error"
+                                    sx={{ml: 2}}
+                                    onClick={() => setShowAnswerForm(false)}
+                                >
+                                    취소
+                                </MDButton>
+                            </MDBox>
+                        </Card>
+                    </MDBox>
                 )}
 
                 {/* 삭제 버튼 */}
-                <Box sx={{display: 'flex', justifyContent: 'flex-start'}}>
-                    <Button
+                <MDBox sx={{display: 'flex', justifyContent: 'flex-start'}}>
+                    <MDButton
                         variant="contained"
                         color="error"
                         onClick={() => deleteInquiryByNo(inquiry.inquiryNo)}
                     >
                         삭제
-                    </Button>
-                </Box>
-            </Box>
+                    </MDButton>
+                </MDBox>
+
+            </MDBox>
         </DashboardLayout>
     );
 }

@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.1.0
+ =========================================================
+
+ * Product Page: https://www.creative-tim.com/product/material-dashboard-react
+ * Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+ Coded by www.creative-tim.com
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
+
+import React, {useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 // @mui material components
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
@@ -12,7 +25,12 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // API 호출 함수
-import { postCheckPw } from '../../api/memberApi';
+import {postCheckPw} from '../../api/memberApi';
+import MDBox from "../../components/MD/MDBox";
+import MDButton from "../../components/MD/MDButton";
+import {useMediaQuery} from "@mui/material";
+import MDTypography from "../../components/MD/MDTypography";
+import Card from "@mui/material/Card";
 
 function CheckPw() {
   const { state } = useLocation();
@@ -21,6 +39,7 @@ function CheckPw() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -82,41 +101,42 @@ function CheckPw() {
 
   return (
     <DashboardLayout>
-      <Box
+        <MDBox sx={{ width: '100%', mt: 2, display: 'flex', justifyContent: 'flex-start' }}>
+            <MDButton
+                sx={{ fontFamily: 'JalnanGothic' }}
+                variant="contained"
+                color="white"
+                onClick={handleBack}
+                startIcon={<KeyboardArrowLeftIcon />}
+            >
+                돌아가기
+            </MDButton>
+        </MDBox>
+
+      <MDBox
         sx={{
           p: 3,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '80vh',
+          height: isSmallScreen ? '40vh' :'60vh',
+          mb: isSmallScreen ? 10:10
         }}
       >
-        <Box
+        <Card
           sx={{
             width: '100%',
             maxWidth: '500px',
-            boxShadow: 3,
-            borderRadius: 2,
             p: 4,
-            backgroundColor: '#fff',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <Box sx={{ width: '100%', mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleBack}
-              startIcon={<KeyboardArrowLeftIcon />}
-            >
-              돌아가기
-            </Button>
-          </Box>
-          <Typography variant="h5" gutterBottom>
+          <MDTypography
+              variant="h5" gutterBottom>
             비밀번호 확인
-          </Typography>
+          </MDTypography>
 
           {member.providerType === 'LOCAL' ? (
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
@@ -130,19 +150,29 @@ function CheckPw() {
                 sx={{ mb: 3 }}
                 inputProps={{ style: { fontSize: '1rem' } }}
               />
-              <Button
+              <MDButton
                 type="submit"
                 variant="contained"
                 color="primary"
                 fullWidth
-                sx={{ mb: 2, fontSize: '1.2rem', color: '#fff' }}
+                sx={{
+                    fontFamily: 'JalnanGothic',
+                    fontSize: isSmallScreen ? '0.8rem':'1.1rem',
+                    minWidth: 'auto',
+                    width: '100%',
+                    padding: isSmallScreen
+                        ? '1px 2px'
+                        : '4px 8px',
+                    lineHeight:  isSmallScreen ? 3:3,  // 줄 간격을 줄여 높이를 감소시킴
+                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                }}
               >
                 비밀번호 확인
-              </Button>
-              {error && <Typography color="error" sx={{ fontSize: '1rem' }}>{error}</Typography>}
+              </MDButton>
+              {error && <Typography color="error" sx={{ fontSize: isSmallScreen ? '0.8rem':'1rem' }}>{error}</Typography>}
             </form>
           ) : (
-            <Button
+            <MDButton
               variant="contained"
               color="primary"
               fullWidth
@@ -150,10 +180,10 @@ function CheckPw() {
               onClick={handleProviderLogin}
             >
               {member.providerType}로 인증
-            </Button>
+            </MDButton>
           )}
-        </Box>
-      </Box>
+        </Card>
+      </MDBox>
     </DashboardLayout>
   );
 }

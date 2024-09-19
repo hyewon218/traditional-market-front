@@ -16,24 +16,18 @@
 // 내 정보 페이지 버튼 4개(내정보, 구매목록, 문의내역, 배송지관리)
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // @mui material components
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import {useMediaQuery} from "@mui/material";
+import MDBox from "../../components/MD/MDBox";
+import MDButton from "../../components/MD/MDButton";
 
 // Material Dashboard 2 React components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { postCheckAdminPw } from "../../api/adminApi";
 import { getMember } from "../../api/memberApi";
 
 const initState = {
@@ -49,6 +43,7 @@ const initState = {
 function MyInfo() {
     const [member, setMember] = useState({...initState})
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         handleGetMember();
@@ -107,62 +102,95 @@ function MyInfo() {
 
   return (
       <DashboardLayout>
-        <Box
-          sx={{
-            p: 3,
-            height: '80vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={6} sm={3}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={() => handleViewMyInfo(member)}
-                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
-              >
-                내정보
-              </Button>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleViewOrderList}
-                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
-              >
-                구매목록
-              </Button>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleViewMyInquiries}
-                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
-              >
-                문의내역
-              </Button>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleViewDeliveryManage}
-                sx={{ height: '250px', color: '#fff', fontSize: '2.7em' }} // 글자 크기를 키움
-              >
-                배송지 관리
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+          <MDBox
+              mb={isSmallScreen ? 10 : 10}
+              sx={{
+                  p: 3,
+                  height: isSmallScreen ? '60vh' :'80vh',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+              }}
+          >
+              <Grid container spacing={isSmallScreen ? 5 : 2} justifyContent="center" alignItems="center">
+                  <Grid item xs={6} sm={3} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <MDButton
+                          fullWidth
+                          variant="gradient"
+                          color="info"
+                          onClick={() => handleViewMyInfo(member)}
+                          sx={{
+                              fontFamily: 'JalnanGothic',
+                              fontSize: isSmallScreen ? '0.9rem' : '1.5rem',
+                              minWidth: 'auto',
+                              width: isSmallScreen ? '100px' : '200px', // 가로 너비를 줄임
+                              padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                              lineHeight: isSmallScreen ? 5 : 6, // 줄 간격을 줄여 높이를 감소시킴
+                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                          }}
+                      >
+                          내정보
+                      </MDButton>
+                  </Grid>
+                  <Grid item xs={6} sm={3} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <MDButton
+                          fullWidth
+                          variant="gradient"
+                          color="info"
+                          onClick={handleViewOrderList}
+                          sx={{
+                              fontFamily: 'JalnanGothic',
+                              fontSize: isSmallScreen ? '0.9rem' : '1.5rem',
+                              minWidth: 'auto',
+                              width: isSmallScreen ? '100px' : '200px', // 가로 너비를 줄임
+                              padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                              lineHeight: isSmallScreen ? 5 : 6, // 줄 간격을 줄여 높이를 감소시킴
+                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                          }}
+                      >
+                          구매목록
+                      </MDButton>
+                  </Grid>
+                  <Grid item xs={6} sm={3} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <MDButton
+                          fullWidth
+                          variant="gradient"
+                          color="info"
+                          onClick={handleViewMyInquiries}
+                          sx={{
+                              fontFamily: 'JalnanGothic',
+                              fontSize: isSmallScreen ? '0.9rem' : '1.5rem',
+                              minWidth: 'auto',
+                              width: isSmallScreen ? '100px' : '200px', // 가로 너비를 줄임
+                              padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                              lineHeight: isSmallScreen ? 5 : 6, // 줄 간격을 줄여 높이를 감소시킴
+                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                          }}
+                      >
+                          문의내역
+                      </MDButton>
+                  </Grid>
+                  <Grid item xs={6} sm={3} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <MDButton
+                          fullWidth
+                          variant="gradient"
+                          color="info"
+                          onClick={handleViewDeliveryManage}
+                          sx={{
+                              fontFamily: 'JalnanGothic',
+                              fontSize: isSmallScreen ? '0.9rem' : '1.5rem',
+                              minWidth: 'auto',
+                              width: isSmallScreen ? '100px' : '200px', // 가로 너비를 줄임
+                              padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                              lineHeight: isSmallScreen ? 5 : 6, // 줄 간격을 줄여 높이를 감소시킴
+                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                          }}
+                      >
+                          배송지 관리
+                      </MDButton>
+                  </Grid>
+              </Grid>
+          </MDBox>
       </DashboardLayout>
     );
 }
