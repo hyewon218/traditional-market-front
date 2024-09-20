@@ -70,11 +70,8 @@ function Alarm() {
     let eventSource = undefined;
 
     const {moveToLoginReturn, isAuthorization} = useCustomLogin() // 로그인이 필요한 페이지
-
     const host = `${API_SERVER_HOST}/api/notifications`
-
     const navigate = useNavigate();
-
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const changePage = (pageNum) => {
