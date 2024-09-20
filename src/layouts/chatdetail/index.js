@@ -48,7 +48,6 @@ function ChatDetail() {
     } = useCustomLogin()
 
     const chatContainerRef = useRef(null);
-
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
@@ -524,13 +523,16 @@ function ChatDetail() {
                             <Grid container justifyContent="center"
                                   alignItems="center">
                                 <Grid item xs={8.5} lg={10.5}>
-                                    <ProfanityFilterMDInput label="메시지 보내기"
-                                                            type="text"
-                                                            id="msg"
-                                                            onChange={onChangeChat}
-                                                            onKeyDown={handleKeyDown}
-                                                            value={chat}
-                                                            fullWidth/>
+                                    <ProfanityFilterMDInput
+                                        label="메시지 보내기"
+                                        type="text"
+                                        id="msg"
+                                        onChange={onChangeChat}
+                                        onKeyDown={handleKeyDown}
+                                        value={chat}
+                                        fullWidth
+                                        sx={{ fontSize: '16px' }} // 1rem 은 약 16px 이지만 명시적으로 설정(확대방지)
+                                    />
                                 </Grid>
                                 <Grid item xs={3.5} lg={1.5}>
                                     <MDBox sx={{
@@ -542,7 +544,7 @@ function ChatDetail() {
                                                   color="info"
                                                   sx={{
                                                       fontFamily: 'JalnanGothic',
-                                                      fontSize: '1rem',
+                                                      fontSize: '16px',  // 1rem 은 약 16px 이지만 명시적으로 설정(확대방지)
                                                       padding: '4px 20px',
                                                   }}
                                         >
