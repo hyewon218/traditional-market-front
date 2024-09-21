@@ -798,12 +798,6 @@
 //export default DeliveryManage;
 //
 
-
-
-
-
-
-
 // 반응형
 /**
  =========================================================
@@ -821,14 +815,26 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
 import MDBox from '../../components/MD/MDBox';
 import MDTypography from '../../components/MD/MDTypography';
-import { useMediaQuery } from '@mui/material';
+import {Grid, useMediaQuery} from '@mui/material';
 import {Button, Modal, TextField} from '@mui/material';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-import { postDelivery, getDeliveryList, putDelivery, deleteDelivery, putDeliveryPrimary, putDeliveryDelPrimary } from "../../api/deliveryApi";
+import {
+    postDelivery,
+    getDeliveryList,
+    putDelivery,
+    deleteDelivery,
+    putDeliveryPrimary,
+    putDeliveryDelPrimary, getPrimaryDelivery
+} from "../../api/deliveryApi";
+import MDButton from "../../components/MD/MDButton";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import {useNavigate} from "react-router-dom";
+import DeliveryPostModal from "../../components/delivery/DeliveryPostModal";
+import DeliveryPutModal from "../../components/delivery/DeliveryPutModal";
 
 function DeliveryManage() {
     const [deliveries, setDeliveries] = useState([]);
@@ -838,37 +844,27 @@ function DeliveryManage() {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [newDelivery, setNewDelivery] = useState({});
     const [editDelivery, setEditDelivery] = useState(null);
+    const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const [result, setResult] = useState(null)
+    const [primaryDeliveryNo, setPrimaryDeliveryNo] = useState(null);
+    const [putResult, setPutResult] = useState(null) // 배송지 수정 모달창 관련
 
     const handleGetDeliveries = (page) => {
-        const params = { page, size : 7, sort: 'createTime,asc' };
+        const params = {page, size: 7, sort: 'createTime,asc'};
         getDeliveryList(params)
-            .then(data => {
-                setDeliveries(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(error => {
-                console.error("배송지 목록을 불러오는 데 실패했습니다.", error);
-            });
+        .then(data => {
+            setDeliveries(data.content);
+            setTotalPages(data.totalPages);
+        })
+        .catch(error => {
+            console.error("배송지 목록을 불러오는 데 실패했습니다.", error);
+        });
     };
 
     useEffect(() => {
         handleGetDeliveries(currentPage);
     }, [currentPage]);
-
-    // 추가
-    const handleOpenAddModal = () => {
-        setNewDelivery({
-            title: '',
-            receiver: '',
-            phone: '',
-            postCode: '',
-            roadAddr: '',
-            jibunAddr: '',
-            detailAddr: '',
-            extraAddr: ''
-        });
-        setOpenAddModal(true);
-    };
 
     const handleCloseAddModal = () => {
         setOpenAddModal(false);
@@ -890,8 +886,10 @@ function DeliveryManage() {
         }
 
         // 유효성 검사
-        if (!newDelivery.title || !newDelivery.receiver || !newDelivery.phone || !newDelivery.postCode ||
-            !newDelivery.roadAddr || !newDelivery.jibunAddr || !newDelivery.detailAddr || !newDelivery.extraAddr
+        if (!newDelivery.title || !newDelivery.receiver || !newDelivery.phone
+            || !newDelivery.postCode ||
+            !newDelivery.roadAddr || !newDelivery.jibunAddr
+            || !newDelivery.detailAddr || !newDelivery.extraAddr
         ) {
             alert('모든 필드를 입력해주세요.');
             return;
@@ -997,7 +995,7 @@ function DeliveryManage() {
     const openDaumPostcode = (mode) => {
         if (window.daum && window.daum.Postcode) {
             new window.daum.Postcode({
-                oncomplete: function(data) {
+                oncomplete: function (data) {
                     const roadAddr = data.roadAddress;
                     let extraRoadAddr = '';
 
@@ -1005,7 +1003,8 @@ function DeliveryManage() {
                         extraRoadAddr += data.bname;
                     }
                     if (data.buildingName !== '' && data.apartment === 'Y') {
-                        extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        extraRoadAddr += (extraRoadAddr !== '' ? ', '
+                            + data.buildingName : data.buildingName);
                     }
                     if (extraRoadAddr !== '') {
                         extraRoadAddr = ' (' + extraRoadAddr + ')';
@@ -1035,6 +1034,55 @@ function DeliveryManage() {
         }
     };
 
+    // 뒤로 가기(내 정보 홈으로 가기)
+    const handleBack = () => {
+        navigate('/myinfo');
+    };
+
+    /*배송지 추가*/
+    const handleDeliveryPostModal = () => { // 배송지 목록 모달 내 배송지 추가 버튼
+        setResult(true); // Show the DeliveryPostModal
+    };
+
+    const postDeliveryModal = () => { // DeliveryPostModal 종료
+        setResult(false)
+        handleGetDeliveries(); // 모달 창 닫히고 조회
+    }
+
+    /*배송지 수정*/
+    const handleDeliveryPutModal = (delivery) => { // 배송지 목록 모달 내 배송지 수정 버튼
+        console.log('handleDeliveryPutModal');
+        //setPutResult(true); // Show the DeliveryPutModal
+        setPutResult(delivery); // Pass the selected delivery info to the modal
+    };
+
+    const putDeliveryModal = () => { // DeliveryPutModal 종료
+        setPutResult(false)
+        handleGetDeliveries(); // 모달 창 닫히고 조회
+    }
+
+    /*기본 배송지 선택*/
+    const handlePrimaryDelivery = (deliveryNo) => { // 기본 배송지 선택 버튼
+        console.log('handleSelectDelivery');
+        putDeliveryPrimary(deliveryNo).then(data => {
+            console.log('기본 배송지로 수정!!');
+            console.log(data);
+            setPrimaryDeliveryNo(deliveryNo); // Set the selected delivery address
+            handleGetPrimaryDelivery();
+        }).catch(error => {
+            console.error("기본 배송지 수정에 실패했습니다.", error);
+        });
+    };
+
+    const handleGetPrimaryDelivery = () => { // 기본 배송지 조회
+        console.log('handleGetPrimaryDelivery');
+        getPrimaryDelivery().then(data => {
+            setPrimaryDeliveryNo(data.deliveryNo);
+        }).catch(error => {
+            console.error("기본 배송지 조회에 실패했습니다.", error);
+        });
+    };
+
     // Inline styles
     const styles = {
         table: {
@@ -1059,12 +1107,19 @@ function DeliveryManage() {
             padding: '16px',
         },
         button: {
-            margin: '0 5px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
+            fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '0px 15px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
             cursor: 'pointer',
+            borderRadius: '4px',
+            border: 'none',
         },
         addDeliveryButton: {
             marginBottom: '20px',
@@ -1181,7 +1236,10 @@ function DeliveryManage() {
             pagination.push(
                 <button
                     key={i}
-                    style={{ ...styles.button, ...(i === currentPage ? styles.active : {}) }}
+                    style={{
+                        ...styles.button, ...(i === currentPage ? styles.active
+                            : {})
+                    }}
                     onClick={() => handlePageClick(i)}
                 >
                     {i + 1}
@@ -1194,7 +1252,8 @@ function DeliveryManage() {
                 key="next"
                 style={styles.button}
                 disabled={currentPage >= totalPages - 1}
-                onClick={() => handlePageClick(Math.min(currentPage + 1, totalPages - 1))}
+                onClick={() => handlePageClick(
+                    Math.min(currentPage + 1, totalPages - 1))}
             >
                 다음
             </button>
@@ -1213,264 +1272,606 @@ function DeliveryManage() {
         return pagination;
     };
 
-    // 600px 이하일 때 true를 반환
-    const isMobile = useMediaQuery('(max-width:600px)');
-
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
-                    배송지 관리
-                </MDTypography>
-                <MDBox pt={3} pb={3}>
-                    <Button style={styles.addDeliveryButton} onClick={handleOpenAddModal}>
-                        배송지 추가
-                    </Button>
-                    <Card style={styles.card}>
-                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
+            {result ?
+                <DeliveryPostModal
+                    callbackFn={postDeliveryModal}
+                />
+                : <></>
+            }
+            {putResult ?
+                <DeliveryPutModal
+                    delivery={putResult}
+                    callbackFn={putDeliveryModal}
+                />
+                : <></>
+            }
+
+            <Grid container>
+                <Grid item xs={6} lg={4}>
+                    <MDTypography fontWeight="bold"
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 3,
+                                      fontSize: isSmallScreen ? '1.2rem'
+                                          : '2rem'
+                                  }}
+                                  variant="body2">
+                        배송지 관리
+                    </MDTypography>
+                </Grid>
+                <Grid item xs={6} lg={8}>
+                    <MDBox sx={{
+                        pr: isSmallScreen ? 2 : 3,
+                        width: '100%',
+                        mt: isSmallScreen ? 0 : 4,
+                        display: 'flex',
+                        justifyContent: 'right',
+                    }}>
+                        <MDButton
+                            sx={{
+                                fontFamily: 'JalnanGothic',
+                                fontSize: isSmallScreen ? '0.7rem' : '0.9rem',
+                                minWidth: 'auto',
+                                width: isSmallScreen ? '100px' : 'auto', // 가로 너비를 줄임
+                                padding: isSmallScreen
+                                    ? '1px 2px'
+                                    : '4px 8px',
+                                lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                            }}
+                            variant="contained"
+                            color="white"
+                            onClick={handleBack}
+                            startIcon={<KeyboardArrowLeftIcon/>}
+                        >
+                            돌아가기
+                        </MDButton>
+                    </MDBox>
+                </Grid>
+            </Grid>
+
+            <MDBox pt={0} pb={20} display="flex" justifyContent="center">
+                <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}
+                       width="100%"
+                       display="flex"
+                       justifyContent="center">
+                    <Card sx={{
+                        maxWidth: isSmallScreen ? '90%' : '50%',  // 카드의 최대 너비 설정
+                        width: '100%',                           // 부모 요소에서 차지하는 너비 설정
+                        margin: '0 auto',                        // 가로로 중앙 정렬
+                    }}>
+                        <MDBox pt={2} pb={2} px={isSmallScreen ? 1 : 2}>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}>
+                                <MDButton
+                                    onClick={handleDeliveryPostModal}
+                                    variant="gradient"
+                                    sx={{
+                                        color: '#ffffff',
+                                        fontSize: '1.2rem',
+                                        fontFamily: 'JalnanGothic',
+                                        padding: '10px',
+                                        width: isSmallScreen ? '90%' : '30%',
+                                    }}
+                                    color={"light"}>
+                                    + 배송지 추가
+                                </MDButton>
+                            </div>
+
                             <div className="deliveryList-contents">
                                 {deliveries.length > 0 ? (
-                                    isMobile ? (
+                                   /* isMobile ? (*/
+                                            <ul>
+                                                {Array.isArray(deliveries)
+                                                    && deliveries.map(
+                                                        delivery =>
+                                                            <li key={delivery.deliveryNo}>
+                                                                <MDBox pt={2}
+                                                                       ml={isSmallScreen
+                                                                           ? -2
+                                                                           : 0}>
+                                                                    <Grid container>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={9}
+                                                                            sm={9.8}
+                                                                            md={9.8}
+                                                                            lg={10}>
+                                                                            <MDTypography
+                                                                                fontWeight="bold"
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.9rem'
+                                                                                        : '1.1rem',
+                                                                                }}
+                                                                                variant="body2">
+                                                                                {delivery.receiver
+                                                                                    + ' '
+                                                                                    + '('
+                                                                                    + delivery.title
+                                                                                    + ')'}
+                                                                                {primaryDeliveryNo
+                                                                                    === delivery.deliveryNo
+                                                                                    && (
+                                                                                        <span
+                                                                                            style={{
+                                                                                                fontSize: isSmallScreen
+                                                                                                    ? '0.7rem'
+                                                                                                    : '0.9rem',
+                                                                                                color: "deeppink"
+                                                                                            }}>
+                                                                                        기본 배송지
+                                                                                    </span>
+                                                                                    )}
+                                                                            </MDTypography>
+                                                                        </Grid>
+                                                                    </Grid>
+
+                                                                    <Grid
+                                                                        container>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={12}
+                                                                            md={5}
+                                                                            sx={{mt: -1}}>
+                                                                            <MDTypography
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.8rem'
+                                                                                        : '1rem',
+                                                                                }}
+                                                                                fontWeight="bold"
+                                                                                variant="body2">
+                                                                                {delivery.phone}
+                                                                            </MDTypography>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                    <Grid
+                                                                        container>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={12}
+                                                                            md={12}>
+                                                                            <MDTypography
+                                                                                sx={{
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.8rem'
+                                                                                        : '1rem',
+                                                                                }}
+                                                                                fontWeight="bold"
+                                                                                variant="body2">
+                                                                                {delivery.roadAddr
+                                                                                    + ' '
+                                                                                    + delivery.detailAddr
+                                                                                    + ' '
+                                                                                    + '('
+                                                                                    + delivery.postCode
+                                                                                    + ')'}
+                                                                            </MDTypography>
+                                                                        </Grid>
+                                                                    </Grid>
+
+                                                                    <Grid
+                                                                        container>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={1.6}
+                                                                            lg={1.2}>
+                                                                            <MDButton
+                                                                                onClick={() => handleDeliveryPutModal(
+                                                                                    delivery)}
+                                                                                variant="gradient"
+                                                                                color="light"
+                                                                                sx={{
+                                                                                    color: 'gray',
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.7rem'
+                                                                                        : '0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen
+                                                                                        ? '30px'
+                                                                                        : '60px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                                                }}
+                                                                            >
+                                                                                수정
+                                                                            </MDButton>
+                                                                        </Grid>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={1.6}
+                                                                            lg={1.2}>
+                                                                            <MDButton
+                                                                                onClick={() => handleDeleteDelivery(
+                                                                                    delivery.deliveryNo)}
+                                                                                variant="gradient"
+                                                                                color="light"
+                                                                                sx={{
+                                                                                    color: 'gray',
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.7rem'
+                                                                                        : '0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen
+                                                                                        ? '30px'
+                                                                                        : '60px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                                                }}
+                                                                            >
+                                                                                삭제
+                                                                            </MDButton>
+                                                                        </Grid>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={4}
+                                                                            md={4}
+                                                                            lg={4}>
+                                                                            <MDButton
+                                                                                onClick={() => handlePrimaryDelivery(
+                                                                                    delivery.deliveryNo)}
+                                                                                variant="gradient"
+                                                                                color="warning"
+                                                                                sx={{
+                                                                                    fontFamily: 'JalnanGothic',
+                                                                                    fontSize: isSmallScreen
+                                                                                        ? '0.7rem'
+                                                                                        : '0.8rem',
+                                                                                    minWidth: 'auto',
+                                                                                    width: isSmallScreen
+                                                                                        ? '100px'
+                                                                                        : '150px', // 가로 너비를 줄임
+                                                                                    padding: isSmallScreen
+                                                                                        ? '1px 2px'
+                                                                                        : '4px 8px',
+                                                                                    lineHeight: 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                                                }}
+                                                                            >
+                                                                                기본배송지
+                                                                                설정
+                                                                            </MDButton>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </MDBox>
+                                                            </li>
+                                                    )}
+                                            </ul>
+
                                         // 모바일일 때 카드 형식으로 출력
-                                        deliveries.map((delivery, index) => (
-                                            <div
-                                                key={delivery.deliveryNo}
+                                        /* deliveries.map((delivery, index) => (
+                                             <div
+                                                 key={delivery.deliveryNo}
+                                                 style={{
+                                                     ...styles.deliveryItem,
+                                                     borderBottom: index
+                                                     < deliveries.length - 1
+                                                         ? '1px solid #ddd'
+                                                         : 'none',
+                                                     paddingBottom: '15px',
+                                                     marginBottom: '15px',
+                                                 }}
+                                             >
+                                                 <MDTypography variant="body2"
+                                                               sx={styles.deliveryText}>
+                                                     {delivery.receiver} ({delivery.title})
+                                                 </MDTypography>
+                                                 <MDTypography variant="body2"
+                                                               sx={styles.deliveryText}>
+                                                     {delivery.phone}
+                                                 </MDTypography>
+                                                 <MDTypography variant="body2"
+                                                               sx={styles.deliveryText}>
+                                                     {delivery.roadAddr} {delivery.extraAddr
+                                                     ? `${delivery.extraAddr}`
+                                                     : ''} {delivery.detailAddr} ({delivery.postCode})
+                                                 </MDTypography>
+                                                 <MDBox sx={styles.actionsBox}>
+                                                     <MDTypography
+                                                         style={styles.clickable}
+                                                         sx={styles.actionText}
+                                                         variant="body2"
+                                                         onClick={() => handleOpenEditModal(
+                                                             delivery)}
+                                                     >
+                                                         수정
+                                                     </MDTypography>
+                                                     <MDTypography
+                                                         style={styles.clickable}
+                                                         sx={styles.actionText}
+                                                         variant="body2"
+                                                         onClick={() => handleDeleteDelivery(
+                                                             delivery.deliveryNo)}
+                                                     >
+                                                         삭제
+                                                     </MDTypography>
+                                                     {!delivery.primary ? (
+                                                         <MDTypography
+                                                             style={{...styles.clickable, ...styles.primaryActive}}
+                                                             sx={styles.actionText}
+                                                             variant="body2"
+                                                             onClick={() => handleSetPrimary(
+                                                                 delivery.deliveryNo)}
+                                                         >
+                                                             기본배송지 설정
+                                                         </MDTypography>
+                                                     ) : (
+                                                         <MDTypography
+                                                             style={{...styles.clickable, ...styles.primaryActive}}
+                                                             sx={styles.actionText}
+                                                             onClick={() => handleDelPrimary(
+                                                                 delivery.deliveryNo)}
+                                                             variant="body2"
+                                                         >
+                                                             기본배송지 해제
+                                                         </MDTypography>
+                                                     )}
+                                                 </MDBox>
+                                             </div>
+                                        ))*/
+          /*                          ) : (
+                                    // 600px 이상일 때 테이블 형식으로 출력
+                                    <table style={styles.table}>
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            기본배송지
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            배송지이름
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            받는사람
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            휴대전화번호
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            우편번호
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            도로명주소
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            지번주소
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            상세주소
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            참고사항
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            수정
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            삭제
+                                        </MDTypography>
+                                    </th>
+                                    <th>
+                                        <MDTypography
+                                            fontWeight="bold"
+                                            variant="body2"
+                                            sx={styles.th}>
+                                            기본배송지 설정
+                                        </MDTypography>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {deliveries.map((delivery) => (
+                                    <tr key={delivery.deliveryNo}>
+                                        <td>
+                                            <MDTypography
+                                                style={styles.clickable}
+                                                sx={styles.td}
+                                                variant="body2"
+                                            >
+                                                {delivery.primary
+                                                    ? "기본배송지" : ""}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.title}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.receiver}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.phone}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.postCode}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.roadAddr}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.jibunAddr}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.detailAddr}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                sx={styles.td}
+                                                variant="body2">
+                                                {delivery.extraAddr}
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                style={styles.clickable}
+                                                sx={styles.td}
+                                                variant="body2"
+                                                onClick={() => handleOpenEditModal(
+                                                    delivery)}
+                                            >
+                                                수정
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
+                                                style={styles.clickable}
+                                                sx={styles.td}
+                                                variant="body2"
+                                                onClick={() => handleDeleteDelivery(
+                                                    delivery.deliveryNo)}
+
+                                            >
+                                                삭제
+                                            </MDTypography>
+                                        </td>
+                                        <td>
+                                            <MDTypography
                                                 style={{
-                                                    ...styles.deliveryItem,
-                                                    borderBottom: index < deliveries.length - 1 ? '1px solid #ddd' : 'none',
-                                                    paddingBottom: '15px',
-                                                    marginBottom: '15px',
+                                                    ...styles.clickable, ...(delivery.primary
+                                                        ? styles.disabled
+                                                        : styles.primaryActive)
+                                                }}
+                                                sx={styles.td}
+                                                variant="body2"
+                                                onClick={() => {
+                                                    if (!delivery.primary) {
+                                                        handleSetPrimary(
+                                                            delivery.deliveryNo);
+                                                    }
                                                 }}
                                             >
-                                                <MDTypography variant="body2" sx={styles.deliveryText}>
-                                                    {delivery.receiver} ({delivery.title})
-                                                </MDTypography>
-                                                <MDTypography variant="body2" sx={styles.deliveryText}>
-                                                    {delivery.phone}
-                                                </MDTypography>
-                                                <MDTypography variant="body2" sx={styles.deliveryText}>
-                                                    {delivery.roadAddr} {delivery.extraAddr ? `${delivery.extraAddr}` : ''} {delivery.detailAddr} ({delivery.postCode})
-                                                </MDTypography>
-                                                <MDBox sx={styles.actionsBox}>
-                                                    <MDTypography
-                                                        style={styles.clickable}
-                                                        sx={styles.actionText}
-                                                        variant="body2"
-                                                        onClick={() => handleOpenEditModal(delivery)}
-                                                    >
-                                                        수정
-                                                    </MDTypography>
-                                                    <MDTypography
-                                                        style={styles.clickable}
-                                                        sx={styles.actionText}
-                                                        variant="body2"
-                                                        onClick={() => handleDeleteDelivery(delivery.deliveryNo)}
-                                                    >
-                                                        삭제
-                                                    </MDTypography>
-                                                    {!delivery.primary ? (
-                                                        <MDTypography
-                                                            style={{ ...styles.clickable, ...styles.primaryActive }}
-                                                            sx={styles.actionText}
+                                                설정
+                                            </MDTypography>
+                                            <MDTypography
+                                                style={{
+                                                    ...styles.clickable, ...(delivery.primary
+                                                        ? styles.primaryActive
+                                                        : styles.disabled)
+                                                            }}
+                                                            sx={styles.td}
                                                             variant="body2"
-                                                            onClick={() => handleSetPrimary(delivery.deliveryNo)}
+                                                            onClick={() => {
+                                                                if (delivery.primary) {
+                                                                    handleDelPrimary(
+                                                                        delivery.deliveryNo);
+                                                                }
+                                                            }}
                                                         >
-                                                            기본배송지 설정
+                                                            해제
                                                         </MDTypography>
-                                                    ) : (
-                                                        <MDTypography
-                                                            style={{ ...styles.clickable, ...styles.primaryActive }}
-                                                            sx={styles.actionText}
-                                                            onClick={() => handleDelPrimary(delivery.deliveryNo)}
-                                                            variant="body2"
-                                                        >
-                                                            기본배송지 해제
-                                                        </MDTypography>
-                                                    )}
-                                                </MDBox>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        // 600px 이상일 때 테이블 형식으로 출력
-                                        <table style={styles.table}>
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            기본배송지
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            배송지이름
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            받는사람
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            휴대전화번호
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            우편번호
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            도로명주소
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            지번주소
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            상세주소
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            참고사항
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            수정
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            삭제
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            기본배송지 설정
-                                                        </MDTypography>
-                                                    </th>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                {deliveries.map((delivery) => (
-                                                    <tr key={delivery.deliveryNo}>
-                                                        <td>
-                                                            <MDTypography
-                                                                style={styles.clickable}
-                                                                sx={styles.td}
-                                                                variant="body2"
-                                                            >
-                                                                {delivery.primary ? "기본배송지" : ""}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.title}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.receiver}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.phone}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.postCode}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.roadAddr}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.jibunAddr}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.detailAddr}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography sx={styles.td} variant="body2">
-                                                                {delivery.extraAddr}
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography
-                                                                style={styles.clickable}
-                                                                sx={styles.td}
-                                                                variant="body2"
-                                                                onClick={() => handleOpenEditModal(delivery)}
-                                                            >
-                                                                수정
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography
-                                                                style={styles.clickable}
-                                                                sx={styles.td}
-                                                                variant="body2"
-                                                                onClick={() => handleDeleteDelivery(delivery.deliveryNo)}
-
-                                                            >
-                                                                삭제
-                                                            </MDTypography>
-                                                        </td>
-                                                        <td>
-                                                            <MDTypography
-                                                                style={{ ...styles.clickable, ...(delivery.primary ? styles.disabled : styles.primaryActive) }}
-                                                                sx={styles.td}
-                                                                variant="body2"
-                                                                onClick={() => {
-                                                                    if (!delivery.primary) handleSetPrimary(delivery.deliveryNo);
-                                                                }}
-                                                            >
-                                                                설정
-                                                            </MDTypography>
-                                                            <MDTypography
-                                                                style={{ ...styles.clickable, ...(delivery.primary ? styles.primaryActive : styles.disabled) }}
-                                                                sx={styles.td}
-                                                                variant="body2"
-                                                                onClick={() => {
-                                                                    if (delivery.primary) handleDelPrimary(delivery.deliveryNo);
-                                                                }}
-                                                            >
-                                                                해제
-                                                            </MDTypography>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                            ))}
                                             </tbody>
                                         </table>
-                                    )
+                                    )*/
                                 ) : (
                                     <MDTypography sx={styles.noDeliveries}>
                                         저장된 배송지가 없습니다
                                     </MDTypography>
                                 )}
+                                {deliveries.length > 0 && (
+                                    <MDBox sx={styles.pagination}>
+                                        {renderPagination()}
+                                    </MDBox>
+                                )}
                             </div>
                         </MDBox>
                     </Card>
                 </MDBox>
-                {deliveries.length > 0 && (
-                    <MDBox sx={styles.pagination}>
-                        {renderPagination()}
-                    </MDBox>
-                )}
             </MDBox>
 
             {/* 배송지 추가 모달 */}
