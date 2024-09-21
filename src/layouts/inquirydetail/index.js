@@ -217,26 +217,45 @@ function InquiryDetail() {
                         <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} md={8}>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>문의사항
-                                            제목:</strong> {inquiry.inquiryTitle}
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>
+                                        문의사항 제목 : {inquiry.inquiryTitle}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>문의사항
-                                            작성자:</strong> {inquiry.inquiryWriter}
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>
+                                        문의사항 작성자 : {inquiry.inquiryWriter}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>작성
-                                            시간:</strong> {formatCreateTime(
-                                        inquiry.createTime)}
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>
+                                        작성 시간 : {formatCreateTime(inquiry.createTime)}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>문의사항
-                                            내용:</strong> {inquiry.inquiryContent}
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>
+                                        문의사항 내용 : {inquiry.inquiryContent}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>답변
-                                            상태:</strong> {inquiry.inquiryState}
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>
+                                        답변 상태 : {inquiry.inquiryState}
                                     </MDTypography>
                                 </Grid>
                                 <Grid item xs={12} md={4}>
@@ -269,18 +288,17 @@ function InquiryDetail() {
                         <Card sx={{p: 3, mb: 2}}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} md={8}>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>답변
-                                            작성자:</strong> {answerData.answerWriter}
+                                    <MDTypography
+                                        variant="body1" paragraph>
+                                        답변 작성자 : {answerData.answerWriter}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>답변 작성
-                                            시간:</strong> {formatCreateTime(
-                                        answerData.createTime)}
+                                    <MDTypography
+                                        variant="body1" paragraph>
+                                        답변 작성 시간 : {formatCreateTime(answerData.createTime)}
                                     </MDTypography>
-                                    <MDTypography variant="body1" paragraph>
-                                        <strong>답변
-                                            내용:</strong> {answerData.answerContent}
+                                    <MDTypography
+                                        variant="body1" paragraph>
+                                        답변 내용 : {answerData.answerContent}
                                     </MDTypography>
                                 </Grid>
                                 <Grid item xs={12} md={4}>

@@ -270,7 +270,7 @@ function MyInquiries() {
                 </Grid>
             </Grid>
 
-            <MDBox pt={0} pb={20}>
+            <MDBox pt={2} pb={20}>
                 <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}>
                     <Card>
                         <MDBox pt={2} pb={2} px={isSmallScreen ? 1 : 2}>
