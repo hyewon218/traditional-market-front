@@ -102,20 +102,19 @@ const DeliveryPostModal = ({callbackFn}) => {
 
     return ReactDOM.createPortal(
         <DashboardLayout>
-            <div
-                className={`fixed top-36 lg:top-20 left-0 z-[1100] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
+            <div className={`fixed top-0 left-0 z-[2000] flex h-full w-full  justify-center bg-gray-600 bg-opacity-75`}>
                 <MDBox
                     sx={{
-                        mt: {xs: 1, sm: 1, md: 3, lg: 3},
+                        mt: {xs: 1, sm: 1, md: 1, lg: 5},
                     }}
                     style={{
-                        width: isSmallScreen? '90%':'80%',
-                        maxWidth: '600px',
+                        width: isSmallScreen? '90%':'60%',
+                        maxWidth: '400px',
                     }}>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3}
+                        <MDBox pt={1} pb={isSmallScreen ? 1:2} px={3}
                                style={{
-                                   maxHeight: isSmallScreen? '66vh':'84vh', // 폼의 최대 높이
+                                   maxHeight: isSmallScreen? '100vh':'100vh', // 폼의 최대 높이
                                    overflowY: 'auto', // 폼 내부 스크롤
                                    borderRadius: '15px', // 모서리 라운드
                                }}
@@ -138,9 +137,9 @@ const DeliveryPostModal = ({callbackFn}) => {
                         >
                             <div style={{ marginTop: '5px' }}>
                                 <MDTypography
+                                    sx={{fontSize: isSmallScreen ? '0.9rem' :'1rem'}}
                                     fontWeight="bold"
                                     variant="body2"
-                                    fontSize="20px"
                                 >
                                     배송지 추가
                                 </MDTypography>
@@ -152,6 +151,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         name="title"
                                         label="배송지 이름"
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
@@ -159,6 +159,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         name="receiver"
                                         label="받는 사람"
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
@@ -166,6 +167,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         name="phone"
                                         label="휴대전화번호"
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
@@ -174,17 +176,20 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         label="우편번호"
                                         value={deliveries.postCode}
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
-                                    <MDButton onClick={toggleHandler}
-                                              variant="gradient"
-                                              color="dark"
-                                              sx={{
-                                                  fontFamily: 'JalnanGothic',
-                                                  fontSize: '0.8rem',
-                                                  padding: '4px 8px',
-                                              }}
+                                    <MDButton
+                                        onClick={toggleHandler}
+                                       /* onClick={() => openDaumPostcode('add')}*/
+                                      variant="gradient"
+                                      color="dark"
+                                      sx={{
+                                          fontFamily: 'JalnanGothic',
+                                          fontSize: '0.8rem',
+                                          padding: '4px 8px',
+                                      }}
                                     >
                                         주소 검색
                                     </MDButton>
@@ -205,6 +210,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         label="도로명주소"
                                         value={deliveries.roadAddr}
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
@@ -213,6 +219,7 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         label="지번주소"
                                         value={deliveries.jibunAddr}
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
@@ -220,12 +227,14 @@ const DeliveryPostModal = ({callbackFn}) => {
                                         name="detailAddr"
                                         label="상세주소"
                                         onChange={handleChangeDelivery}
+                                        required
                                         fullWidth/>
                                 </MDBox>
                                 <MDBox mb={2}>
                                     <MDInput
                                         name="extraAddr"
                                         label="참고사항"
+                                        value={deliveries.extraAddr}
                                         onChange={handleChangeDelivery}
                                         fullWidth/>
                                 </MDBox>
@@ -237,8 +246,14 @@ const DeliveryPostModal = ({callbackFn}) => {
                                               color="info"
                                               sx={{
                                                   fontFamily: 'JalnanGothic',
-                                                  fontSize: '0.8rem',
-                                                  padding: '4px 8px',
+                                                  fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                  minWidth: 'auto',
+                                                  width: isSmallScreen ? '80px' : 'auto', // 가로 너비를 줄임
+                                                  padding: isSmallScreen
+                                                      ? '1px 2px'
+                                                      : '2px 4px',
+                                                  lineHeight:  isSmallScreen ? 2.3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                  minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                               }}
                                     >
                                         배송지 추가
@@ -252,8 +267,14 @@ const DeliveryPostModal = ({callbackFn}) => {
                                               color="info"
                                               sx={{
                                                   fontFamily: 'JalnanGothic',
-                                                  fontSize: '0.8rem',
-                                                  padding: '4px 8px',
+                                                  fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                                  minWidth: 'auto',
+                                                  width: isSmallScreen ? '60px' : 'auto', // 가로 너비를 줄임
+                                                  padding: isSmallScreen
+                                                      ? '1px 2px'
+                                                      : '2px 4px',
+                                                  lineHeight:  isSmallScreen ? 2.3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                  minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                               }}
                                     >
                                         취소

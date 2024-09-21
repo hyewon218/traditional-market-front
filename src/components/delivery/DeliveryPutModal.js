@@ -43,12 +43,12 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
     };
 
     const handlePutDelivery = () => { // 배송지 수정
-        console.log('handlePutDelivery');
+        //console.log('handlePutDelivery');
         const deliveryData = { ...deliveries };
 
         putDelivery(delivery.deliveryNo, deliveryData).then(data => {
-            console.log('배송지 수정!!');
-            console.log(data);
+            //console.log('배송지 수정!!');
+            //console.log(data);
             if (callbackFn) {
                 callbackFn();
             }
@@ -88,19 +88,19 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
 
     return ReactDOM.createPortal(
         <DashboardLayout>
-            <div className={`fixed top-36 lg:top-20 left-0 z-[1100] flex h-full w-full justify-center bg-gray-600 bg-opacity-75`}>
+            <div className={`fixed top-0 left-0 z-[2000] flex h-full w-full justify-center bg-gray-600 bg-opacity-75`}>
                 <MDBox
                     sx={{
-                        mt: {xs: 1, sm: 1, md: 3, lg: 3},
+                        mt: {xs: 1, sm: 1, md: 1, lg: 5},
                     }}
                     style={{
-                        width: isSmallScreen? '90%':'80%',
-                        maxWidth: '600px',
+                        width: isSmallScreen? '90%':'60%',
+                        maxWidth: '400px',
                     }}>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3}
+                        <MDBox pt={1} pb={isSmallScreen ? 1:2} px={3}
                                style={{
-                                   maxHeight: isSmallScreen? '66vh':'84vh', // 폼의 최대 높이
+                                   maxHeight: isSmallScreen? '100vh':'100vh', // 폼의 최대 높이
                                    overflowY: 'auto', // 폼 내부 스크롤
                                    borderRadius: '15px', // 모서리 라운드
                                }}
@@ -122,7 +122,9 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
                                }}
                         >
                             <div style={{ marginTop: '5px' }}>
-                                <MDTypography fontWeight="bold" variant="body2" fontSize="25px">
+                                <MDTypography
+                                    sx={{fontSize: isSmallScreen ? '0.9rem' :'1rem'}}
+                                    fontWeight="bold" variant="body2">
                                     배송지 수정
                                 </MDTypography>
                             </div>
@@ -233,8 +235,14 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
                                         style={{ marginRight: '10px' }}
                                         sx={{
                                             fontFamily: 'JalnanGothic',
-                                            fontSize: '0.8rem',
-                                            padding: '4px 8px',
+                                            fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+                                            minWidth: 'auto',
+                                            width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                            padding: isSmallScreen
+                                                ? '1px 2px'
+                                                : '2px 4px',
+                                            lineHeight:  isSmallScreen ? 2.3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                         }}
                                     >
                                         수정
@@ -245,8 +253,14 @@ const DeliveryPutModal = ({ delivery = {}, callbackFn }) => {
                                         color="info"
                                         sx={{
                                             fontFamily: 'JalnanGothic',
-                                            fontSize: '0.8rem',
-                                            padding: '4px 8px',
+                                            fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+                                            minWidth: 'auto',
+                                            width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+                                            padding: isSmallScreen
+                                                ? '1px 2px'
+                                                : '2px 4px',
+                                            lineHeight:  isSmallScreen ? 2.3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                         }}
                                     >
                                         취소
