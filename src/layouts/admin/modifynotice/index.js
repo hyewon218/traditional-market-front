@@ -273,8 +273,7 @@ import MDButton from '../../../components/MD/MDButton';
 import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 
 import {putNotice, getNotice} from "../../../api/noticeApi";
-import {FormControl, InputLabel, Select} from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
+import {useMediaQuery} from "@mui/material";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 
@@ -308,6 +307,7 @@ function ModifyNotice() {
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
 
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleChangeNotice = (e) => {
         const { name, value } = e.target;
@@ -413,7 +413,7 @@ function ModifyNotice() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={6} pb={3} px={3}>
+            <MDBox pt={0} pb={3} px={3}>
                 <Card>
                     <MDBox pt={3} px={3} lineHeight={1.5}>
                         <MDBox mb={2}>
@@ -425,15 +425,15 @@ function ModifyNotice() {
                                 onChange={handleChangeNotice}
                             />
                         </MDBox>
-                        <MDBox mb={7} sx={{ width: '100%' }}>
+                        <MDBox mb={isSmallScreen ? 15 : 7} sx={{ width: '100%' }}>
                         <ReactQuill
                           value={notice.noticeContent}
                           onChange={handleQuillChange}
                           theme="snow"
-                          style={{ height: '300px' }} // 높이는 원하는 대로 조정 가능
+                          style={{ height: '180px' }} // 높이는 원하는 대로 조정 가능
                         />
                         </MDBox>
-                        <MDBox mb={2}>
+                        <MDBox mb={1}>
                             <input
                                 type="file"
                                 ref={uploadRef}
@@ -441,11 +441,21 @@ function ModifyNotice() {
                                 multiple
                                 style={{ display: 'none' }}
                             />
-                            <MDButton variant="outlined" color="primary" onClick={() => uploadRef.current.click()}>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem' : '0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '100px' : 'auto',
+                                    padding: isSmallScreen ? '1px 2px' : '4px 8px',
+                                    lineHeight: isSmallScreen ? 2.3 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
+                                variant="outlined" color="primary" onClick={() => uploadRef.current.click()}>
                                 이미지 업로드
                             </MDButton>
                         </MDBox>
-                        <MDBox mb={2}>
+                        <MDBox mb={1}>
                             <div>
                                 {filePreviews.map((preview, index) => (
                                     <div key={index}>
@@ -465,8 +475,24 @@ function ModifyNotice() {
                                 ))}
                             </div>
                         </MDBox>
-                        <MDBox mb={2}>
-                            <MDButton variant="contained" color="primary" onClick={handleModifyNotice}>
+                        <MDBox mb={isSmallScreen ? 2 : 3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen
+                                        ? '0.7rem'
+                                        : '0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen
+                                        ? '60px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight: isSmallScreen
+                                        ? 2.3 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
+                                variant="contained" color="primary" onClick={handleModifyNotice}>
                                 수정 완료
                             </MDButton>
                         </MDBox>
