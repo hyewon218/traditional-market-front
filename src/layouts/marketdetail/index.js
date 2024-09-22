@@ -329,34 +329,6 @@ function MarketDetail() {
     };
 
     // 모바일 길찾기
-//    const handleDirections = async (type) => {
-//        if (!startLocation) {
-//            alert("출발지를 입력해 주세요.");
-//            return;
-//        }
-//
-//        try {
-//            const destinationCoords = await getCoordinates(market.marketAddr);
-//            const departureCoords = await getCoordinates(startLocation);
-//
-//            if (!destinationCoords || !departureCoords) {
-//                throw new Error('좌표를 가져오는 데 실패했습니다.');
-//            }
-//
-//            // URL 생성
-//            const url = `https://m.search.naver.com/search.naver?query=%EB%B9%A0%EB%A5%B8%EA%B8%B8%EC%B0%BE%EA%B8%B0&nso_path=placeType%5Eplace%3Bname%5E${encodeURIComponent(startLocation)}%3Baddress%5E%3Blongitude%5E${departureCoords.lng}%3Blatitude%5E${departureCoords.lat}%3Bcode%5E%7Ctype%5Eplace%3Bname%5E${encodeURIComponent(market.marketAddr)}%3Baddress%5E%3Blongitude%5E${destinationCoords.lng}%3Blatitude%5E${destinationCoords.lat}%3Bcode%5E%7Cobjtype%5Epath%3Bby%5E${type}`;
-//
-//            // URL 로그 찍기
-//            console.log("길찾기 URL:", url);
-//
-//            window.open(url, '_blank'); // 새 탭에서 열기
-//            setShowDirectionsModal(false); // 모달 닫기
-//        } catch (error) {
-//            console.error("길찾기 URL 생성 중 오류 발생:", error);
-//        }
-//    };
-
-    // 시장 길찾기
     const handleDirections = async (type) => {
         if (!startLocation) {
             alert("출발지를 입력해 주세요.");
@@ -374,37 +346,7 @@ function MarketDetail() {
             }
 
             // URL 생성
-            const departureName = encodeURIComponent(startLocation);
-            const destinationName = encodeURIComponent(market.marketAddr);
-            const departureX = departureCoords.lng;
-            const departureY = departureCoords.lat;
-            const destinationX = destinationCoords.lng;
-            const destinationY = destinationCoords.lat;
-            const scale = "15.00";  // 지도 스케일
-            const rotation = "0";   // 지도 회전
-            const centerX = "0";    // 지도 중심 X
-            const centerY = "0";    // 지도 중심 Y
-            const mapMode = "dh";   // 지도 모드
-
-            let url;
-            switch (type) {
-                case 'walk':
-                    // 도보 길찾기 URL
-                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/walk?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
-                    break;
-                case 'transit':
-                    // 대중교통 길찾기 URL
-                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/transit?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
-                    break;
-                case 'car':
-                    // 자동차 길찾기 URL
-                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/car?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
-                    break;
-                default:
-                    // 교통수단이 유효하지 않은 경우 처리
-                    console.error('유효하지않은 교통수단입니다 :', type);
-                    throw new Error('유효하지않은 교통수단입니다');
-            }
+            const url = `https://m.search.naver.com/search.naver?query=%EB%B9%A0%EB%A5%B8%EA%B8%B8%EC%B0%BE%EA%B8%B0&nso_path=placeType%5Eplace%3Bname%5E${encodeURIComponent(startLocation)}%3Baddress%5E%3Blongitude%5E${departureCoords.lng}%3Blatitude%5E${departureCoords.lat}%3Bcode%5E%7Ctype%5Eplace%3Bname%5E${encodeURIComponent(market.marketAddr)}%3Baddress%5E%3Blongitude%5E${destinationCoords.lng}%3Blatitude%5E${destinationCoords.lat}%3Bcode%5E%7Cobjtype%5Epath%3Bby%5E${type}`;
 
             // URL 로그 찍기
             console.log("길찾기 URL:", url);
@@ -415,6 +357,66 @@ function MarketDetail() {
             console.error("길찾기 URL 생성 중 오류 발생:", error);
         }
     };
+
+    // pc 길찾기
+//    const handleDirections = async (type) => {
+//        if (!startLocation) {
+//            alert("출발지를 입력해 주세요.");
+//            setShowDirectionsModal(false);
+//            setShowStartLocationModal(true);
+//            return;
+//        }
+//
+//        try {
+//            const destinationCoords = await getCoordinates(market.marketAddr);
+//            const departureCoords = await getCoordinates(startLocation);
+//
+//            if (!destinationCoords || !departureCoords) {
+//                throw new Error('좌표를 가져오는 데 실패했습니다.');
+//            }
+//
+//            // URL 생성
+//            const departureName = encodeURIComponent(startLocation);
+//            const destinationName = encodeURIComponent(market.marketAddr);
+//            const departureX = departureCoords.lng;
+//            const departureY = departureCoords.lat;
+//            const destinationX = destinationCoords.lng;
+//            const destinationY = destinationCoords.lat;
+//            const scale = "15.00";  // 지도 스케일
+//            const rotation = "0";   // 지도 회전
+//            const centerX = "0";    // 지도 중심 X
+//            const centerY = "0";    // 지도 중심 Y
+//            const mapMode = "dh";   // 지도 모드
+//
+//            let url;
+//            switch (type) {
+//                case 'walk':
+//                    // 도보 길찾기 URL
+//                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/walk?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+//                    break;
+//                case 'transit':
+//                    // 대중교통 길찾기 URL
+//                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/transit?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+//                    break;
+//                case 'car':
+//                    // 자동차 길찾기 URL
+//                    url = `https://map.naver.com/p/directions/${departureX},${departureY},${departureName}/${destinationX},${destinationY},${destinationName}/-/car?c=${scale},${rotation},${centerX},${centerY},${mapMode}`;
+//                    break;
+//                default:
+//                    // 교통수단이 유효하지 않은 경우 처리
+//                    console.error('유효하지않은 교통수단입니다 :', type);
+//                    throw new Error('유효하지않은 교통수단입니다');
+//            }
+//
+//            // URL 로그 찍기
+//            console.log("길찾기 URL:", url);
+//
+//            window.open(url, '_blank'); // 새 탭에서 열기
+//            setShowDirectionsModal(false); // 모달 닫기
+//        } catch (error) {
+//            console.error("길찾기 URL 생성 중 오류 발생:", error);
+//        }
+//    };
 
     // 출발지 입력 모달에서 확인 버튼
     const handleConfirm = () => {
@@ -1030,7 +1032,8 @@ function MarketDetail() {
                 </Dialog>
             )}
 
-            {showDirectionsModal && (
+            {/* pc 길찾기 */}
+            {/* {showDirectionsModal && (
                 <Dialog open={showDirectionsModal} onClose={closeDirectionsModal}>
                     <DialogTitle>길찾기</DialogTitle>
                     <DialogContent>
@@ -1038,6 +1041,27 @@ function MarketDetail() {
                             도보
                         </Button>
                         <Button onClick={() => handleDirections('transit')}>
+                            대중교통
+                        </Button>
+                        <Button onClick={() => handleDirections('car')}>
+                            자차
+                        </Button>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeDirectionsModal}>닫기</Button>
+                    </DialogActions>
+                </Dialog>
+            )} */}
+
+            {/* 모바일 길찾기 */}
+            {showDirectionsModal && (
+                <Dialog open={showDirectionsModal} onClose={closeDirectionsModal}>
+                    <DialogTitle>길찾기</DialogTitle>
+                    <DialogContent>
+                        <Button onClick={() => handleDirections('walk')}>
+                            도보
+                        </Button>
+                        <Button onClick={() => handleDirections('pubtrans')}>
                             대중교통
                         </Button>
                         <Button onClick={() => handleDirections('car')}>
