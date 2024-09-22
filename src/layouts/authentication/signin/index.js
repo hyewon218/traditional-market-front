@@ -167,8 +167,9 @@ function SignIn() {
                                                 <MDBox display="flex" justifyContent="center" spacing={2}>
                                                     <MDButton
                                                         component="a"
-                                                        href="http://localhost:8080/oauth2/authorization/google"
+                                                        //href="http://localhost:8080/oauth2/authorization/google"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/google"
+                                                        href="http://tmarket.kro.kr:8080/oauth2/authorization/google"
                                                         variant="outlined"
                                                         color="info"
                                                         sx={{
@@ -182,8 +183,9 @@ function SignIn() {
                                                     </MDButton>
                                                     <MDButton
                                                         component="a"
-                                                        href="http://localhost:8080/oauth2/authorization/naver"
+                                                        //href="http://localhost:8080/oauth2/authorization/naver"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/naver"
+                                                        href="http://tmarket.kro.kr:8080/oauth2/authorization/naver"
                                                         variant="outlined"
                                                         color="info"
                                                         sx={{
@@ -197,8 +199,9 @@ function SignIn() {
                                                     </MDButton>
                                                     <MDButton
                                                         component="a"
-                                                        href="http://localhost:8080/oauth2/authorization/kakao"
+                                                        //href="http://localhost:8080/oauth2/authorization/kakao"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/kakao"
+                                                        href="http://tmarket.kro.kr:8080/oauth2/authorization/kakao"
                                                         variant="outlined"
                                                         color="info"
                                                         sx={{

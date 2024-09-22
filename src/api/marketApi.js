@@ -1,5 +1,7 @@
 import axios from "axios"
-export const API_SERVER_HOST = `http://localhost:8080`
+//export const API_SERVER_HOST = `http://localhost:8080`
+//export const API_SERVER_HOST = `http://3.36.96.0:8080`
+export const API_SERVER_HOST = `http://tmarket.kro.kr:8080`
 const prefix = `${API_SERVER_HOST}/api/markets`
 
 export const postMarket = async (formData) => {

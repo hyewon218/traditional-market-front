@@ -109,7 +109,8 @@ function ChatDetail() {
         try {
             const stompClient = new StompJs.Client({
                 //brokerURL: "ws://localhost:8080/stomp/chat",
-                brokerURL: "ws://3.36.96.0:8080/stomp/chat",
+                //brokerURL: "ws://3.36.96.0:8080/stomp/chat",
+                brokerURL: "ws://tmarket.kro.kr:8080/stomp/chat",
                 connectHeaders: {
                     Authorization: getCookie('Authorization')
                 },
@@ -261,7 +262,7 @@ function ChatDetail() {
 
     const msgBox = chatList.map((chat, index) => {
         /*TODO : 관리자 ID 수정*/
-        const adminIds = ['esc0218', 'esc0220']; // 관리자 ID 배열
+        const adminIds = ['esc0218', 'esc0220', 'songwc3']; // 관리자 ID 배열
         const isSenderAdmin = adminIds.includes(chat.sender); // 메시지 보낸 사람이 관리자라면 true
         const senderName = isSenderAdmin ? '관리자' : chat.sender; // 일반 사용자 입장에서 관리자는 '관리자'로 표시
 
@@ -443,7 +444,7 @@ function ChatDetail() {
     return (
         <DashboardLayout>
             <MDBox
-                pb={isSmallScreen ? 10 : 10}
+                pb={isSmallScreen ? 1 : 5}
                 sx={{
                 mt: {xs: -3, sm: 3, md: 3, lg: 1},
                 maxWidth: '800px',
@@ -484,10 +485,8 @@ function ChatDetail() {
                        sx={{
                            flexGrow: 1,
                            maxHeight: {
-                               xs: '310px',  // 모바일 화면
-                               sm: '400px',  // 작은 화면
-                               md: '350px',  // 중간 화면
-                               lg: '350px',  // 큰 화면
+                               xs: '300px',  // 모바일 화면
+                               lg: '450px',  // 큰 화면
                            },
                            overflowY: 'auto',
                        }}>
