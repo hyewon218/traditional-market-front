@@ -165,54 +165,57 @@ function SignIn() {
                                         <MDBox mt={3} mb={1} textAlign="center">
                                             <MDTypography variant="button" color="text">
                                                 <MDBox display="flex" justifyContent="center" spacing={2}>
-                                                    <MDButton
-                                                        component="a"
+                                                    <a
                                                         //href="http://localhost:8080/oauth2/authorization/google"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/google"
                                                         href="http://tmarket.kro.kr:8080/oauth2/authorization/google"
-                                                        variant="outlined"
-                                                        color="info"
-                                                        sx={{
-                                                            width: '150px',
-                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
-                                                            fontFamily: 'JalnanGothic',
-                                                            margin: '0 10px'
-                                                        }}
                                                     >
-                                                        구글
-                                                    </MDButton>
-                                                    <MDButton
-                                                        component="a"
+                                                        <img
+                                                            src="/google_login.png"
+                                                            alt="Google Login"
+                                                            style={{
+                                                                width: '150px',   // 이미지 크기 조정
+                                                                height: '40px',    // 이미지 비율 유지
+                                                                cursor: 'pointer', // 클릭 가능하도록 포인터 표시
+                                                                margin: isSmallScreen ? '5px' : '10px',  // 화면 크기에 따라 여백 조정,
+                                                                padding: isSmallScreen ? '1px 2px' : '4px 8px'
+                                                            }}
+                                                        />
+                                                    </a>
+                                                    <a
                                                         //href="http://localhost:8080/oauth2/authorization/naver"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/naver"
                                                         href="http://tmarket.kro.kr:8080/oauth2/authorization/naver"
-                                                        variant="outlined"
-                                                        color="info"
-                                                        sx={{
-                                                            width: '150px',
-                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
-                                                            fontFamily: 'JalnanGothic',
-                                                            margin: '0 10px'
-                                                        }}
                                                     >
-                                                        네이버
-                                                    </MDButton>
-                                                    <MDButton
-                                                        component="a"
+                                                        <img
+                                                            src="/naver_login.png"
+                                                            alt="Naver Login"
+                                                            style={{
+                                                                width: '150px',
+                                                                height: '40px',
+                                                                cursor: 'pointer',
+                                                                margin: isSmallScreen ? '5px' : '10px',
+                                                                padding: isSmallScreen ? '1px 2px' : '4px 8px'
+                                                            }}
+                                                        />
+                                                    </a>
+                                                    <a
                                                         //href="http://localhost:8080/oauth2/authorization/kakao"
                                                         //href="http://3.36.96.0:8080/oauth2/authorization/kakao"
                                                         href="http://tmarket.kro.kr:8080/oauth2/authorization/kakao"
-                                                        variant="outlined"
-                                                        color="info"
-                                                        sx={{
-                                                            width: '150px',
-                                                            padding: isSmallScreen ? '1px 2px' : '4px 8px',
-                                                            fontFamily: 'JalnanGothic',
-                                                            margin: '0 10px'
-                                                        }}
                                                     >
-                                                        카카오
-                                                    </MDButton>
+                                                        <img
+                                                            src="/kakao_login.png"
+                                                            alt="Kakao Login"
+                                                            style={{
+                                                                width: '150px',
+                                                                height: '40px',
+                                                                cursor: 'pointer',
+                                                                margin: isSmallScreen ? '5px' : '10px',
+                                                                padding: isSmallScreen ? '1px 2px' : '4px 8px'
+                                                            }}
+                                                        />
+                                                    </a>
                                                 </MDBox>
                                             </MDTypography>
                                         </MDBox>
@@ -221,7 +224,6 @@ function SignIn() {
                                                 sx={{
                                                     fontSize: isSmallScreen? '0.7rem':'1rem'
                                                 }}
-                                                componen
                                                 variant="button"
                                                 color="text">
                                                 계정이 없으신가요?{' '}
