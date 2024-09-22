@@ -532,6 +532,7 @@ import ModifyShopSeller from './layouts/seller/modify-shop-seller';
 import ItemDetailSeller from './layouts/seller/item-detail-seller';
 import OrderDetailSeller from './layouts/seller/order-detail-seller';
 import DailySalesItem from './layouts/admin/daily-sales-item';
+import SignInPopUp from './layouts/authentication/signin-popup';
 
 import CoordinatePopupPage from './pages/CoordinatePopupPage';
 
@@ -624,13 +625,20 @@ export default function App() {
             <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
                 <CssBaseline />
                 {/* 경로가 '/coordinate-popup'이 아닐 때만 상단바와 설정 버튼 렌더링 */}
-                {layout === 'dashboard' && pathname !== '/coordinate-popup' && (
+                {/* {layout === 'dashboard' && pathname !== '/coordinate-popup' && (
+                    <>
+                        <Navbar brandName="우리동네 전통시장" />
+                        <Configurator />
+                    </>
+                )} */}
+                {layout === 'dashboard' && !pathname.includes('/coordinate-popup') && !pathname.includes('/authentication/signin-popup') && (
                     <>
                         <Navbar brandName="우리동네 전통시장" />
                         <Configurator />
                     </>
                 )}
-                {layout === 'vr' && pathname !== '/coordinate-popup' && <Configurator />}
+                {/* {layout === 'vr' && pathname !== '/coordinate-popup' && <Configurator />} */}
+                {layout === 'vr' && !pathname.includes('/coordinate-popup') && !pathname.includes('/authentication/signin-popup') && <Configurator />}
                 <Routes>
                     {getRoutes(routes)}
                     <Route path="*" element={<Navigate to="/market" />} />
@@ -652,6 +660,7 @@ export default function App() {
                     <Route path="/order-list" element={<OrderList />} />
                     <Route path="/order-detail" element={<OrderDetail />} />
                     <Route path="/add-info" element={<ModifyOAuthInfo />} />
+                    <Route path="/authentication/signin-popup" element={<SignInPopUp />} />
 
                     {/* seller 권한만 접근 가능 */}
                     <Route
@@ -755,13 +764,20 @@ export default function App() {
         <ThemeProvider theme={darkMode ? themeDark : theme}>
             <CssBaseline />
             {/* 경로가 '/coordinate-popup'이 아닐 때만 상단바와 설정 버튼 렌더링 */}
-            {layout === 'dashboard' && pathname !== '/coordinate-popup' && (
+            {/* {layout === 'dashboard' && pathname !== '/coordinate-popup' && (
+                <>
+                    <Navbar brandName="우리동네 전통시장" />
+                    <Configurator />
+                </>
+            )} */}
+            {layout === 'dashboard' && !pathname.includes('/coordinate-popup') && !pathname.includes('/authentication/signin-popup') && (
                 <>
                     <Navbar brandName="우리동네 전통시장" />
                     <Configurator />
                 </>
             )}
-            {layout === 'vr' && pathname !== '/coordinate-popup' && <Configurator />}
+            {/* {layout === 'vr' && pathname !== '/coordinate-popup' && <Configurator />} */}
+            {layout === 'vr' && !pathname.includes('/coordinate-popup') && !pathname.includes('/authentication/signin-popup') && <Configurator />}
             <Routes>
                 {getRoutes(routes)}
                 <Route path="*" element={<Navigate to="/market" />} />
@@ -783,6 +799,7 @@ export default function App() {
                 <Route path="/order-list" element={<OrderList />} />
                 <Route path="/order-detail" element={<OrderDetail />} />
                 <Route path="/add-info" element={<ModifyOAuthInfo />} />
+                <Route path="/authentication/signin-popup" element={<SignInPopUp />} />
 
                 {/* seller 권한만 접근 가능 */}
                 <Route
