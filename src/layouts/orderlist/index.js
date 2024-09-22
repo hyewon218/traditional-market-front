@@ -38,6 +38,7 @@ import {
 } from "../../api/orderApi";
 import {putOrderStatus} from "../../api/adminApi";
 import {getItemOne} from "../../api/itemApi";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 
 function OrderList() {
     const [orders, setOrders] = useState([]);
@@ -230,6 +231,11 @@ function OrderList() {
         setCurrentPage(page);
     };
 
+    // 뒤로 가기(내 정보 홈으로 가기)
+    const handleBack = () => {
+        navigate('/myinfo');
+    };
+
     // CSS 스타일
     const styles = {
         //cardContainer: {display: 'flex', flexDirection: 'column', gap: '8px'}, // 상하 여백 줄임
@@ -259,7 +265,7 @@ function OrderList() {
         button: {
             fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
-            fontSize: isSmallScreen ? '0.6rem':'1.2rem',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
             minWidth: 'auto',
             width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
             padding: isSmallScreen
@@ -472,56 +478,94 @@ function OrderList() {
                             주문 내역
                         </MDTypography>
                     </Grid>
-                    <Grid item xs={3.5} md={1.5}>
+                    <Grid item xs={6} lg={3}>
+                        <MDBox sx={{
+                            pr: isSmallScreen ? 2 : 3,
+                            width: '100%',
+                            mt: isSmallScreen ? 0 : 4,
+                            display: 'flex',
+                            justifyContent: 'right',
+                        }}>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.7rem' : '0.9rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '100px' : 'auto', // 가로 너비를 줄임
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '4px 8px',
+                                    lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                }}
+                                variant="contained"
+                                color="white"
+                                onClick={handleBack}
+                                startIcon={<KeyboardArrowLeftIcon/>}
+                            >
+                                돌아가기
+                            </MDButton>
+                        </MDBox>
+                    </Grid>
+
+                </Grid>
+                <Grid container spacing={isSmallScreen ? 0 : 2} sx={{mt : isSmallScreen ? 2 : 0}}>
+                    <Grid item xs={6.5} md={9}>
+                        <MDTypography fontWeight="bold"
+                                      sx={{
+                                          mt: isSmallScreen ? 2 : -3,
+                                          fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
+                                          color: 'red',
+                                          ml : isSmallScreen ? 0 : 4
+                                      }}
+                                      variant="body2">※ 구매 확정 시 반품 신청 불가합니다.
+                        </MDTypography>
+                    </Grid>
+                    <Grid item xs={3} md={1.7}>
                         <MDButton
                             variant="gradient"
                             color="info"
                             sx={{
                                 fontFamily: 'JalnanGothic',
-                                fontSize: isSmallScreen ? '0.7rem' : '1.1rem',
+                                fontSize: isSmallScreen ? '0.6rem' : '1.0rem',
                                 minWidth: 'auto',
-                                width: isSmallScreen ? '70px' : '150px', // 가로 너비를 줄임
+                                width: isSmallScreen ? '60px' : '180px', // 가로 너비를 줄임
                                 padding: isSmallScreen ? '1px 2px' : '4px 8px',
                                 lineHeight: isSmallScreen ? 1.5 : 2, // 줄 간격을 줄여 높이를 감소시킴
                                 minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
-                                mt: isSmallScreen ? 0 : 3,
                                 ml: isSmallScreen ? 2 : 0
                             }}
                             onClick={() => handleStatusFilter(null)}>
-                            전체 보기<br/>(취소 제외)
+                            {isSmallScreen ? (
+                                <>
+                                    전체 보기
+                                    <br />
+                                    (취소 제외)
+                                </>
+                            ) : '전체 보기(취소 제외)'}
                         </MDButton>
                     </Grid>
-                    <Grid item xs={2.5} md={1.5}>
+                    <Grid item xs={2.5} md={1.3}>
                         <MDButton
                             variant="gradient"
                             color="error"
                             sx={{
                                 fontFamily: 'JalnanGothic',
-                                fontSize: isSmallScreen ? '0.7rem' : '1.1rem',
+                                fontSize: isSmallScreen ? '0.6rem' : '1.0rem',
                                 minWidth: 'auto',
-                                width: isSmallScreen ? '60px' : '150px', // 가로 너비를 줄임
+                                width: isSmallScreen ? '60px' : '120px', // 가로 너비를 줄임
                                 padding: isSmallScreen ? '1px 2px' : '4px 8px',
-                                lineHeight: isSmallScreen ? 3 : 4, // 줄 간격을 줄여 높이를 감소시킴
+                                lineHeight: isSmallScreen ? 3 : 2, // 줄 간격을 줄여 높이를 감소시킴
                                 minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
-                                mt: isSmallScreen ? 0 : 3
                             }}
                             onClick={() => handleStatusFilter('CANCEL')}>
                             취소 목록
                         </MDButton>
                     </Grid>
                 </Grid>
-                <MDTypography fontWeight="bold"
-                              sx={{
-                                  ml: isSmallScreen ? 2 : 4,
-                                  mt: isSmallScreen ? 1 : -3,
-                                  fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
-                                  color: 'red'
-                              }}
-                              variant="body2">※ 구매 확정 시 반품 신청 불가합니다.
-                </MDTypography>
             </MDBox>
 
-            <MDBox pt={isSmallScreen ? -2 : 2} pb={10}>
+            <MDBox pt={isSmallScreen ? 0 : 2} pb={10}>
                 {orders.length > 0 ? (
                     orders.map((order) => {
                         // 상품 항목 집계
@@ -558,40 +602,29 @@ function OrderList() {
                                                 fontSize: isSmallScreen? '0.8rem':'1rem'
                                         }}
                                             variant="body2">
-                                            주문 상태: {getOrderStatusText(
-                                            order.orderStatus)}
+                                            {getOrderStatusText(order.orderStatus)}
+                                        </MDTypography>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen? '0.6rem':'1rem'
+                                            }}
+                                            variant="body2">{order.orderDate}
                                         </MDTypography>
                                         <MDTypography
                                             sx={{
                                                 fontSize: isSmallScreen? '0.8rem':'1rem'
                                             }}
-                                            variant="body2">
-                                            주문 날짜: {order.orderDate}
+                                            variant="body2">{names}
                                         </MDTypography>
                                         <MDTypography
                                             sx={{
                                                 fontSize: isSmallScreen? '0.8rem':'1rem'
                                             }}
-                                            variant="body2">
-                                            주문 번호: {order.randomOrderNo}
+                                            variant="body2">{totalPrice.toLocaleString()} 원
                                         </MDTypography>
-                                        <MDTypography
-                                            sx={{
-                                                fontSize: isSmallScreen? '0.8rem':'1rem'
-                                            }}
-                                            variant="body2">
-                                            상품명: {names}
-                                        </MDTypography>
-                                        <MDTypography
-                                            sx={{
-                                                fontSize: isSmallScreen? '0.8rem':'1rem'
-                                            }}
-                                            variant="body2">
-                                            가격: {totalPrice.toLocaleString()} 원
-                                        </MDTypography>
-                                        <MDBox mt={2}>
-                                            <Grid container spacing={isSmallScreen ? 0.2 : 0.2}>
-                                                <Grid item xs={isSmallScreen ? 12 : 1.0}>
+                                        <MDBox mt={isSmallScreen ? 1 : 2}>
+                                            <Grid container spacing={isSmallScreen ? 0.2 : 0.1}>
+                                                <Grid item xs={isSmallScreen ? 12 : 0.9}>
                                                     <MDButton
                                                         color="light"
                                                         sx={{
@@ -603,7 +636,6 @@ function OrderList() {
                                                             lineHeight: isSmallScreen ? 2 : 2,  // 줄 간격을 줄여 높이를 감소시킴
                                                             minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                                                         }}
-                                                        //style={styles.button}
                                                         onClick={() => handleDetail(
                                                             order)}>
                                                         상세보기
@@ -612,8 +644,7 @@ function OrderList() {
                                                 {order.orderStatus === 'FINISH'
                                                     && (
                                                         <>
-                                                            <Grid item
-                                                                  xs={isSmallScreen ? 12 : 1.4}>
+                                                            <Grid item xs={isSmallScreen ? 12 : 1.4}>
                                                                 <MDButton
                                                                     color="info"
                                                                     sx={{
@@ -651,10 +682,8 @@ function OrderList() {
                                                             </Grid>
                                                         </>
                                                     )}
-                                            {order.orderStatus
-                                                === 'COMPLETE' && (
-                                                    <Grid item xs={isSmallScreen
-                                                        ? 12 : 1.4}>
+                                            {order.orderStatus === 'COMPLETE' && (
+                                                    <Grid item xs={isSmallScreen ? 12 : 1.4}>
                                                         <MDButton
                                                             color="error"
                                                             sx={{

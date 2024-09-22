@@ -108,8 +108,10 @@ function ShopDetail() {
         fetchCurrentUser();
 
         handleCountLikes();
-        handleCheckLike();
-    }, []);
+        if (isAuthorization) {
+            handleCheckLike();
+        }
+    }, [isAuthorization]);
 
 //    useEffect(() => {
 //        if (isCategoryFiltered && selectedCategory) {

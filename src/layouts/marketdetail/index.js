@@ -107,9 +107,10 @@ function MarketDetail() {
 
     useEffect(() => {
         handleCountLikes();
-//        handleGetShops();
-        handleCheckLike();
-    }, []);
+        if (isAuthorization) {
+            handleCheckLike();
+        }
+    }, [isAuthorization]);
 
 //    useEffect(() => {
 //        if (isCategoryFiltered && selectedCategory) {

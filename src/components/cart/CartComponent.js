@@ -125,12 +125,13 @@ const CartComponent = () => {
             >
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} md={12} lg={12}>
-                        <MDBox pb={3}>
+                        <MDBox pb={isSmallScreen ? 2 : 3}>
                             <Card>
-                                <MDBox pt={2} pb={3} px={3}>
-                                    <Grid container>
+                                <MDBox pt={isSmallScreen ? 1 : 2} pb={isSmallScreen ? 1 : 2} px={3}>
+                                    <Grid container alignItems="center">
                                         <Grid item xs={10}>
                                             <MDTypography
+                                                sx={{ fontSize: isSmallScreen ? '0.9rem':'1.2rem' }}
                                                 fontWeight="bold"
                                                 variant="body2">
                                                 {userId}님의 장바구니
@@ -138,6 +139,9 @@ const CartComponent = () => {
                                         </Grid>
                                         <Grid item xs={2}>
                                             <MDTypography
+                                                sx={{
+                                                    fontSize: isSmallScreen ? '0.7rem':'1.2rem',
+                                            }}
                                                 variant="body2"
                                                 textAlign="right">
                                                 <div
@@ -154,12 +158,12 @@ const CartComponent = () => {
                 </Grid>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mb: 30 }}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mb: 20 }}>
                         {cartItems.length > 0 && (
                             <MDBox pb={3}>
                                 <Card>
                                     <MDBox pt={2}>
-                                        <Grid container spacing={2}>
+                                        <Grid container spacing={isSmallScreen ? 0 : 2}>
                                             <Grid item xs={12} sm={12} md={7} lg={7}>
                                                 <ul>
                                                     {cartItems.map(cartItem => {
@@ -256,7 +260,7 @@ const CartComponent = () => {
                                                                         <Grid item xs={5}>
                                                                             <MDTypography
                                                                                 fontWeight="bold"
-                                                                                sx={{fontSize: '1.5rem'}}
+                                                                                sx={{fontSize: isSmallScreen ? '1.2rem' : '1.5rem'}}
                                                                                 variant="body2">
                                                                                 {cartItem.itemName}
                                                                             </MDTypography>
@@ -331,13 +335,13 @@ const CartComponent = () => {
                                                       paddingRight: isSmallScreen ? '0px' : '26px'
                                                   }}>
                                                 <div className="w-full"
-                                                     style={{marginBottom: '20px'}}>
+                                                     style={{marginBottom: isSmallScreen ? '15px': '30px'}}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         sx={{
-                                                            fontSize: isSmallScreen ? '1.5rem':'2rem',
+                                                            fontSize: isSmallScreen ? '1.3rem':'2rem',
                                                             paddingTop: '9px',
-                                                            paddingLeft: '13px'
+                                                            paddingLeft: isSmallScreen ? '23px' : '13px'
                                                         }}
                                                         variant="body2">
                                                         총 가격 : {total}
@@ -354,10 +358,12 @@ const CartComponent = () => {
                                                         sx={{
                                                             backgroundColor: '#50bcdf',
                                                             color: '#ffffff',
-                                                            fontSize: '2rem',
+                                                            fontSize: isSmallScreen ? '1.3rem' : '2rem',
                                                             fontFamily: 'JalnanGothic',
-                                                            padding: '20px 40px',
+                                                            padding: isSmallScreen ? '10px 20px' : '10px 20px',
                                                             width: '100%',
+                                                            lineHeight: isSmallScreen ? 2 : 2,
+                                                            minHeight: 'auto'
                                                         }}
                                                     >
                                                         주문하기

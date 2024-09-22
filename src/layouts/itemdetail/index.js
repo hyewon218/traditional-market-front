@@ -335,8 +335,10 @@ function ItemDetail() {
 
         handleGetComments();
         handleCountLikes();
-        handleCheckLike();
-    }, []);
+        if (isAuthorization) {
+            handleCheckLike();
+        }
+    }, [isAuthorization]);
 
     return (
         <DashboardLayout>
