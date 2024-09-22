@@ -60,7 +60,7 @@ function ItemDetail() {
     const {isAdmin, isSeller, isAuthorization, userId} = useCustomLogin()
     const {state} = useLocation();
     const item = state; // 전달된 item 데이터를 사용
-    console.log(state);
+
     const [page, setPage] = useState(0);
 
     const [likes, setLikes] = useState(0);
@@ -112,6 +112,15 @@ function ItemDetail() {
     };
 
     const handleClickAddCart = () => {
+        if (!isAuthorization) {
+            const userConfirmed = window.confirm("로그인 후 이용 가능합니다. 로그인 하시겠습니까?");
+            if (userConfirmed) {
+                // 새 창으로 로그인 페이지 열기
+                window.open('/authentication/signin-popup', '_blank', 'width=' + (window.innerWidth / 2) + ',height=' + (window.innerHeight) + ',resizable=yes');
+            }
+            return;
+        }
+
         addCart({itemNo: item.itemNo, count: quantity}); // 수량을 포함하여 장바구니 추가
         const userConfirmed = window.confirm("장바구니에 추가되었습니다. 장바구니로 이동하시겠습니까?");
         if (userConfirmed) {
@@ -146,7 +155,11 @@ function ItemDetail() {
     // 상품 댓글
     const handleWriteComment = () => {
         if (!isAuthorization) {
-            alert("로그인이 필요합니다.");
+            const userConfirmed = window.confirm("로그인 후 이용 가능합니다. 로그인 하시겠습니까?");
+            if (userConfirmed) {
+                // 새 창으로 로그인 페이지 열기
+                window.open('/authentication/signin-popup', '_blank', 'width=' + (window.innerWidth / 2) + ',height=' + (window.innerHeight) + ',resizable=yes');
+            }
             return;
         }
         if (!comment.trim()) { // 댓글 필드 비어있는지 확인
@@ -230,6 +243,15 @@ function ItemDetail() {
 
     // 수량 핸들러 이용한 주문하기
     const handleClickOrder = () => {
+        if (!isAuthorization) {
+            const userConfirmed = window.confirm("로그인 후 이용 가능합니다. 로그인 하시겠습니까?");
+            if (userConfirmed) {
+                // 새 창으로 로그인 페이지 열기
+                window.open('/authentication/signin-popup', '_blank', 'width=' + (window.innerWidth / 2) + ',height=' + (window.innerHeight) + ',resizable=yes');
+            }
+            return;
+        }
+
         postOrder({itemNo: item.itemNo, count: quantity}).then(data => { // 수량을 포함하여 주문
             console.log('상품 주문 성공!!!');
             console.log(data);
@@ -310,6 +332,15 @@ function ItemDetail() {
 
     // 댓글 신고
     const handleReportComment = (reportedMemberId) => {
+        if (!isAuthorization) {
+            const userConfirmed = window.confirm("로그인 후 이용 가능합니다. 로그인 하시겠습니까?");
+            if (userConfirmed) {
+                // 새 창으로 로그인 페이지 열기
+                window.open('/authentication/signin-popup', '_blank', 'width=' + (window.innerWidth / 2) + ',height=' + (window.innerHeight) + ',resizable=yes');
+            }
+            return;
+        }
+
         const confirmed = window.confirm('해당 회원을 신고하시겠습니까?');
 
         if (confirmed) {

@@ -29,37 +29,37 @@ const MapComponent = ({marketAddr, marketName}) => {
                 return alert('지도를 표시하는 중 오류가 발생했습니다.');
             }
 
-            var result = response.v2;
-            var items = result.addresses;
+            const result = response.v2;
+            const items = result.addresses;
 
             if (items.length > 0) {
-                var firstItem = items[0];
+                const firstItem = items[0];
 
-                var x = parseFloat(firstItem.x);
-                var y = parseFloat(firstItem.y);
+                const x = parseFloat(firstItem.x);
+                const y = parseFloat(firstItem.y);
 
-                var jibunAddress = firstItem.jibunAddress;
-                var roadAddress = firstItem.roadAddress;
+                const jibunAddress = firstItem.jibunAddress;
+                const roadAddress = firstItem.roadAddress;
 
                 // 콘솔에 query 값 출력
                 console.log("query:", address);
 
                 // 지도 옵션 설정
-                var mapOptions = {
+                const mapOptions = {
                     center: new window.naver.maps.LatLng(y, x),
                     zoom: 15
                 };
 
                 // 지도 생성
-                var map = new window.naver.maps.Map('map', mapOptions);
+                const map = new window.naver.maps.Map('map', mapOptions);
 
                 // 마커 생성 및 정보창 설정
-                var marker = new window.naver.maps.Marker({
+                const marker = new window.naver.maps.Marker({
                     position: new window.naver.maps.LatLng(y, x),
                     map: map
                 });
 
-                var infoWindow = new window.naver.maps.InfoWindow({
+                const infoWindow = new window.naver.maps.InfoWindow({
                     content: [
                         '<div style="padding:10px;min-width:200px;line-height:150%;">',
                         '<h3>' + marketName + '</h3>',
@@ -83,8 +83,8 @@ const MapComponent = ({marketAddr, marketName}) => {
 
                 /* 여기서부터 날씨 API */
                 // OpenWeather API로 날씨 정보 가져오기
-                var apiKey = '49a8252265aef937b366a8506d1fec4f';
-                var weatherUrl = 'https://api.openweathermap.org/data/2.5/weather?lat='
+                const apiKey = '49a8252265aef937b366a8506d1fec4f';
+                const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather?lat='
                     + y + '&lon=' + x + '&appid=' + apiKey + '&units=metric';
 
                 fetch(weatherUrl)
@@ -92,13 +92,13 @@ const MapComponent = ({marketAddr, marketName}) => {
                 .then(data => {
                     console.log(data);
 
-                    var currentTemp = data.main.temp;
-                    var feelsLike = data.main.feels_like;
-                    var minTemp = data.main.temp_min;
-                    var maxTemp = data.main.temp_max;
-                    var humidity = data.main.humidity;
-                    var weatherDescription = data.weather[0].description;
-                    var weatherCode = data.weather[0].icon;
+                    const currentTemp = data.main.temp;
+                    const feelsLike = data.main.feels_like;
+                    const minTemp = data.main.temp_min;
+                    const maxTemp = data.main.temp_max;
+                    const humidity = data.main.humidity;
+                    const weatherDescription = data.weather[0].description;
+                    const weatherCode = data.weather[0].icon;
                     console.log(weatherDescription);
 
                     // 날씨 정보를 HTML에 출력
@@ -116,7 +116,7 @@ const MapComponent = ({marketAddr, marketName}) => {
                         + humidity + '%';
 
                     // 날씨 상태에 따른 설명을 한국어로 변환
-                    var weatherDescriptionKorean = getKoreanWeatherDescription(
+                    const weatherDescriptionKorean = getKoreanWeatherDescription(
                         weatherDescription);
                     document.getElementById(
                         'weather-description').textContent = '날씨: '
