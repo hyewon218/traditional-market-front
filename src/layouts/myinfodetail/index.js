@@ -314,10 +314,10 @@ function MyInfoDetail() {
                 </Grid>
             </Grid>
 
-            <MDBox pt={0} pb={20}>
+            <MDBox pt={2} pb={20}>
                 <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}>
                     <Card>
-                        <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
+                        <MDBox pt={isSmallScreen ? 2 : 3} pb={isSmallScreen ? 2 : 3} px={isSmallScreen ? 2 : 2}>
                             <Grid container spacing={2}>
                                  <Grid item xs={12} md={8}>
                                     <MDTypography
@@ -343,24 +343,25 @@ function MyInfoDetail() {
                                             onClick={() => handleGetRemainingTime(member.memberNo)}
                                             sx={{
                                                 fontFamily: 'JalnanGothic',
-                                                fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+                                                fontSize: isSmallScreen ? '0.5rem':'0.9rem',
                                                 minWidth: 'auto',
                                                 width: isSmallScreen ? '110px' : 'auto', // 가로 너비를 줄임
                                                 padding: isSmallScreen
                                                     ? '1px 2px'
                                                     : '4px 8px',
                                                 lineHeight:  isSmallScreen ? 2:2,  // 줄 간격을 줄여 높이를 감소시킴
-                                                minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                                minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                ml : 1
                                             }}
                                         >
                                             닉네임 변경까지 남은 시간
                                         </MDButton>
+                                        <br/>
                                         <span
                                             style={{
                                                 fontFamily: 'JalnanGothic',
                                                 fontSize: isSmallScreen ? '0.6rem':'0.9rem',
                                                 color: 'red',
-                                                marginLeft: '10px',
                                             }}
                                         >*닉네임은 한달에 한번 변경 가능합니다.
                                 </span>

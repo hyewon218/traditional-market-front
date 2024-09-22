@@ -35,9 +35,7 @@ const OrderComponent = () => {
     const [selectedDelivery, setSelectedDelivery] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('KakaoPay'); // Default payment method
     const [selectedMessage, setSelectedMessage] = useState(null); // 선택된 메시지 상태
-
     const [currentImageIndexes, setCurrentImageIndexes] = useState({}); // State for image index
-
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const total = useMemo(() => {
@@ -71,7 +69,7 @@ const OrderComponent = () => {
 
     /*모달창*/
     const handleDeliveryModal = () => { // 주문 페이지 내 배송지 추가 버튼
-        console.log('handleDeliveryModal');
+        //console.log('handleDeliveryModal');
         setResult(true);
     };
 
@@ -191,12 +189,13 @@ const OrderComponent = () => {
             >
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} md={12} lg={12}>
-                        <MDBox pb={3}>
+                        <MDBox pb={isSmallScreen ? 2 : 3}>
                             <Card>
-                                <MDBox pt={2} pb={3} px={3}>
+                                <MDBox pt={isSmallScreen ? 1 : 2} pb={isSmallScreen ? 1 : 2} px={3}>
                                     <Grid container>
                                         <Grid item xs={10}>
                                             <MDTypography
+                                                sx={{ fontSize: isSmallScreen ? '0.9rem':'1.2rem' }}
                                                 fontWeight="bold"
                                                 variant="body2">
                                                 결제
@@ -216,7 +215,7 @@ const OrderComponent = () => {
                         fontWeight="bold"
                         variant="body2"
                         sx={{
-                            fontSize: isSmallScreen ? '20px':'25px',
+                            fontSize : isSmallScreen ? '1.1rem':'1.5rem'
                         }}
                     >
                         배송지
@@ -228,11 +227,11 @@ const OrderComponent = () => {
                                     <MDBox>
                                         <div>
                                             <MDBox
-                                                pb={2}
+                                                pb={1}
                                                 pt={2}
                                                 px={2}>
                                                 <Grid container alignItems="center" sx={{ ml:1 }}>
-                                                    <Grid item xs={isSmallScreen ? 8 : 8.5} >
+                                                    <Grid item xs={isSmallScreen ? 8.5 : 10.3} >
                                                         <MDTypography
                                                             fontWeight="bold"
                                                             sx={{ fontSize: isSmallScreen ? '1rem':'1.3rem'}}
@@ -241,7 +240,7 @@ const OrderComponent = () => {
                                                             {deliveryAddressTitleMessage}
                                                         </MDTypography>
                                                     </Grid>
-                                                    <Grid item xs={isSmallScreen ? 4 : 3.5} container justifyContent="flex-end" >
+                                                    <Grid item xs={isSmallScreen ? 3.5 : 1.7} justifyContent="flex-end" >
                                                         <MDButton
                                                             onClick={handleDeliveryModal}
                                                             variant="gradient"
@@ -253,9 +252,8 @@ const OrderComponent = () => {
                                                                 height: '40px',
                                                                 fontSize: isSmallScreen ? '0.7rem':'0.875rem',
                                                                 padding: isSmallScreen
-                                                                    ? '1px 2px'
+                                                                    ? '2px 4px'
                                                                     : '4px 8px',
-                                                                mr:2
                                                             }}
                                                         >{buttonText}
                                                         </MDButton>
@@ -270,7 +268,7 @@ const OrderComponent = () => {
                                                         {selectedDelivery?.phone || primaryDelivery.phone}
                                                     </MDTypography>
                                                 </Grid>
-                                                <Grid item xs={12} sx={{ ml:1 }}>
+                                                <Grid item xs={12} sx={{ ml:1, mb:1 }}>
                                                     <MDTypography
                                                         fontWeight="bold"
                                                         variant="body2"
@@ -307,8 +305,8 @@ const OrderComponent = () => {
                                               color: '#ffffff',
                                               fontSize: isSmallScreen? '1.5rem' :'2rem',
                                               fontFamily: 'JalnanGothic',
-                                              padding: '20px 0px',
-                                              width: '600px',
+                                              padding: isSmallScreen ? '15px 20px' : '20px 40px',
+                                              width: '100%',
                                           }}
                                           disabled={!deliveryAddress}
                                 >{total}원 결제하기
@@ -322,7 +320,7 @@ const OrderComponent = () => {
                 <Grid item xs={12}>
                     <MDTypography fontWeight="bold" variant="body2"
                                   sx={{
-                                      fontSize: isSmallScreen ? '20px':'25px',
+                                      fontSize : isSmallScreen ? '1.1rem':'1.5rem'
                                   }}>
                         주문상품
                     </MDTypography>
@@ -446,7 +444,7 @@ const OrderComponent = () => {
                         fontWeight="bold"
                         variant="body2"
                         sx={{
-                            fontSize: isSmallScreen ? '20px':'25px',
+                            fontSize : isSmallScreen ? '1.1rem':'1.5rem'
                         }}
                     >
                         결제수단
