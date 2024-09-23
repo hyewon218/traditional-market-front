@@ -224,6 +224,16 @@ function Footer({email}) {
         setOpenTerms(false);
     };
 
+    const commonTypographyStyles = {
+        fontFamily: 'GowunBatang-Regular',
+        fontSize: isSmallScreen ? '0.4rem' : '0.6rem'
+    };
+
+    const commonTypographyMediumStyles = {
+        fontFamily: 'GowunBatang-Regular',
+        fontSize: isSmallScreen ? '0.5rem' : '0.7rem'
+    };
+
     useEffect(() => {
         if (openPrivacy || openTerms) {
             // 스크롤이 고정되면서 페이지 내용이 줄어들지 않도록 설정
@@ -257,12 +267,12 @@ function Footer({email}) {
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
-                mb={1}
+                mb={0.5}
             >
-                <MDTypography variant="body2" fontWeight="medium"  sx={{ fontSize: isSmallScreen? '0.5rem':'0.8rem' }}>
+                <MDTypography variant="body2" fontWeight="medium"  sx={commonTypographyMediumStyles}>
                     우리동네 전통시장
                 </MDTypography>
-                <MDTypography variant="body2" color="text" sx={{ fontSize: isSmallScreen? '0.5rem':'0.75rem' }}>
+                <MDTypography variant="body2" color="text" sx={commonTypographyMediumStyles}>
                     &copy; {new Date().getFullYear()} 우리동네 전통시장. All Rights Reserved.
                 </MDTypography>
             </MDBox>
@@ -271,13 +281,11 @@ function Footer({email}) {
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
-                mb={1}
+                mb={0.5}
             >
-                <MDTypography variant="body2" color="text" sx={{ fontSize: isSmallScreen? '0.5rem':'0.7rem' }}>
+                <MDTypography variant="body2" color="text" sx={commonTypographyStyles}>
                     본 사이트의 모든 콘텐츠는 "우리동네 전통시장"에 저작권이 있으며, 사전 서면 동의 없이 무단 복제, 배포,
-                    수정, 전시, 출판 등을 금지합니다.
-                </MDTypography>
-                <MDTypography variant="body2" color="text" sx={{ fontSize: isSmallScreen? '0.5rem':'0.7rem' }}>
+                    수정, 전시, 출판 등을 금지합니다.<br/>
                     문의사항이 있으시면 아래 이메일을 통해 연락주시기 바랍니다.
                 </MDTypography>
             </MDBox>
@@ -286,15 +294,15 @@ function Footer({email}) {
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
-                gap={2} // 링크와 이메일 간의 간격을 조절
+                gap={1} // 링크와 이메일 간의 간격을 조절
             >
-                <MDTypography variant="body2" color="text" sx={{ fontSize: isSmallScreen? '0.5rem':'0.7rem' }}>
+                <MDTypography variant="body2" color="text" sx={commonTypographyStyles}>
                     이메일 : {email}
                 </MDTypography>
-                <Link href="#" onClick={handleOpenPrivacy} underline="hover" sx={{ fontSize: isSmallScreen? '0.5rem':'0.7rem' }}>
+                <Link href="#" onClick={handleOpenPrivacy} underline="hover" sx={commonTypographyStyles}>
                     개인정보 취급방침
                 </Link>
-                <Link href="#" onClick={handleOpenTerms} underline="hover" sx={{ fontSize: isSmallScreen? '0.5rem':'0.7rem' }}>
+                <Link href="#" onClick={handleOpenTerms} underline="hover" sx={commonTypographyStyles}>
                     이용약관
                 </Link>
             </MDBox>

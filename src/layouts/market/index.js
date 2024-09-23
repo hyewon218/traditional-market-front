@@ -60,17 +60,6 @@ function Market() {
         }
     }, []);
 
-//    useEffect(() => {
-//        if (isSearchActive) {
-//            return;
-//        }
-//        if (selectedCategory) {
-//            fetchCategoryMarkets(page);
-//        } else {
-//            fetchMarkets(page);
-//        }
-//    }, [selectedCategory, isSearchActive, page]);
-
     useEffect(() => {
         if (isSearchActive) {
             fetchSearchMarkets(page);

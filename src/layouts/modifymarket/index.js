@@ -32,7 +32,7 @@ import MDButton from '../../components/MD/MDButton';
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 import {putMarket, getOne} from "../../api/marketApi";
-import {FormControl, InputLabel, Select} from "@mui/material";
+import {FormControl, InputLabel, Select, useMediaQuery} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
 const categories = {
@@ -80,8 +80,8 @@ function ModifyMarket() {
     const [initialImages, setInitialImages] = useState(initMarket.imageList || []); // 기존에 있던 이미지들
     const [filePreviews, setFilePreviews] = useState([]); // 새로 추가한 이미지들
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
-
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleChangeMarket = (e) => {
         const { name, value } = e.target;
@@ -233,8 +233,18 @@ function ModifyMarket() {
 
     return (
         <DashboardLayout>
-            <MDBox pb={3}>
-                <Card>
+            <MDBox pt={isSmallScreen ? 0 : 1}
+                   pb={20}
+                   px={isSmallScreen ? 1 : 3}
+                   mt={isSmallScreen ? -3 : 0}
+                   width="100%"
+                   display="flex"
+                   justifyContent="center">
+                <Card sx={{
+                    maxWidth: isSmallScreen ? '90%' : '40%',
+                    width: '100%',
+                    margin: '0 auto',
+                }}>
                     <MDBox pt={3} pb={3} px={3} lineHeight={1.5}>
                         <MDBox mb={2}>
                             <MDInput
@@ -363,46 +373,128 @@ function ModifyMarket() {
                                 multiple
                                 style={{ display: 'none' }}
                             />
-                            <MDButton variant="outlined" color="primary" onClick={() => uploadRef.current.click()}>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.6rem':'0.8rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '80px' : '120px',
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '2px 4px',
+                                    lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                    mr : isSmallScreen ? '10px' : '20px'
+                                }}
+                                variant="outlined" color="primary" onClick={() => uploadRef.current.click()}>
                                 이미지 업로드
                             </MDButton>
-                        </MDBox>
-                        <MDBox mb={2}>
-                            <MDButton variant="outlined" color="primary" onClick={handleOpenMapPopup}>
+                            <MDButton
+                                sx={{
+                                    fontFamily: 'JalnanGothic',
+                                    fontSize: isSmallScreen ? '0.6rem':'0.8rem',
+                                    minWidth: 'auto',
+                                    width: isSmallScreen ? '70px' : '100px',
+                                    padding: isSmallScreen
+                                        ? '1px 2px'
+                                        : '2px 4px',
+                                    lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                    minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                    mr : isSmallScreen ? '10px' : '10px'
+                                }}
+                                variant="outlined" color="primary" onClick={handleOpenMapPopup}>
                                 좌표 찾기
                             </MDButton>
                         </MDBox>
-                        <MDBox mb={2}>
-                            <div>
+                        <MDBox mb={2} sx={{ display: 'flex', flexWrap: 'wrap' }}>
                                 {filePreviews.map((preview, index) => (
-                                    <div key={index}>
-                                        <img src={preview} alt={`preview ${index}`} width="100" />
-                                        <IconButton onClick={() => handleRemovePreviewFile(index)}>
-                                            <CloseIcon />
+                                    <div key={index} style={{ position: 'relative' , marginRight: '10px', marginBottom: '10px' }}>
+                                        <img src={preview} alt={`preview ${index}`}
+                                             style={{
+                                                 maxWidth: isSmallScreen ? '100px':'150px',
+                                                 maxHeight: isSmallScreen ? '100px':'150px',
+                                             }}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            color="secondary"
+                                            onClick={() => handleRemovePreviewFile(index)}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 0,
+                                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                                zIndex: 1, // z-index 추가
+                                                padding: '2px', // 버튼 크기 조정
+                                            }}
+                                        >
+                                            <CloseIcon/>
                                         </IconButton>
                                     </div>
                                 ))}
                                 {initialImages.map((img, index) => (
-                                    <div key={index}>
-                                        <img src={img.imageUrl} alt={`initial ${index}`} width="100" />
-                                        <IconButton onClick={() => handleRemoveInitialImage(index)}>
-                                            <CloseIcon />
+                                    <div key={index}  style={{ position: 'relative', marginRight: '10px', marginBottom: '10px'  }}>
+                                        <img src={img.imageUrl} alt={`initial ${index}`}
+                                             style={{
+                                            maxWidth: isSmallScreen ? '100px':'150px',
+                                            maxHeight: isSmallScreen ? '100px':'150px',
+                                            }}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            color="secondary"
+                                            onClick={() => handleRemoveInitialImage(index)}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 0,
+                                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                                zIndex: 1, // z-index 추가
+                                                padding: '2px', // 버튼 크기 조정
+                                            }}
+                                        >
+                                            <CloseIcon/>
                                         </IconButton>
                                     </div>
                                 ))}
-                            </div>
                         </MDBox>
                         <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <MDButton variant="contained"
+                            <MDButton variant="gradient"
                                       color="info"
                                       onClick={handleModifyMarket}
                                       sx={{
                                           fontFamily: 'JalnanGothic',
-                                          fontSize: '0.8rem',
-                                          padding: '4px 8px',
+                                          fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                          minWidth: 'auto',
+                                          width: isSmallScreen ? '50px' : '70px',
+                                          padding: isSmallScreen
+                                              ? '1px 2px'
+                                              : '2px 4px',
+                                          lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                          minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                          mr : isSmallScreen ? '10px' : '10px'
                                       }}
                             >
-                                수정 완료
+                                수정
+                            </MDButton>
+                            <MDButton onClick={() => {
+                                window.history.back();  // 이전 페이지로 돌아감
+                            }}
+                                      variant="gradient"
+                                      color="info"
+                                      sx={{
+                                          fontFamily: 'JalnanGothic',
+                                          fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                          minWidth: 'auto',
+                                          width: isSmallScreen ? '50px' : '70px',
+                                          padding: isSmallScreen
+                                              ? '1px 2px'
+                                              : '2px 4px',
+                                          lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                          minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                      }}
+                            >
+                                취소
                             </MDButton>
                         </MDBox>
                     </MDBox>
