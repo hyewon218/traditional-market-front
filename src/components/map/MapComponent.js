@@ -59,14 +59,18 @@ const MapComponent = ({marketAddr, marketName}) => {
                     map: map
                 });
 
+                const fontFamily = 'JalnanGothic';
                 const infoWindow = new window.naver.maps.InfoWindow({
                     content: [
-                        '<div style="padding:10px;min-width:200px;line-height:150%;">',
-                        '<h3>' + marketName + '</h3>',
-                        '<h4>지번 주소</h4>',
-                        '<p>' + jibunAddress + '</p>',
-                        '<h4>도로명 주소</h4>',
-                        '<p>' + roadAddress + '</p>',
+                        `<div style="padding: ${isSmallScreen ? '5px' : '10px'}; 
+                                min-width: ${isSmallScreen ? '50px' : '180px'}; 
+                                line-height: ${isSmallScreen ? '1.0' : '1.1'}; 
+                                font-family:${fontFamily};">`,
+                        `<h3 style="font-size:${isSmallScreen ? '0.6em' : '1.1em'};">${marketName}</h3>`,
+                        `<h4 style="font-size:${isSmallScreen ? '0.5em' : '0.9em'};">지번 주소</h4>`,
+                        `<p style="font-size:${isSmallScreen ? '0.4em' : '0.8em'};">${jibunAddress}</p>`,
+                        `<h4 style="font-size:${isSmallScreen ? '0.5em' : '0.9em'};">도로명 주소</h4>`,
+                        `<p style="font-size:${isSmallScreen ? '0.4em' : '0.8em'};">${roadAddress}</p>`,
                         '</div>'
                     ].join('')
                 });
@@ -80,6 +84,9 @@ const MapComponent = ({marketAddr, marketName}) => {
                             infoWindow.open(map, marker);
                         }
                     });
+
+                // 자동으로 정보창 열기
+                //infoWindow.open(map, marker);
 
                 /* 여기서부터 날씨 API */
                 // OpenWeather API로 날씨 정보 가져오기
@@ -243,6 +250,19 @@ const MapComponent = ({marketAddr, marketName}) => {
         });
     }
 
+    const commonTypographyStyles = {
+        fontFamily: 'GowunBatang-Regular',
+        fontSize: isSmallScreen ? '0.75rem':'0.9rem',
+        mb: isSmallScreen? -2:-1,
+    };
+
+    const commonTypographyMediumStyles = {
+        fontFamily: 'JalnanGothic',
+        fontSize: isSmallScreen ? '1rem' : '1.1rem',
+        mb: isSmallScreen? 0:1,
+        fontWeight: 'bold',
+    };
+
     useEffect(() => {
         showMarketInfo(marketAddr, marketName);
     }, [])
@@ -256,43 +276,43 @@ const MapComponent = ({marketAddr, marketName}) => {
                 <Grid item xs={5} md={3} lg={3}>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '1rem':'1.1rem', mb: isSmallScreen? 0:1}}
+                        sx={commonTypographyMediumStyles}
                         textAlign="right">
                         날씨 정보
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="current-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="feels-like"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="min-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="max-temp"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -2:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="humidity"></p>
                     </MDTypography>
                     <MDTypography
                         variant="body2"
-                        sx={{fontSize: isSmallScreen? '0.75rem':'0.9rem', mb: isSmallScreen? -3:-1}}
+                        sx={commonTypographyStyles}
                         textAlign="right">
                         <p id="weather-description"></p>
                     </MDTypography>

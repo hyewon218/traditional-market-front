@@ -29,8 +29,10 @@ import MDButton from '../../components/MD/MDButton';
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import {useLocation, useNavigate} from "react-router-dom";
-import {FormControl, InputLabel, Select} from "@mui/material";
+import {FormControl, InputLabel, Select, useMediaQuery} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 const categories = {
     판매중: 'SELL',
@@ -72,16 +74,12 @@ const fetchItem = async (itemNo) => {
 function PostItem() {
     const {state} = useLocation();
     const shop = state; // 전달된 shop 데이터를 사용
-
     const uploadRef = useRef()
-    const [fetching, setFetching] = useState(false)
-    const [result, setResult] = useState(null)
     const [previewImages, setPreviewImages] = useState([]);
     const [imageFiles, setImageFiles] = useState([]); // 실제 파일 상태 관리
-
     const navigate = useNavigate()
-
     const [item, setItem] = useState({...initState})
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleChangeItem = (e) => {
         const {name, value} = e.target;
@@ -155,9 +153,19 @@ function PostItem() {
 
     return (
         <DashboardLayout>
-            <MDBox pb={3}>
-                <Card>
-                    <MDBox pt={4} pb={3} px={3}>
+                <MDBox pt={isSmallScreen ? 0 : 5}
+                       pb={20}
+                       px={isSmallScreen ? 1 : 3}
+                       mt={isSmallScreen ? -3 : 0}
+                       width="100%"
+                       display="flex"
+                       justifyContent="center">
+                    <Card sx={{
+                        maxWidth: isSmallScreen ? '90%' : '40%',
+                        width: '100%',
+                        margin: '0 auto',
+                    }}>
+                    <MDBox pt={3} pb={3} px={3}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
                                 <MDInput
@@ -254,18 +262,19 @@ function PostItem() {
                                                     maxHeight: '150px',
                                                 }}
                                             />
-                                            <MDButton
+                                            <IconButton
+                                                size="small"
+                                                color="secondary"
                                                 onClick={() => handleRemoveImage(index)}
-                                                sx={{
+                                                style={{
                                                     position: 'absolute',
-                                                    top: '5px',
-                                                    right: '5px',
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                                    padding: '5px',
+                                                    top: 0,
+                                                    right: 0,
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.7)'
                                                 }}
                                             >
-                                                X
-                                            </MDButton>
+                                                <CloseIcon/>
+                                            </IconButton>
                                         </MDBox>
                                     ))}
                                 </MDBox>
@@ -276,11 +285,37 @@ function PostItem() {
                                           color="info"
                                           sx={{
                                               fontFamily: 'JalnanGothic',
-                                              fontSize: '0.8rem',
-                                              padding: '4px 8px'
+                                              fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                              minWidth: 'auto',
+                                              width: isSmallScreen ? '40px' : '50px',
+                                              padding: isSmallScreen
+                                                  ? '1px 2px'
+                                                  : '2px 4px',
+                                              lineHeight:  isSmallScreen ? 2.3:2,
+                                              minHeight: 'auto',
+                                              mr : isSmallScreen ? '10px' : '10px'
                                           }}
                                 >
                                     저장
+                                </MDButton>
+                                <MDButton onClick={() => {
+                                    window.history.back();  // 이전 페이지로 돌아감
+                                }}
+                                          variant="gradient"
+                                          color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                              minWidth: 'auto',
+                                              width: isSmallScreen ? '40px' : '50px',
+                                              padding: isSmallScreen
+                                                  ? '1px 2px'
+                                                  : '2px 4px',
+                                              lineHeight:  isSmallScreen ? 2.3:2,  // 줄 간격을 줄여 높이를 감소시킴
+                                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                          }}
+                                >
+                                    취소
                                 </MDButton>
                             </MDBox>
                         </MDBox>

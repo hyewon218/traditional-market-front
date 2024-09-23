@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
-// 수정 필드에 소속시장, 소속 상점 추가(수정은 불가), 수정 후 해당 상품 상세 페이지로 이동 추가
+// 수정 필드에 소속 시장, 소속 상점 추가(수정은 불가), 수정 후 해당 상품 상세 페이지로 이동 추가
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
@@ -33,7 +33,7 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import {putItem, getItemOne} from "../../api/itemApi";
 import {getShopOne} from "../../api/shopApi";
 import {getOne} from "../../api/marketApi";
-import {FormControl, InputLabel, Select} from "@mui/material";
+import {FormControl, InputLabel, Select, useMediaQuery} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
 const itemSellStatusOptions = {
@@ -86,8 +86,8 @@ function ModifyItem() {
     const [removedImages, setRemovedImages] = useState([]); // 제거된 이미지를 추적하기 위한 상태
     const [market, setMarket] = useState(''); // 소속 시장 매핑하기 위한 상태
     const [shop, setShop] = useState(''); // 소속 상점 매핑하기 위한 상태
-
     const navigate = useNavigate()
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         // 소속 시장과 상점 데이터를 불러오기
@@ -220,9 +220,19 @@ function ModifyItem() {
 
     return (
         <DashboardLayout>
-            <MDBox pb={3}>
-                <Card>
-                    <MDBox pt={3} pb={3} px={3}>
+            <MDBox pt={isSmallScreen ? 0 : 1}
+                   pb={20}
+                   px={isSmallScreen ? 1 : 3}
+                   mt={isSmallScreen ? -3 : 0}
+                   width="100%"
+                   display="flex"
+                   justifyContent="center">
+                <Card sx={{
+                    maxWidth: isSmallScreen ? '90%' : '40%',
+                    width: '100%',
+                    margin: '0 auto',
+                }}>
+                    <MDBox pt={3} pb={3} px={3} lineHeight={1.5}>
                         <MDBox component="form" role="form">
                             <MDBox mb={2}>
                                 <MDInput
@@ -332,8 +342,11 @@ function ModifyItem() {
                                            mr={2} mb={2}>
                                         <img key={index} src={`${img.imageUrl}`}
                                              alt={`preview-${index}`}
-                                             width="300px"
-                                             style={{marginRight: '10px'}}/>
+                                             style={{
+                                                 maxWidth: isSmallScreen ? '100px':'150px',
+                                                 maxHeight: isSmallScreen ? '100px':'150px',
+                                                 marginRight: '10px'
+                                             }}/>
                                         <IconButton
                                             size="small"
                                             color="secondary"
@@ -350,14 +363,16 @@ function ModifyItem() {
                                         </IconButton>
                                     </MDBox>
                                 ))}
-                            </MDBox>
-                            <MDBox display="flex" flexWrap="wrap">
                                 {filePreviews.map((preview, index) => (
                                     <MDBox key={index} position="relative"
                                            mr={2} mb={2}>
                                         <img src={preview}
                                              alt={`preview-${index}`}
-                                             width="400px"/>
+                                             style={{
+                                                 maxWidth: isSmallScreen ? '100px':'150px',
+                                                 maxHeight: isSmallScreen ? '100px':'150px',
+                                                 marginRight: '10px'
+                                             }}/>
                                         <IconButton
                                             size="small"
                                             color="secondary"
@@ -375,16 +390,43 @@ function ModifyItem() {
                                     </MDBox>
                                 ))}
                             </MDBox>
+
                             <MDBox style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <MDButton onClick={handleModifyItem}
                                           variant="gradient" color="info"
                                           sx={{
                                               fontFamily: 'JalnanGothic',
-                                              fontSize: '0.8rem',
-                                              padding: '4px 8px',
+                                              fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                              minWidth: 'auto',
+                                              width: isSmallScreen ? '50px' : '70px',
+                                              padding: isSmallScreen
+                                                  ? '1px 2px'
+                                                  : '2px 4px',
+                                              lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                              minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                              mr : isSmallScreen ? '10px' : '10px'
                                           }}
                                 >
-                                    수정하기
+                                    수정
+                                </MDButton>
+                                <MDButton onClick={() => {
+                                    window.history.back();  // 이전 페이지로 돌아감
+                                }}
+                                          variant="gradient"
+                                          color="info"
+                                          sx={{
+                                              fontFamily: 'JalnanGothic',
+                                              fontSize: isSmallScreen ? '0.7rem':'0.9rem',
+                                              minWidth: 'auto',
+                                              width: isSmallScreen ? '50px' : '70px',
+                                              padding: isSmallScreen
+                                                  ? '1px 2px'
+                                                  : '2px 4px',
+                                              lineHeight:  isSmallScreen ? 2.3:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                              minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                                          }}
+                                >
+                                    취소
                                 </MDButton>
                             </MDBox>
                         </MDBox>

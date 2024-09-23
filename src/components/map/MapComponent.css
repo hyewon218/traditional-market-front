@@ -8,7 +8,7 @@
 /* Adjust the map's height and margins on smaller screens */
 @media (max-width: 600px) {
   #map {
-    height: 180px; /* Reduced height for medium screens */
+    height: 190px; /* Reduced height for medium screens */
     margin-left: 0;
   }
 }
