@@ -110,7 +110,7 @@ function ChatDetail() {
             const stompClient = new StompJs.Client({
                 //brokerURL: "ws://localhost:8080/stomp/chat",
                 //brokerURL: "ws://3.36.96.0:8080/stomp/chat",
-                brokerURL: "ws://tmarket.kro.kr:8080/stomp/chat",
+                brokerURL: "wss://tmarket.store/stomp/chat",
                 connectHeaders: {
                     Authorization: getCookie('Authorization')
                 },

@@ -59,7 +59,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://tmarket.kro.kr:8080",
+  "proxy": "https://tmarket.store",
   "eslintConfig": {
     "extends": [
       "react-app",
