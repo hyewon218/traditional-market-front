@@ -77,7 +77,7 @@ function TopFiveItem() {
                 topFiveRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             }).catch(error => {
-            console.error("TOP 5 상품 조회에 실패했습니다.", error);
+            console.error("스크롤 이동에 실패했습니다.", error);
         });
     };
 

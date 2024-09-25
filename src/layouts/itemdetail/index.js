@@ -88,8 +88,7 @@ function ItemDetail() {
                 const memberResponse = await getMember();
                 const shopResponse = await getShopOne(item.shopNo);
 
-                if (isAdmin || (isSeller && (memberResponse.memberNo
-                    === shopResponse.sellerNo))) {
+                if (isAdmin || (isSeller && (memberResponse.memberNo === shopResponse.sellerNo))) {
                     setShowButtons(true);
                 }
                 console.log('shopResponse : ', shopResponse);
@@ -99,7 +98,9 @@ function ItemDetail() {
             }
         };
 
-        fetchUserAndShopData();
+        if (isAuthorization) {
+            fetchUserAndShopData();
+        }
     }, [item.shopNo]);
 
     // 수량 증가 및 감소 핸들러

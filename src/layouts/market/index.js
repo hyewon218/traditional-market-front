@@ -314,19 +314,24 @@ function Market() {
                 </Card>
 
                 {/* 알람 아이콘 */}
-                <IconButton onClick={handleNotificationIcon}
-                            sx={{ position: 'absolute', right: isSmallScreen ? '50px' : '160px', marginTop: '0' }}>
-                    <Badge badgeContent={notificationCount} color="primary">
-                        <NotificationImportant />
-                    </Badge>
-                </IconButton>
+                {isAuthorization && (
+                    <IconButton onClick={handleNotificationIcon}
+                                sx={{ position: 'absolute', right: isSmallScreen ? '50px' : '160px', marginTop: '0' }}>
+                        <Badge badgeContent={notificationCount} color="primary">
+                            <NotificationImportant />
+                        </Badge>
+                    </IconButton>
+                )}
+
                 {/* 장바구니 아이콘 + 장바구니에 담긴 상품 갯수 */}
-                <IconButton onClick={handleCartIcon}
-                            sx={{ position: 'absolute', right: isSmallScreen ? '10px' : '100px', marginTop: '0' }}>
-                    <Badge badgeContent={cartItems.length} color="primary">
-                        <ShoppingCartIcon/>
-                    </Badge>
-                </IconButton>
+                {isAuthorization && (
+                    <IconButton onClick={handleCartIcon}
+                                sx={{ position: 'absolute', right: isSmallScreen ? '10px' : '100px', marginTop: '0' }}>
+                        <Badge badgeContent={cartItems.length} color="primary">
+                            <ShoppingCartIcon/>
+                        </Badge>
+                    </IconButton>
+                )}
             </MDBox>
 
             {/* 카테고리 */}

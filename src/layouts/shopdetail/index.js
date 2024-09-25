@@ -105,10 +105,10 @@ function ShopDetail() {
                 setShowButtons(false); // 오류 발생 시 버튼 숨김
             }
         };
-        fetchCurrentUser();
 
         handleCountLikes();
         if (isAuthorization) {
+            fetchCurrentUser();
             handleCheckLike();
         }
     }, [isAuthorization]);
