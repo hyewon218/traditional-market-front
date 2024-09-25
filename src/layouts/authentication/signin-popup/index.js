@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
-
-// react-router-dom components
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 // @mui material components
 import Card from '@mui/material/Card';
@@ -13,11 +10,8 @@ import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
 import MDInput from '../../../components/MD/MDInput';
 import MDButton from '../../../components/MD/MDButton';
-import FindIdModal from '../../../components/common/FindIdModal';  // 아이디 찾기 모달 컴포넌트 import
-import TempPwModal from '../../../components/common/TempPwModal';  // 임시비밀번호 발급 모달 컴포넌트 import
 
 // Authentication layout components
-import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
 import useCustomLogin from "../../../hooks/useCustomLogin";
 
 // Data
@@ -31,13 +25,9 @@ const initState = {
 
 function SignInPopUp() {
     const [loginParam, setLoginParam] = useState({ ...initState })
-    const [openIdModal, setOpenIdModal] = useState(false);
-    const [openPwModal, setOpenPwModal] = useState(false);
-
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const {
-        moveToPath,
         isAuthorization
     } = useCustomLogin()
 
@@ -103,11 +93,6 @@ function SignInPopUp() {
         e.preventDefault(); // 기본 폼 제출 방지
         handleSignIn(); // 로그인 함수 호출
     }
-
-    const handleOpenIdModal = () => setOpenIdModal(true);
-    const handleCloseIdModal = () => setOpenIdModal(false);
-    const handleOpenPwModal = () => setOpenPwModal(true);
-    const handleClosePwModal = () => setOpenPwModal(false);
 
     if (!isAuthorization) {
         return (
@@ -186,7 +171,8 @@ function SignInPopUp() {
                                         <MDBox mt={3} mb={1} textAlign="center">
                                             <MDTypography variant="button" color="text">
                                                 <MDBox display="flex" justifyContent="center" spacing={2}>
-                                                    <a href="http://localhost:8080/oauth2/authorization/google">
+                                                    {/*<a href="http://localhost:8080/oauth2/authorization/google">*/}
+                                                    <a href="https://tmarket.store/api/oauth2/authorization/google">
                                                         <img
                                                             src="/google_login.png"
                                                             alt="Google Login"
@@ -198,7 +184,8 @@ function SignInPopUp() {
                                                             }}
                                                         />
                                                     </a>
-                                                    <a href="http://localhost:8080/oauth2/authorization/naver">
+                                                    {/*<a href="http://localhost:8080/oauth2/authorization/naver">*/}
+                                                    <a href="https://tmarket.store/api/oauth2/authorization/naver">
                                                         <img
                                                             src="/naver_login.png"
                                                             alt="Naver Login"
@@ -210,7 +197,8 @@ function SignInPopUp() {
                                                             }}
                                                         />
                                                     </a>
-                                                    <a href="http://localhost:8080/oauth2/authorization/kakao">
+                                                    {/*<a href="http://localhost:8080/oauth2/authorization/kakao">*/}
+                                                    <a href="https://tmarket.store/api/oauth2/authorization/kakao">
                                                         <img
                                                             src="/kakao_login.png"
                                                             alt="Kakao Login"
