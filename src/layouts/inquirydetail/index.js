@@ -40,11 +40,11 @@ import {deleteInquiry} from "../../api/inquiryApi";
 
 const initState = {
     answerNo: 0,
-    inquiryWriterNo:0,
-    inquiryNo:0,
-    answerContent:'',
-    answerWriter:'',
-    imageList:[],
+    inquiryWriterNo: 0,
+    inquiryNo: 0,
+    answerContent: '',
+    answerWriter: '',
+    imageList: [],
     createTime: null,
     updateTime: null
 }
@@ -68,7 +68,7 @@ function InquiryDetail() {
             try {
                 const data = await getInquiryAnswer(inquiry.inquiryNo);
                 setAnswerData(data); // 가져온 데이터를 상태에 저장
-                console.log("getInquiryAnswer!!!!!"+data.answerContent)
+                console.log("getInquiryAnswer!!!!!" + data.answerContent)
             } catch (error) {
                 console.error("답변을 가져오는 중 오류 발생: ", error);
             }
@@ -164,6 +164,18 @@ function InquiryDetail() {
         }).format(date);
     };
 
+    // 공통 스타일 변수로 추출
+    const buttonStyles = (isSmallScreen) => ({
+        fontFamily: 'JalnanGothic',
+        fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
+        minWidth: 'auto',
+        width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+        padding: isSmallScreen ? '1px 2px' : '4px 8px',
+        lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+        minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+        ml: isSmallScreen ? 2 : 4
+    });
+
     return (
         <DashboardLayout>
             <Grid container>
@@ -211,10 +223,11 @@ function InquiryDetail() {
             </Grid>
 
             <MDBox pt={0} pb={20}>
-                <MDBox pt={isSmallScreen ? 1 : 1} pb={1} px={isSmallScreen ? 1 : 3}>
+                <MDBox pt={isSmallScreen ? 1 : 1} pb={1}
+                       px={isSmallScreen ? 1 : 3}>
                     {/* 문의사항 기본 정보 */}
                     <Card>
-                        <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
+                        <MDBox pt={2} px={isSmallScreen ? 2 : 2}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} md={8}>
                                     <MDTypography
@@ -239,7 +252,8 @@ function InquiryDetail() {
                                                 ? '0.7rem' : '1rem'
                                         }}
                                         variant="body1" paragraph>
-                                        작성 시간 : {formatCreateTime(inquiry.createTime)}
+                                        작성 시간 : {formatCreateTime(
+                                        inquiry.createTime)}
                                     </MDTypography>
                                     <MDTypography
                                         sx={{
@@ -285,44 +299,60 @@ function InquiryDetail() {
                 {answerData.answerNo && (
                     <MDBox pt={isSmallScreen ? 1 : 1} pb={1}
                            px={isSmallScreen ? 1 : 3}>
-                        <Card sx={{p: 3, mb: 2}}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={8}>
-                                    <MDTypography
-                                        variant="body1" paragraph>
-                                        답변 작성자 : {answerData.answerWriter}
-                                    </MDTypography>
-                                    <MDTypography
-                                        variant="body1" paragraph>
-                                        답변 작성 시간 : {formatCreateTime(answerData.createTime)}
-                                    </MDTypography>
-                                    <MDTypography
-                                        variant="body1" paragraph>
-                                        답변 내용 : {answerData.answerContent}
-                                    </MDTypography>
+                        {/* 문의사항 기본 정보 */}
+                        <Card>
+                            <MDBox pt={2} px={isSmallScreen ? 2 : 2}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={8}>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.7rem' : '1rem'
+                                            }}
+                                            variant="body1" paragraph>
+                                            답변 작성자 : {answerData.answerWriter}
+                                        </MDTypography>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.7rem' : '1rem'
+                                            }}
+                                            variant="body1" paragraph>
+                                            답변 작성 시간 : {formatCreateTime(
+                                            answerData.createTime)}
+                                        </MDTypography>
+                                        <MDTypography
+                                            sx={{
+                                                fontSize: isSmallScreen
+                                                    ? '0.7rem' : '1rem'
+                                            }}
+                                            variant="body1" paragraph>
+                                            답변 내용 : {answerData.answerContent}
+                                        </MDTypography>
+                                    </Grid>
+                                    <Grid item xs={12} md={4}>
+                                        <MDBox sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                            gap: 2
+                                        }}>
+                                            {Array.isArray(answerData.imageList)
+                                                && answerData.imageList.map(
+                                                    (img, index) => (
+                                                        <img
+                                                            key={index}
+                                                            src={img.imageUrl}
+                                                            alt={`answer-image-${index}`}
+                                                            width="70%"
+                                                            style={{marginBottom: '10px'}}
+                                                        />
+                                                    )
+                                                )}
+                                        </MDBox>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} md={4}>
-                                    <MDBox sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-start',
-                                        gap: 2
-                                    }}>
-                                        {Array.isArray(answerData.imageList)
-                                            && answerData.imageList.map(
-                                                (img, index) => (
-                                                    <img
-                                                        key={index}
-                                                        src={img.imageUrl}
-                                                        alt={`answer-image-${index}`}
-                                                        width="70%"
-                                                        style={{marginBottom: '10px'}}
-                                                    />
-                                                )
-                                            )}
-                                    </MDBox>
-                                </Grid>
-                            </Grid>
+                            </MDBox>
                         </Card>
                     </MDBox>
                 )}
@@ -335,8 +365,9 @@ function InquiryDetail() {
                         mb: 2
                     }}>
                         <MDButton
-                            variant="contained"
-                            color="error"
+                            sx={buttonStyles(isSmallScreen)}
+                            variant="gradient"
+                            color="info"
                             onClick={handleAnswerClick}
                         >
                             답변하기
@@ -348,73 +379,89 @@ function InquiryDetail() {
                 {showAnswerForm && (
                     <MDBox pt={isSmallScreen ? 1 : 1} pb={1}
                            px={isSmallScreen ? 1 : 3}>
-                        <Card sx={{p: 3, mb: 2}}>
-                            <MDBox component="form"
-                                   onSubmit={handleAddInquiryAnswer}>
-                                <MDTypography variant="body1" paragraph>
-                                    <strong>답변 내용:</strong>
-                                </MDTypography>
-                                <textarea
-                                    name="answerContent"
-                                    rows="5"
-                                    cols="100"
-                                    placeholder="답변 내용을 입력하세요"
-                                    style={{
-                                        width: '100%',
-                                        marginBottom: '10px'
-                                    }}
-                                    value={inquiryAnswer.answerContent}
-                                    onChange={handleChangeInquiryAnswer}
-                                />
-                                <MDInput
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleFileChange}
-                                    style={{marginBottom: '10px'}}
-                                />
-                                <MDBox sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 2
-                                }}>
-                                    {previewImages.map((src, index) => (
-                                        <MDBox key={index}
-                                               sx={{position: 'relative'}}>
-                                            <img
-                                                src={src}
-                                                alt={`preview-${index}`}
-                                                style={{
-                                                    maxWidth: '150px',
-                                                    maxHeight: '150px',
-                                                }}
-                                            />
-                                            <IconButton
-                                                sx={{
-                                                    position: 'absolute',
-                                                    top: 0,
-                                                    right: 0
-                                                }}
-                                                onClick={() => handleRemoveImage(
-                                                    index)}
-                                            >
-                                                <KeyboardArrowRightIcon/>
-                                            </IconButton>
-                                        </MDBox>
-                                    ))}
+                        {/* 문의사항 기본 정보 */}
+                        <Card>
+                            <MDBox pt={2} pb={2} px={isSmallScreen ? 2 : 2}>
+                                <MDBox component="form"
+                                       onSubmit={handleAddInquiryAnswer}>
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen
+                                                ? '0.7rem' : '1rem'
+                                        }}
+                                        variant="body1" paragraph>답변 내용
+                                    </MDTypography>
+                                    <textarea
+                                        name="answerContent"
+                                        rows="5"
+                                        cols="100"
+                                        placeholder="답변 내용을 입력하세요"
+                                        style={{
+                                            width: '100%',
+                                            marginBottom: '10px'
+                                        }}
+                                        value={inquiryAnswer.answerContent}
+                                        onChange={handleChangeInquiryAnswer}
+                                    />
+                                    <MDInput
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleFileChange}
+                                        style={{marginBottom: '10px'}}
+                                    />
+                                    <MDBox sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 2
+                                    }}>
+                                        {previewImages.map((src, index) => (
+                                            <MDBox key={index}
+                                                   sx={{position: 'relative'}}>
+                                                <img
+                                                    src={src}
+                                                    alt={`preview-${index}`}
+                                                    style={{
+                                                        maxWidth: '150px',
+                                                        maxHeight: '150px',
+                                                    }}
+                                                />
+                                                <IconButton
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        right: 0
+                                                    }}
+                                                    onClick={() => handleRemoveImage(
+                                                        index)}
+                                                >
+                                                    <KeyboardArrowRightIcon/>
+                                                </IconButton>
+                                            </MDBox>
+                                        ))}
+                                    </MDBox>
+                                    <MDBox style={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end'
+                                    }}>
+                                        <MDButton
+                                            sx={buttonStyles(isSmallScreen)}
+                                            variant="gradient"
+                                            color="info"
+                                            type="submit"
+                                        >
+                                            답변 등록
+                                        </MDButton>
+                                        <MDButton
+                                            sx={buttonStyles(isSmallScreen)}
+                                            variant="gradient"
+                                            color="info"
+                                            onClick={() => setShowAnswerForm(false)}
+                                        >
+                                            취소
+                                        </MDButton>
+                                    </MDBox>
                                 </MDBox>
-                                <MDButton variant="contained" color="error"
-                                          type="submit">
-                                    답변 등록
-                                </MDButton>
-                                <MDButton
-                                    variant="contained"
-                                    color="error"
-                                    sx={{ml: 2}}
-                                    onClick={() => setShowAnswerForm(false)}
-                                >
-                                    취소
-                                </MDButton>
                             </MDBox>
                         </Card>
                     </MDBox>
@@ -423,7 +470,8 @@ function InquiryDetail() {
                 {/* 삭제 버튼 */}
                 <MDBox sx={{display: 'flex', justifyContent: 'flex-start'}}>
                     <MDButton
-                        variant="contained"
+                        sx={buttonStyles(isSmallScreen)}
+                        variant="gradient"
                         color="error"
                         onClick={() => deleteInquiryByNo(inquiry.inquiryNo)}
                     >
