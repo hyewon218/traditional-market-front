@@ -205,16 +205,17 @@ function Market() {
         navigate('/post-market');
     };
 
-    const changePage = (pageNum) => {
-        setPage(pageNum);
-        if (isSearchActive) {
-            fetchSearchMarkets(pageNum);
-        } else if (selectedCategory) {
-            fetchCategoryMarkets(pageNum);
-        } else {
-            fetchMarkets(pageNum);
-        }
-    };
+    // 페이징때 사용
+//    const changePage = (pageNum) => {
+//        setPage(pageNum);
+//        if (isSearchActive) {
+//            fetchSearchMarkets(pageNum);
+//        } else if (selectedCategory) {
+//            fetchCategoryMarkets(pageNum);
+//        } else {
+//            fetchMarkets(pageNum);
+//        }
+//    };
 
 //    const renderMarkets = isSearchActive ? filteredMarkets : (selectedCategory
 //        ? categoryMarkets : markets);
