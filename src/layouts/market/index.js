@@ -307,6 +307,14 @@ function Market() {
                             borderRadius: isSmallScreen ? '10px' :'8px',
                             marginRight: isSmallScreen ? '43px' : '50px',
                         }}
+                        InputLabelProps={{
+                            sx: {
+                                display: 'flex', // flex 사용
+                                alignItems: 'center', // 세로 가운데 정렬
+                                height: '50%', // 높이를 전체로 설정
+                                padding: '0', // 패딩 제거
+                            }
+                        }}
                     />
                     <IconButton onClick={handleSearchSubmit}
                                 sx={{ position: 'absolute', right: '8px' }}>
