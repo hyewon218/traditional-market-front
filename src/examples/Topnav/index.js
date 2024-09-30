@@ -294,7 +294,7 @@ function Topnav({ brandName, logoSrc }) {
                 sx={{
                   fontSize: '0.9rem',
                   fontFamily: 'JalnanGothic',
-                  padding: '0.75rem 1.5rem',
+                  padding: '0.75rem 2.5rem 0.75rem 3.5rem', // 위, 오른쪽, 아래, 왼쪽 순서
                   color: 'black',
                   whiteSpace: 'nowrap',
                 }}
@@ -331,9 +331,9 @@ function Topnav({ brandName, logoSrc }) {
                 color="inherit"
                 onClick={handleSellerMenuClick}
                 sx={{
-                  fontSize: '1rem',
+                  fontSize: '0.9rem',
                   fontFamily: 'JalnanGothic',
-                  padding: '0.75rem 1.5rem',
+                  padding: '0.75rem 2.5rem 0.75rem 3.5rem', // 위, 오른쪽, 아래, 왼쪽 순서
                   color: 'black',
                   whiteSpace: 'nowrap',
                 }}
