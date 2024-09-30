@@ -1,4 +1,3 @@
-// 반응형
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -9,6 +8,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import useCustomLogin from '../../hooks/useCustomLogin';
+import useMediaQuery from '@mui/material/useMediaQuery';  // 추가된 부분
 
 function Topnav({ brandName, logoSrc }) {
   const { isAuthorization, isAdmin, isSeller, isMember } = useCustomLogin();
@@ -16,6 +16,8 @@ function Topnav({ brandName, logoSrc }) {
   const [sellerMenuAnchor, setSellerMenuAnchor] = useState(null);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
   const location = useLocation();
+
+  const isDesktop = useMediaQuery('(min-width:900px)');  // 화면 너비가 900px 이상인지 확인
 
   const menuItems = [
     { name: '시장', route: '/market', visible: true },
@@ -27,6 +29,7 @@ function Topnav({ brandName, logoSrc }) {
     { name: '1:1 채팅상담', route: '/chat', visible: isAuthorization },
     { name: '알람', route: '/alarms', visible: isAuthorization },
     { name: '문의하기', route: '/postinquiry', visible: isMember || isSeller },
+    { name: '내정보', route: '/myinfo', visible: isAuthorization && isDesktop }, // 900px 이상일 때만 출력
     { name: '로그아웃', route: '/authentication/logout', visible: isAuthorization },
     { name: '상점 관리', route: '/shop-manage-seller', visible: false },
     { name: '주문 관리', route: '/order-manage-seller', visible: false },
