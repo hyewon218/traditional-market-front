@@ -241,14 +241,22 @@ function SignIn() {
                                                     회원가입
                                                 </MDTypography>
                                             </MDTypography>
-                                            <MDBox mt={isSmallScreen? 0:2}>
+                                            <MDBox mt={isSmallScreen ? 0 : 2}>
                                                 <MDButton
-                                                    variant="text" color="info" onClick={handleOpenIdModal}>
+                                                    variant="text"
+                                                    color="info"
+                                                    onClick={handleOpenIdModal}
+                                                    sx={{ fontFamily: 'JalnanGothic' }}  // 글꼴 설정
+                                                >
                                                     아이디 찾기
                                                 </MDButton>
-                                                {' | '}
+                                                {!isSmallScreen && ' | '}
                                                 <MDButton
-                                                    variant="text" color="info" onClick={handleOpenPwModal}>
+                                                    variant="text"
+                                                    color="info"
+                                                    onClick={handleOpenPwModal}
+                                                    sx={{ fontFamily: 'JalnanGothic' }}  // 글꼴 설정
+                                                >
                                                     비밀번호 찾기
                                                 </MDButton>
                                             </MDBox>

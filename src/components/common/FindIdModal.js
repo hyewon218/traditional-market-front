@@ -6,20 +6,22 @@ import MDInput from '../MD/MDInput';
 import MDButton from '../MD/MDButton';
 import MDBox from '../MD/MDBox';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Data
 import { postSendFindIdCode, postVerifyCode, postFindId } from "../../api/memberApi";
 
-const modalStyle = {
+const modalStyle = (isSmallScreen) =>  ({
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: isSmallScreen ? '90%' : 400,  // 600px 이하일 경우 너비 90%
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
-};
+    borderRadius: '8px', // 모서리 둥글게
+});
 
 function FindIdModal({ open, handleClose, children }) {
     const [memberEmail, setMemberEmail] = useState('');
@@ -31,6 +33,9 @@ function FindIdModal({ open, handleClose, children }) {
     const [openIdModal, setOpenIdModal] = useState(false); // 아이디 찾기 모달 열기 상태
     const [foundId, setFoundId] = useState(''); // 찾은 아이디 저장 상태
     const [copyMessage, setCopyMessage] = useState(''); // 복사 확인 메시지 상태
+
+    // 화면 너비가 600px 이하인 경우 감지
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     // 인증번호 일치 여부 실시간 검증
     useEffect(() => {
@@ -124,7 +129,7 @@ function FindIdModal({ open, handleClose, children }) {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={modalStyle}>
+                <Box sx={modalStyle(isSmallScreen)}>
                     <MDTypography variant="h5" mb={2}>아이디 찾기</MDTypography>
                     <MDInput
                         type="text"
@@ -178,7 +183,7 @@ function FindIdModal({ open, handleClose, children }) {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={modalStyle}>
+                <Box sx={modalStyle(isSmallScreen)}>
                     <MDBox mb={2}>
                         <MDBox display="flex" alignItems="center">
                             <MDTypography variant="body1" mr={3}>
