@@ -284,7 +284,7 @@ function InquiryDetail() {
                                                 key={index}
                                                 src={img.imageUrl}
                                                 alt={`inquiry-image-${index}`}
-                                                width="70%"
+                                                width={(isSmallScreen ? "30%":"50%")}
                                                 style={{marginBottom: '10px'}}
                                             />
                                         ))}
