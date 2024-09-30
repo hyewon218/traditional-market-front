@@ -14,9 +14,9 @@
  */
 
 import * as React from 'react';
-import { useRef, useEffect, useState } from 'react';
+import {useRef, useState} from 'react';
 import ProfanityFilterMDInput from '../../components/common/ProfanityFilter'; // 비속어 필터
-import { containsProfanity } from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
+import {containsProfanity} from '../../components/common/profanityUtils'; // 분리한 비속어 필터 내 containsProfanity 함수 import
 
 // @mui material components
 import Card from '@mui/material/Card';
@@ -28,178 +28,213 @@ import MDButton from '../../components/MD/MDButton';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
-import { useNavigate } from "react-router-dom";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 // Data
-import { postInquiry, getInquiryOne } from "../../api/inquiryApi";
+import {postInquiry, getInquiryOne} from "../../api/inquiryApi";
+import {useMediaQuery} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 const initState = {
-  inquiryTitle: '',
-  inquiryContent: '',
+    inquiryTitle: '',
+    inquiryContent: '',
 };
 
 const fetchInquiry = async (inquiryNo) => {
 
-  try {
-    const data = await getInquiryOne(inquiryNo);
-    console.log("fetchInquiry data: ", data);
-    return data;
+    try {
+        const data = await getInquiryOne(inquiryNo);
+        console.log("fetchInquiry data: ", data);
+        return data;
 
-  } catch (error) {
-    console.error("문의사항 정보 불러오기 오류:", error);
-  }
+    } catch (error) {
+        console.error("문의사항 정보 불러오기 오류:", error);
+    }
 };
 
 function PostInquiry() {
-  const uploadRef = useRef();
-  const [previewImages, setPreviewImages] = useState([]);
-  const [imageFiles, setImageFiles] = useState([]);
-  const navigate = useNavigate();
-  const [inquiry, setInquiry] = useState({ ...initState });
+    const uploadRef = useRef();
+    const [previewImages, setPreviewImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
+    const navigate = useNavigate();
+    const [inquiry, setInquiry] = useState({...initState});
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
-  const handleChangeInquiry = (e) => {
-    const { name, value } = e.target;
-    setInquiry(prevInquiry => ({ ...prevInquiry, [name]: value }));
-  };
+    const handleChangeInquiry = (e) => {
+        const {name, value} = e.target;
+        setInquiry(prevInquiry => ({...prevInquiry, [name]: value}));
+    };
 
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    const newPreviewImages = files.map(file => URL.createObjectURL(file));
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        const newPreviewImages = files.map(file => URL.createObjectURL(file));
 
-    event.target.value = null;
+        event.target.value = null;
 
-    setImageFiles(prevFiles => [...prevFiles, ...files]);
-    setPreviewImages(prevImages => [...prevImages, ...newPreviewImages]);
-  };
+        setImageFiles(prevFiles => [...prevFiles, ...files]);
+        setPreviewImages(prevImages => [...prevImages, ...newPreviewImages]);
+    };
 
-  const handleRemoveImage = (index) => {
-    setPreviewImages(prevImages => prevImages.filter((_, i) => i !== index));
-    setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
-  };
+    const handleRemoveImage = (index) => {
+        setPreviewImages(
+            prevImages => prevImages.filter((_, i) => i !== index));
+        setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
 
-  const handleAddInquiry = async (event) => {
-    event.preventDefault();
+    const handleAddInquiry = async (event) => {
+        event.preventDefault();
 
-    // 비속어 검증
-      if (containsProfanity(inquiry.inquiryTitle) || containsProfanity(inquiry.inquiryContent)) {
-        alert('비속어가 포함된 제목이나 내용이 있습니다. 다른 단어를 사용해 주세요.');
-        return;
-      }
+        // 비속어 검증
+        if (containsProfanity(inquiry.inquiryTitle) || containsProfanity(
+            inquiry.inquiryContent)) {
+            alert('비속어가 포함된 제목이나 내용이 있습니다. 다른 단어를 사용해 주세요.');
+            return;
+        }
 
-    if (!window.confirm('작성 후 수정은 불가능합니다. 문의사항을 추가하시겠습니까?')) {
-      return;
-    }
+        if (!window.confirm('작성 후 수정은 불가능합니다. 문의사항을 추가하시겠습니까?')) {
+            return;
+        }
 
-    if (!inquiry.inquiryTitle || !inquiry.inquiryContent) {
-      alert('모든 필드를 입력하세요.');
-      return;
-    }
+        if (!inquiry.inquiryTitle || !inquiry.inquiryContent) {
+            alert('모든 필드를 입력하세요.');
+            return;
+        }
 
-    const maxFileSize = 30 * 1024 * 1024;
-    for (let i = 0; i < imageFiles.length; i++) {
-      if (imageFiles[i].size > maxFileSize) {
-        alert(`파일 크기는 30MB를 초과할 수 없습니다: ${imageFiles[i].name}`);
-        return;
-      }
-    }
+        const maxFileSize = 30 * 1024 * 1024;
+        for (let i = 0; i < imageFiles.length; i++) {
+            if (imageFiles[i].size > maxFileSize) {
+                alert(`파일 크기는 30MB를 초과할 수 없습니다: ${imageFiles[i].name}`);
+                return;
+            }
+        }
 
-    const formData = new FormData();
-    formData.append('inquiryTitle', inquiry.inquiryTitle);
-    formData.append('inquiryContent', inquiry.inquiryContent);
-    for (let i = 0; i < imageFiles.length; i++) {
-      formData.append("imageFiles", imageFiles[i]);
-    }
+        const formData = new FormData();
+        formData.append('inquiryTitle', inquiry.inquiryTitle);
+        formData.append('inquiryContent', inquiry.inquiryContent);
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("imageFiles", imageFiles[i]);
+        }
 
-    try {
-      const data = await postInquiry(formData);
-      const inquiryData = await fetchInquiry(data.inquiryNo);
+        try {
+            const data = await postInquiry(formData);
+            const inquiryData = await fetchInquiry(data.inquiryNo);
 
-      if (window.confirm('작성된 문의사항을 확인하시겠습니까?')) {
-        navigate(`/inquiry-detail`, { state: inquiryData });
-      } else {
-        navigate('/market');
-      }
+            if (window.confirm('작성된 문의사항을 확인하시겠습니까?')) {
+                navigate(`/inquiry-detail`, {state: inquiryData});
+            } else {
+                navigate('/market');
+            }
 
-    } catch (error) {
-      alert("오늘의 문의사항 생성 개수 제한을 초과하였습니다.")
-      console.error("문의사항 추가 오류: ", error);
-    }
-  };
+        } catch (error) {
+            alert("오늘의 문의사항 생성 개수 제한을 초과하였습니다.")
+            console.error("문의사항 추가 오류: ", error);
+        }
+    };
 
-  return (
-    <DashboardLayout>
-      <MDBox pt={6} pb={3}>
-        <Card>
-          <MDBox pt={4} pb={3} px={3}>
-            <MDBox component="form" role="form">
-              <MDBox mb={2}>
-                <ProfanityFilterMDInput
-                  name="inquiryTitle"
-                  label="문의사항 제목"
-                  onChange={handleChangeInquiry}
-                  fullWidth
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <ProfanityFilterMDInput
-                  name="inquiryContent"
-                  label="문의사항 내용"
-                  onChange={handleChangeInquiry}
-                  fullWidth
-                  multiline
-                  rows={6} // 원하는 높이에 따라 rows 값 조정
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <MDInput
-                  inputRef={uploadRef}
-                  onChange={handleFileChange}
-                  inputType={'file'}
-                  type={'file'}
-                  multiple={true}
-                  fullWidth
-                />
-              </MDBox>
-              {previewImages.length > 0 && (
-                <MDBox mb={2} sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                  {previewImages.map((image, index) => (
-                    <MDBox key={index} sx={{ position: 'relative', marginRight: '10px', marginBottom: '10px' }}>
-                      <img
-                        src={image}
-                        alt={`preview-${index}`}
-                        style={{
-                          maxWidth: '150px',
-                          maxHeight: '150px',
-                        }}
-                      />
-                      <MDButton
-                        onClick={() => handleRemoveImage(index)}
-                        sx={{
-                          position: 'absolute',
-                          top: '5px',
-                          right: '5px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                          padding: '5px',
-                        }}
-                      >
-                        X
-                      </MDButton>
+    return (
+        <DashboardLayout>
+            <MDBox pt={isSmallScreen ? 0 : 1}
+                   pb={20}
+                   px={isSmallScreen ? 1 : 3}
+                   mt={isSmallScreen ? 0 : 5}
+                   width="100%"
+                   display="flex"
+                   justifyContent="center">
+                <Card sx={{
+                    maxWidth: isSmallScreen ? '100%' : '40%',
+                    width: '100%',
+                    margin: '0 auto',
+                }}>
+                    <MDBox pt={3} pb={3} px={3} lineHeight={1.5}>
+                        <MDBox component="form" role="form">
+                            <MDBox mb={2}>
+                                <ProfanityFilterMDInput
+                                    name="inquiryTitle"
+                                    label="문의사항 제목"
+                                    onChange={handleChangeInquiry}
+                                    fullWidth
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <ProfanityFilterMDInput
+                                    name="inquiryContent"
+                                    label="문의사항 내용"
+                                    onChange={handleChangeInquiry}
+                                    fullWidth
+                                    multiline
+                                    rows={6} // 원하는 높이에 따라 rows 값 조정
+                                />
+                            </MDBox>
+                            <MDBox mb={2}>
+                                <MDInput
+                                    inputRef={uploadRef}
+                                    onChange={handleFileChange}
+                                    inputType={'file'}
+                                    type={'file'}
+                                    multiple={true}
+                                    fullWidth
+                                />
+                            </MDBox>
+                            {previewImages.length > 0 && (
+                                <MDBox mb={2} sx={{display: 'flex', flexWrap: 'wrap'}}>
+                                    {previewImages.map((image, index) => (
+                                        <MDBox key={index} sx={{
+                                            position: 'relative',
+                                            marginRight: '10px',
+                                            marginBottom: '10px'
+                                        }}>
+                                            <img
+                                                src={image}
+                                                alt={`preview-${index}`}
+                                                style={{
+                                                    maxWidth: isSmallScreen ? '80px':'150px',
+                                                    maxHeight: isSmallScreen ? '80px':'150px',
+                                                }}
+                                            />
+                                            <IconButton
+                                                size="small"
+                                                color="secondary"
+                                                onClick={() => handleRemoveImage(
+                                                    index)}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    right: 0,
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.7)'
+                                                }}
+                                            >
+                                                <CloseIcon/>
+                                            </IconButton>
+                                        </MDBox>
+                                    ))}
+                                </MDBox>
+                            )}
+                            <MDBox mt={isSmallScreen ? 1:3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <MDButton
+                                    variant="gradient"
+                                    color="info"
+                                    sx={{
+                                        fontFamily: 'JalnanGothic',
+                                        fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+                                        minWidth: 'auto',
+                                        width: isSmallScreen ? '100px' : '120px',
+                                        padding: isSmallScreen
+                                            ? '1px 2px'
+                                            : '2px 4px',
+                                        lineHeight:  isSmallScreen ? 2.5:2.2,  // 줄 간격을 줄여 높이를 감소시킴
+                                        minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                    }}
+                                    onClick={handleAddInquiry}>
+                                    문의사항 작성
+                                </MDButton>
+                            </MDBox>
+                        </MDBox>
                     </MDBox>
-                  ))}
-                </MDBox>
-              )}
-              <MDBox mt={4} mb={1} right>
-                <MDButton onClick={handleAddInquiry} variant="gradient" color="info">
-                  문의사항 작성
-                </MDButton>
-              </MDBox>
+                </Card>
             </MDBox>
-          </MDBox>
-        </Card>
-      </MDBox>
-    </DashboardLayout>
-  );
+        </DashboardLayout>
+    );
 }
 
 export default PostInquiry;

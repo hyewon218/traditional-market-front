@@ -2101,7 +2101,7 @@ function MarketDetail() {
             <MDBox pb={2}
                    sx={{ display: 'flex', justifyContent: 'center', flexDirection: isSmallScreen ? 'column' : 'row' }}>
                 <Card sx={{
-                    width: isSmallScreen ? '75%' : isMediumScreen ? '70%' : '50%',
+                    width: isSmallScreen ? '100%' : isMediumScreen ? '70%' : '50%',
                     display: 'flex',
                     flexDirection: isSmallScreen ? 'column' : 'row',
                     justifyContent: 'center',

@@ -27,6 +27,8 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import {getAllNotice, getNoticeListSearch} from "../../api/noticeApi";
 import MDInput from "../../components/MD/MDInput";
 import MDButton from "../../components/MD/MDButton";
+import useCustomLogin from "../../hooks/useCustomLogin";
+import Grid from "@mui/material/Grid";
 
 function Notice() {
     const [notices, setNotices] = useState([]);
@@ -34,7 +36,7 @@ function Notice() {
     const [totalPages, setTotalPages] = useState(0);
     const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
     const navigate = useNavigate();
-
+    const {isAdmin} = useCustomLogin() // 로그인이 필요한 페이지
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetNotices = (page) => {
@@ -89,6 +91,11 @@ function Notice() {
             hour: '2-digit',
             minute: '2-digit',
         }).format(date);
+    };
+
+    const handleAddNotice = () => {
+        console.log('handleAddNotice');
+        navigate('/post-notice-admin');
     };
 
     const styles = {
@@ -209,18 +216,42 @@ function Notice() {
         return pagination;
     };
 
-
-
     return (
          <DashboardLayout>
-             <MDTypography fontWeight="bold"
-                           sx={{
-                               ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
-                               fontSize: isSmallScreen? '1.2rem':'2rem'
-                           }}
-                           variant="body2">
-                 공지사항
-             </MDTypography>
+             <Grid container>
+                 <Grid item xs={4} sm={4} md={10} lg={10}>
+                     <MDTypography fontWeight="bold"
+                                   sx={{
+                                       ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
+                                       fontSize: isSmallScreen? '1.2rem':'2rem'
+                                   }}
+                                   variant="body2">
+                         공지사항
+                     </MDTypography>
+                 </Grid>
+                 <Grid item xs={8} sm={8} md={2} lg={2}>
+                     {isAdmin && (
+                         <MDButton
+                             variant="gradient"
+                             color="success"
+                             sx={{
+                                 backgroundColor: '#50bcdf',
+                                 color: '#ffffff',
+                                 fontSize: isSmallScreen? '0.8rem':'1.3rem',
+                                 fontFamily: 'JalnanGothic',
+                                 padding: isSmallScreen? '2px 4px':'10px 20px',
+                                 width: isSmallScreen? '50%':'85%',
+                                 mt: isSmallScreen? -1:1.5,
+                                 lineHeight: isSmallScreen? 2:1.8,  // 줄 간격을 줄여 높이를 감소시킴
+                                 minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                             }}
+                             onClick={() => handleAddNotice()}>
+                             공지사항 생성
+                         </MDButton>
+                     )}
+                 </Grid>
+             </Grid>
+
              <MDBox pt={isSmallScreen? 1:1} pb={20} px={isSmallScreen? 1:3}>
                      <Card>
                          <MDBox pt={2} pb={3} px={isSmallScreen? 1:2}>
