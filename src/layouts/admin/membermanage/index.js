@@ -27,6 +27,7 @@ import {getMemberList} from "../../../api/memberApi";
 import {getRole, getMemberListSearch} from "../../../api/adminApi";
 import MDButton from "../../../components/MD/MDButton";
 import MDInput from "../../../components/MD/MDInput";
+import Grid from "@mui/material/Grid";
 
 function MemberManage() {
     const [members, setMembers] = useState([]);
@@ -36,6 +37,7 @@ function MemberManage() {
     const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
     const [searchType, setSearchType] = useState('id'); // 검색 타입 (ID 또는 닉네임)
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetMembers = (page = 0, role = 'all') => {
         const params = {page, size: 10};
@@ -113,15 +115,17 @@ function MemberManage() {
         table: {
             width: '100%',
             borderCollapse: 'collapse',
+            marginLeft: '10px', // 왼쪽 여백 추가
         },
         th: {
             fontWeight: 'bold',
-            fontSize: '1.8rem',
+            fontSize: '1.2rem',
             paddingBottom: '10px',
         },
         td: {
+            fontFamily: 'GowunBatang-Regular',
             fontWeight: 'bold',
-            fontSize: '1.2rem',
+            fontSize: '1rem',
             paddingBottom: '7px',
             marginTop: 3,
         },
@@ -129,12 +133,19 @@ function MemberManage() {
             cursor: 'pointer',
         },
         button: {
-            margin: '0 5px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
+            fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '0px 15px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
             cursor: 'pointer',
+            borderRadius: '4px',
+            border: 'none',
         },
         active: {
             backgroundColor: 'blue',
@@ -146,26 +157,40 @@ function MemberManage() {
             marginTop: '20px',
         },
         select: {
-            padding: '8px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            marginBottom: '20px',
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
         },
         noMembersMessage: {
             textAlign: 'center',
-            fontSize: '1.2rem',
+            fontSize: '1rem',
             color: 'red',
             marginTop: '20px',
         },
         searchForm: {
-            marginBottom: '20px',
+            marginBottom: isSmallScreen ? '0px' :'30px',
+        },
+        searchSelect: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
         },
         searchInput: {
-            width: '33%',
+            width: isSmallScreen ? '100%':'100%',
             padding: '4px',
             borderRadius: '2px',
             marginRight: '5px',
-            marginTop: '3px'
+            marginTop: '3px',
+            lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
         },
         memberItem: {
             borderBottom: '1px solid #ddd',
@@ -251,75 +276,105 @@ function MemberManage() {
 
     return (
         <DashboardLayout>
-            <MDTypography
-                fontWeight="bold"
-                sx={{ ml: 4, mt: 2, fontSize: '2rem' }}
-                variant="body2"
-            >
-                회원 관리
-            </MDTypography>
-            <MDBox pt={1} pb={2}>
-                <MDBox pt={1} pb={2} px={3} sx={{ position: 'relative' }}>
+            <Grid container>
+                <Grid item xs={7.5} sm={12} md={9} lg={10}>
+                    <MDTypography
+                        fontWeight="bold"
+                        sx={{
+                            ml: isSmallScreen ? 2 : 4,
+                            mt: isSmallScreen ? 0 : 3,
+                            fontSize: isSmallScreen ? '1.2rem' : '2rem'
+                        }}
+                        variant="body2"
+                    >
+                        회원 관리
+                    </MDTypography>
+                </Grid>
+                <Grid item xs={4.5} sm={12} md={3} lg={2}>
                     {/* "탈퇴회원 관리" 버튼 추가 */}
                     <MDButton
                         onClick={() => handleManageWithdrawMembers()}
                         variant="gradient"
                         color="warning"
                         sx={{
-                            position: { xs: 'relative', sm: 'absolute' }, // 모바일에서는 relative, 데스크탑에서는 absolute
-                            top: { xs: 'auto', sm: '16px' }, // 데스크탑에서는 상단 여백 설정
-                            right: { xs: 'auto', sm: '30px' }, // 데스크탑에서는 오른쪽 여백 설정
-                            mb: { xs: '16px', sm: '0' }, // 모바일에서는 버튼 아래에 여백 추가
+                            fontSize: isSmallScreen ? '0.8rem' : '1.3rem',
                             fontFamily: 'JalnanGothic',
-                            fontSize: '1rem',
-                            padding: '8px 16px',
-                            backgroundColor: '#FF5722', // 주황색 배경
-                            color: '#FFFFFF', // 흰색 글자
-                            zIndex: 10 // 버튼이 다른 요소 위에 보이도록 설정
+                            padding: isSmallScreen ? '2px 4px' : '10px 20px',
+                            width: isSmallScreen ? '90%' : '90%',
+                            mt: isSmallScreen ? -1 : 1.5,
+                            lineHeight: isSmallScreen ? 2 : 1.8,  // 줄 간격을 줄여 높이를 감소시킴
+                            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
                         }}
                     >
                         탈퇴회원 관리
                     </MDButton>
+                </Grid>
+            </Grid>
+
+            <MDBox pt={1} pb={2}>
+                <MDBox pt={isSmallScreen? 1:1} pb={isSmallScreen? 0:1} px={isSmallScreen? 1:3} sx={{ position: 'relative' }}>
                     <Card>
                         <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
                             {/* 검색 폼 추가 */}
-                            <form onSubmit={handleSearchSubmit} style={{ ...styles.searchForm, marginTop: { xs: '48px', sm: '0' } }}>
-                                <select
-                                    id="searchType"
-                                    name="searchType"
-                                    style={styles.searchSelect}
-                                    value={searchType}
-                                    onChange={handleSearchTypeChange}
-                                >
-                                    <option value="id">아이디</option>
-                                    <option value="nickname">닉네임</option>
-                                </select>
-                                <MDInput
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    placeholder="검색어를 입력하세요"
-                                    style={styles.searchInput}
-                                />
-                                <MDButton
-                                    type="submit"
-                                    variant="gradient"
-                                    sx={{
-                                        fontFamily: 'JalnanGothic',
-                                        fontSize: '1.2rem',
-                                        padding: '4px 8px',
-                                        mt: '8px'
-                                    }}
-                                    color="info"
-                                >
-                                    검색
-                                </MDButton>
+                            <form onSubmit={handleSearchSubmit} style={{
+                                ...styles.searchForm,
+                            }}>
+                                <Grid container>
+                                    <Grid item xs={12} lg={0.7}>
+                                        <select
+                                            id="searchType"
+                                            name="searchType"
+                                            style={{...styles.searchSelect, marginTop:'15px'}}
+                                            value={searchType}
+                                            onChange={handleSearchTypeChange}
+                                        >
+                                            <option value="id">아이디</option>
+                                            <option value="nickname">닉네임
+                                            </option>
+                                        </select>
+                                    </Grid>
+                                    <Grid item xs={9} lg={2}>
+                                        <MDInput
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={handleSearchChange}
+                                            placeholder="검색어를 입력하세요"
+                                            style={styles.searchInput}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3} lg={1}>
+                                        <MDButton
+                                            type="submit"
+                                            variant="gradient"
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: isSmallScreen
+                                                    ? '0.8rem' : '0.9rem',
+                                                minWidth: 'auto',
+                                                width: isSmallScreen ? '50px'
+                                                    : 'auto', // 가로 너비를 줄임
+                                                padding: isSmallScreen
+                                                    ? '1px 2px'
+                                                    : '4px 8px',
+                                                lineHeight: isSmallScreen ? 2.2
+                                                    : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                mt: isSmallScreen ? 1.5:1.3
+                                            }}
+                                            color="info"
+                                        >
+                                            검색
+                                        </MDButton>
+                                    </Grid>
+                                </Grid>
                             </form>
                             {/* 드롭다운 추가 */}
+
+
                             <select
                                 id="role"
                                 name="role"
-                                style={styles.select}
+                                style={{...styles.select, marginBottom: isSmallScreen ? '0px':'20px'}}
                                 value={selectedRole}
                                 onChange={handleRoleChange}
                             >
@@ -330,6 +385,7 @@ function MemberManage() {
                                 <option value="MANAGER">중간관리자</option>
                                 <option value="WARNINGMEMBER">경고회원</option>
                             </select>
+
 
                             <div className="memberList-contents">
                                 {isMobile ? (
@@ -348,29 +404,61 @@ function MemberManage() {
                                                 style={styles.memberItem}
                                                 onClick={() => handleDetail(member)}
                                             >
-                                                <MDTypography variant="body2">
-                                                    <strong>ID:</strong> {member.memberId}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                  ID: {member.memberId}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>이메일:</strong> {member.memberEmail}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                    이메일: {member.memberEmail}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>닉네임:</strong> {member.nicknameWithRandomTag}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                   닉네임: {member.nicknameWithRandomTag}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>제재여부:</strong> {member.warning ? "제재중" : "정상"}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                   제재여부: {member.warning ? "제재중" : "정상"}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>신고당한횟수:</strong> {member.countReport}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                    신고 당한 횟수: {member.countReport}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>가입경로:</strong> {member.providerType}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                    가입 경로: {member.providerType}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>권한:</strong> {member.role}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                    권한: {member.role}
                                                 </MDTypography>
-                                                <MDTypography variant="body2">
-                                                    <strong>가입일:</strong> {formatCreateTime(member.createTime)}
+                                                <MDTypography
+                                                    sx={{
+                                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                                    }}
+                                                    variant="body2">
+                                                    가입일: {formatCreateTime(member.createTime)}
                                                 </MDTypography>
                                             </div>
                                         ))
