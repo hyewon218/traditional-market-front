@@ -18,7 +18,13 @@ import {useEffect, useState} from 'react';
 
 // @mui material components
 import Card from '@mui/material/Card';
-import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    useMediaQuery
+} from "@mui/material";
 
 // Material Dashboard 2 React components
 import MDBox from '../../../components/MD/MDBox';
@@ -58,6 +64,7 @@ function Outline() {
         GOOGLE: 0,
         KAKAO: 0,
     });
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const fetchCountMembers = () => {
         getCountMembers().then(data => {
@@ -170,12 +177,16 @@ function Outline() {
     return (
         <DashboardLayout>
             <MDTypography fontWeight="bold"
-                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
+                          sx={{
+                              ml: isSmallScreen ? 2 : 4,
+                              mt: isSmallScreen ? 0 : 3,
+                              fontSize: isSmallScreen ? '1.2rem' : '2rem'
+                          }}
                           variant="body2">
                 홈페이지 현황
             </MDTypography>
             <MDBox pt={1} pb={2}>
-                <MDBox pt={1} pb={2} px={3}>
+                <MDBox pt={isSmallScreen? 1:1} pb={1} px={isSmallScreen? 1:3}>
                     <Card>
                         <MDBox pt={2} pb={3} px={3}>
                             <div className="memberList-contents">
