@@ -33,6 +33,7 @@ import {
 import {postCheckAdminPw} from "../../../api/adminApi";
 import MDButton from "../../../components/MD/MDButton";
 import MDInput from "../../../components/MD/MDInput";
+import Grid from "@mui/material/Grid";
 
 function NoticeManage() {
     const [notices, setNotices] = useState([]);
@@ -44,6 +45,7 @@ function NoticeManage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedNoticeNo, setSelectedNoticeNo] = useState(null); // 삭제할 공지사항 번호 상태
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetNotices = (page) => {
         const params = {page, size: 10, sort: 'createTime,desc'};
@@ -146,17 +148,36 @@ function NoticeManage() {
     };
 
     const styles = {
-        table: {width: '100%', borderCollapse: 'collapse'},
-        th: {fontWeight: 'bold', fontSize: '1.8rem', paddingBottom: '10px'},
-        td: {fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px', wordBreak: 'break-word', marginTop: 3},
-        clickable: {cursor: 'pointer'},
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginLeft: '10px', // 왼쪽 여백 추가
+        },
+        th: {
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            paddingBottom: '3px',
+        },
+        td: {
+            fontFamily: 'GowunBatang-Regular',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            marginTop: 3,
+        },
         button: {
-            margin: '0 5px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
+            fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
-            cursor: 'pointer'
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '0px 15px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+            cursor: 'pointer',
+            borderRadius: '4px',
+            border: 'none',
         },
         active: {backgroundColor: 'blue', color: 'white'},
         pagination: {
@@ -170,13 +191,17 @@ function NoticeManage() {
             border: '1px solid #ccc',
             marginBottom: '20px'
         },
-        searchForm: {marginBottom: '20px'},
+        searchForm: {
+            marginBottom: isSmallScreen ? '0px' :'30px',
+        },
         searchInput: {
-            width: '33%',
+            width: isSmallScreen ? '100%':'100%',
             padding: '4px',
             borderRadius: '2px',
             marginRight: '5px',
-            marginTop: '3px'
+            marginTop: '3px',
+            lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
         },
         searchButton: {
             padding: '8px 16px',
@@ -213,6 +238,28 @@ function NoticeManage() {
             borderRadius: '4px',
             cursor: 'pointer',
             fontSize: '1.2rem'
+        },
+        updateDeleteButton: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.6rem':'0.8rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '40px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+            marginTop: isSmallScreen ? '0px':'16px'
+        },
+        mobileField: {
+            fontSize: isSmallScreen ? '0.8rem' : '1rem',
+            cursor: 'pointer'
+        },
+        mobileNoticeItem: {
+            borderBottom: '1px solid #ddd',
+            padding: '10px',
+            marginBottom: '10px',
+            cursor: 'pointer'
         },
     };
 
@@ -294,50 +341,80 @@ function NoticeManage() {
 
     return (
          <DashboardLayout>
-             <MDTypography fontWeight="bold"
-                           sx={{ ml: 4, mt: 2, fontSize: '2rem' }}
-                           variant="body2">
-                 공지사항 관리
-             </MDTypography>
-             <MDButton
-                 variant="gradient"
-                 color="success"
-                 sx={{
-                     fontFamily: 'JalnanGothic',
-                     fontSize: '1.1rem',
-                     padding: '4px 8px',
-                     marginLeft: '30px',
-                     marginTop: '15px',
-                     mb: '10px'
-                 }}
-                 onClick={() => handleAddNotice()}>
-                 공지사항 생성
-             </MDButton>
-             <MDBox pt={1} pb={2}>
-                 <MDBox pt={1} pb={2} px={3}>
+             <Grid container>
+                 <Grid item xs={7.5} sm={12} md={9} lg={10}>
+                     <MDTypography fontWeight="bold"
+                                   sx={{
+                                       ml: isSmallScreen ? 2 : 4,
+                                       mt: isSmallScreen ? 0 : 3,
+                                       fontSize: isSmallScreen ? '1.2rem' : '2rem'
+                                   }}
+                                   variant="body2">
+                         공지사항 관리
+                     </MDTypography>
+                 </Grid>
+                 <Grid item xs={4.5} sm={12} md={3} lg={2}>
+                     <MDButton
+                         variant="gradient"
+                         color="success"
+                         sx={{
+                             fontSize: isSmallScreen ? '0.8rem' : '1.3rem',
+                             fontFamily: 'JalnanGothic',
+                             padding: isSmallScreen ? '2px 4px' : '10px 20px',
+                             width: isSmallScreen ? '90%' : '90%',
+                             mt: isSmallScreen ? -1 : 1.5,
+                             lineHeight: isSmallScreen ? 2 : 1.8,  // 줄 간격을 줄여 높이를 감소시킴
+                             minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                         }}
+                         onClick={() => handleAddNotice()}>
+                         공지사항 생성
+                     </MDButton>
+                 </Grid>
+             </Grid>
+
+
+             <MDBox pt={1} pb={20}>
+                 <MDBox pt={isSmallScreen? 1:1} pb={isSmallScreen? 0:1} px={isSmallScreen? 1:3}>
                      <Card>
-                         <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
+                         <MDBox pt={2} pb={5} px={3} sx={{ overflowX: 'auto' }}>
                              {/* 검색 폼 추가 */}
-                             <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-                                 <MDInput
-                                     type="text"
-                                     value={searchQuery}
-                                     onChange={handleSearchChange}
-                                     placeholder="검색어를 입력하세요"
-                                     style={styles.searchInput}
-                                 />
-                                 <MDButton
-                                     type="submit"
-                                     variant="gradient"
-                                     sx={{
-                                         fontFamily: 'JalnanGothic',
-                                         fontSize: '1.2rem',
-                                         padding: '4px 8px',
-                                         mt: '8px',
-                                     }}
-                                     color="info">검색
-                                 </MDButton>
+                             <form onSubmit={handleSearchSubmit}
+                                   style={styles.searchForm}>
+                                 <Grid container>
+                                     <Grid item xs={9} lg={2}>
+                                         <MDInput
+                                             type="text"
+                                             value={searchQuery}
+                                             onChange={handleSearchChange}
+                                             placeholder="검색어를 입력하세요"
+                                             style={styles.searchInput}
+                                         />
+                                     </Grid>
+                                     <Grid item xs={3} lg={3}>
+                                         <MDButton
+                                             type="submit"
+                                             variant="gradient"
+                                             sx={{
+                                                 fontFamily: 'JalnanGothic',
+                                                 fontSize: isSmallScreen
+                                                     ? '0.8rem' : '0.9rem',
+                                                 minWidth: 'auto',
+                                                 width: isSmallScreen ? '50px'
+                                                     : 'auto', // 가로 너비를 줄임
+                                                 padding: isSmallScreen
+                                                     ? '1px 2px'
+                                                     : '4px 8px',
+                                                 lineHeight: isSmallScreen ? 2.2
+                                                     : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                 minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                 mt: isSmallScreen ? 1.5:1.3
+                                             }}
+                                             color="info">검색
+                                         </MDButton>
+                                     </Grid>
+                                 </Grid>
                              </form>
+
                              <div className="noticeList-contents">
                                  {notices.length > 0 ? (
                                      !isMobile ? (
@@ -406,6 +483,7 @@ function NoticeManage() {
                                                      </td>
                                                      <td>
                                                          <MDButton
+                                                             sx={styles.updateDeleteButton}
                                                              variant="contained"
                                                              color="info"
                                                              onClick={() => handleUpdateNotice(notice)}>
@@ -414,6 +492,7 @@ function NoticeManage() {
                                                      </td>
                                                      <td>
                                                          <MDButton
+                                                             sx={styles.updateDeleteButton}
                                                              variant="contained"
                                                              color="error"
                                                              onClick={() => openDeleteModal(notice)}>
@@ -426,48 +505,53 @@ function NoticeManage() {
                                          </table>
                                      ) : (
                                          // 모바일에서는 리스트 형태로 출력
-                                         notices.map((notice, index) => {
-                                             const isLastItem = index === notices.length - 1;
-                                             return (
-                                                 <div key={notice.noticeNo} style={{
-                                                     ...styles.mobileItem,
-                                                     borderBottom: !isLastItem ? '1px solid #ddd' : 'none',
-                                                     marginBottom: '10px' // Add spacing between items
+                                         notices.map((notice) => (
+                                             <div key={notice.noticeNo}
+                                                  style={styles.mobileNoticeItem}>
+                                                 <MDTypography
+                                                     onClick={() => handleDetail(
+                                                         notice)}
+                                                     sx={styles.mobileField}
+                                                     variant="body2">
+                                                     {notice.noticeTitle}
+                                                 </MDTypography>
+                                                 <MDTypography
+                                                     sx={styles.mobileField}
+                                                     variant="body2">
+                                                     {notice.noticeWriter}
+                                                 </MDTypography>
+                                                 <MDTypography
+                                                     sx={styles.mobileField}
+                                                     variant="body2">
+                                                     {formatCreateTime(
+                                                         notice.createTime)}
+                                                 </MDTypography>
+                                                 <div style={{
+                                                     display: 'flex',
+                                                     justifyContent: 'flex-end', // Align buttons to the right
+                                                     marginTop: '10px',
+                                                     marginBottom: '10px',
+                                                     gap: '10px' // Space between buttons
                                                  }}>
-                                                     <MDTypography
-                                                         onClick={() => handleDetail(notice)}
-                                                         sx={{ ...styles.clickable, ...styles.mobileField }}
-                                                         variant="body2">
-                                                         {notice.noticeTitle}
-                                                     </MDTypography>
-                                                     <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
-                                                         {notice.noticeWriter}
-                                                     </MDTypography>
-                                                     <MDTypography sx={{ ...styles.mobileField, marginTop: '5px' }} variant="body2">
-                                                         {formatCreateTime(notice.createTime)}
-                                                     </MDTypography>
-                                                     <div style={{
-                                                         display: 'flex',
-                                                         justifyContent: 'flex-end', // Align buttons to the right
-                                                         marginTop: '10px',
-                                                         gap: '10px' // Space between buttons
-                                                     }}>
-                                                         <MDButton
-                                                             variant="contained"
-                                                             color="info"
-                                                             onClick={() => handleUpdateNotice(notice)}>
-                                                             수정
-                                                         </MDButton>
-                                                         <MDButton
-                                                             variant="contained"
-                                                             color="error"
-                                                             onClick={() => openDeleteModal(notice)}>
-                                                             삭제
-                                                         </MDButton>
-                                                     </div>
+                                                     <MDButton
+                                                         sx={styles.updateDeleteButton}
+                                                         variant="contained"
+                                                         color="info"
+                                                         onClick={() => handleUpdateNotice(
+                                                             notice)}>
+                                                         수정
+                                                     </MDButton>
+                                                     <MDButton
+                                                         sx={styles.updateDeleteButton}
+                                                         variant="contained"
+                                                         color="error"
+                                                         onClick={() => openDeleteModal(
+                                                             notice)}>
+                                                         삭제
+                                                     </MDButton>
                                                  </div>
-                                             );
-                                         })
+                                             </div>
+                                         ))
                                      )
                                  ) : (
                                      <MDTypography
@@ -478,15 +562,16 @@ function NoticeManage() {
                                          공지사항이 없습니다.
                                      </MDTypography>
                                  )}
-                                 {notices.length > 0 && (
-                                     <MDBox sx={styles.pagination}>
-                                         {renderPagination()}
-                                     </MDBox>
-                                 )}
+
                              </div>
                          </MDBox>
                      </Card>
                  </MDBox>
+                 {notices.length > 0 && (
+                     <MDBox sx={styles.pagination}>
+                         {renderPagination()}
+                     </MDBox>
+                 )}
              </MDBox>
 
              {/* 비밀번호 모달 */}

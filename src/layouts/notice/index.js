@@ -99,21 +99,34 @@ function Notice() {
     };
 
     const styles = {
-        table: {width: '100%', borderCollapse: 'collapse'},
-        th: {ml:1, fontWeight: 'bold', fontSize: '1.6rem'},
-        td: {ml:1, fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px', marginTop: 1},
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginLeft: '10px',
+        },
+        th: {
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            paddingBottom: '3px',
+        },
+        td: {
+            fontFamily: 'GowunBatang-Regular',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            marginTop: 3,
+        },
         clickable: {cursor: 'pointer'},
         card: {padding: '16px'},
         button: {
             fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
-            fontSize: isSmallScreen ? '0.6rem':'1.2rem',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
             minWidth: 'auto',
-            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            width: isSmallScreen ? '30px' : 'auto',
             padding: isSmallScreen
                 ? '1px 2px'
-                : '2px 16px',
-            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+                : '0px 15px',
+            lineHeight:  isSmallScreen ? 2.5:2,
             minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
             cursor: 'pointer',
             borderRadius: '4px',
@@ -141,14 +154,18 @@ function Notice() {
             border: '1px solid #ccc',
             marginBottom: '20px'
         },
-        searchForm: {marginBottom: '5px'},
-/*        searchInput: {
-            width: '33%',
+        searchForm: {
+            marginBottom: isSmallScreen ? '0px' :'30px',
+        },
+        searchInput: {
+            width: isSmallScreen ? '100%':'100%',
             padding: '4px',
             borderRadius: '2px',
             marginRight: '5px',
-            marginTop: '3px'
-        },*/
+            marginTop: '3px',
+            lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+        },
         noticeItem: {
             borderBottom: '1px solid #ddd',
             padding: '10px',
@@ -219,7 +236,7 @@ function Notice() {
     return (
          <DashboardLayout>
              <Grid container>
-                 <Grid item xs={4} sm={4} md={10} lg={10}>
+                 <Grid item xs={8} sm={4} md={10} lg={10}>
                      <MDTypography fontWeight="bold"
                                    sx={{
                                        ml: isSmallScreen? 2:4, mt: isSmallScreen? 0:3,
@@ -229,7 +246,7 @@ function Notice() {
                          공지사항
                      </MDTypography>
                  </Grid>
-                 <Grid item xs={8} sm={8} md={2} lg={2}>
+                 <Grid item xs={4} sm={8} md={2} lg={2}>
                      {isAdmin && (
                          <MDButton
                              variant="gradient"
@@ -240,7 +257,7 @@ function Notice() {
                                  fontSize: isSmallScreen? '0.8rem':'1.3rem',
                                  fontFamily: 'JalnanGothic',
                                  padding: isSmallScreen? '2px 4px':'10px 20px',
-                                 width: isSmallScreen? '50%':'85%',
+                                 width: isSmallScreen? '90%':'85%',
                                  mt: isSmallScreen? -1:1.5,
                                  lineHeight: isSmallScreen? 2:1.8,  // 줄 간격을 줄여 높이를 감소시킴
                                  minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
@@ -252,62 +269,78 @@ function Notice() {
                  </Grid>
              </Grid>
 
-             <MDBox pt={isSmallScreen? 1:1} pb={20} px={isSmallScreen? 1:3}>
+             <MDBox pt={1} pb={20}>
+                 <MDBox pt={isSmallScreen? 1:1} pb={isSmallScreen? 0:1} px={isSmallScreen? 1:3}>
                      <Card>
-                         <MDBox pt={2} pb={3} px={isSmallScreen? 1:2}>
+                         <MDBox pt={2} pb={5} px={3}>
                              {/* 검색 폼 추가 */}
-                             <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-                                 <MDInput
-                                     sx={{
-                                         width: isSmallScreen ? '70%':'33%',
-                                         padding: '4px',
-                                         borderRadius: '2px',
-                                         marginRight: '5px'
-                                     }}
-                                     type="text"
-                                     value={searchQuery}
-                                     onChange={handleSearchChange}
-                                     placeholder="검색어를 입력하세요"
-                                 />
-                                 <MDButton
-                                     type="submit"
-                                     variant="gradient"
-                                     sx={{
-                                         fontFamily: 'JalnanGothic',
-                                         fontSize: isSmallScreen ? '0.75rem':'1rem',
-                                         minWidth: 'auto',
-                                         width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
-                                         padding: isSmallScreen
-                                             ? '1px 2px'
-                                             : '4px 8px',
-                                         lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
-                                         minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
-                                         mt: isSmallScreen ? 1:0.5
-                                     }}
-                                     color="info">검색
-                                 </MDButton>
+                             <form onSubmit={handleSearchSubmit}
+                                   style={styles.searchForm}>
+                                 <Grid container>
+                                     <Grid item xs={9} lg={2}>
+                                         <MDInput
+                                             style={styles.searchInput}
+                                             type="text"
+                                             value={searchQuery}
+                                             onChange={handleSearchChange}
+                                             placeholder="검색어를 입력하세요"
+                                         />
+                                     </Grid>
+                                     <Grid item xs={3} lg={3}>
+                                         <MDButton
+                                             type="submit"
+                                             variant="gradient"
+                                             sx={{
+                                                 fontFamily: 'JalnanGothic',
+                                                 fontSize: isSmallScreen
+                                                     ? '0.8rem' : '0.9rem',
+                                                 minWidth: 'auto',
+                                                 width: isSmallScreen ? '50px'
+                                                     : 'auto', // 가로 너비를 줄임
+                                                 padding: isSmallScreen
+                                                     ? '1px 2px'
+                                                     : '4px 8px',
+                                                 lineHeight: isSmallScreen ? 2.2
+                                                     : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                 minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                 mt: isSmallScreen ? 1.5:1.3
+                                             }}
+                                             color="info">검색
+                                         </MDButton>
+                                     </Grid>
+                                 </Grid>
                              </form>
                              <div className="noticeList-contents">
                                  {isSmallScreen ? (
                                      // 모바일 실선 리스트 형식
                                      notices.length > 0 ? (
                                          notices.map((notice) => (
-                                             <div key={notice.noticeNo} style={styles.noticeItem} onClick={() => handleDetail(notice)}>
-                                                 <MDTypography sx={styles.noticeTitle} variant="body2">
+                                             <div key={notice.noticeNo}
+                                                  style={styles.noticeItem}
+                                                  onClick={() => handleDetail(
+                                                      notice)}>
+                                                 <MDTypography
+                                                     sx={styles.noticeTitle}
+                                                     variant="body2">
                                                      {notice.noticeTitle}
                                                  </MDTypography>
-                                                 <MDTypography sx={styles.noticeDetails} variant="body2">
+                                                 <MDTypography
+                                                     sx={styles.noticeDetails}
+                                                     variant="body2">
                                                      {notice.noticeWriter}
                                                  </MDTypography>
-                                                 <MDTypography sx={styles.noticeDetails} variant="body2">
-                                                     {formatCreateTime(notice.createTime)}
+                                                 <MDTypography
+                                                     sx={styles.noticeDetails}
+                                                     variant="body2">
+                                                     {formatCreateTime(
+                                                         notice.createTime)}
                                                  </MDTypography>
                                              </div>
                                          ))
                                      ) : (
                                          <MDTypography
                                              variant="body2"
-                                             sx={{ marginLeft: '8px' }}
+                                             sx={{marginLeft: '8px'}}
                                          >공지사항이 없습니다.</MDTypography>
                                      )
                                  ) : (
@@ -317,23 +350,26 @@ function Notice() {
                                              <thead>
                                              <tr>
                                                  <th>
-                                                     <MDTypography fontWeight="bold"
-                                                                   variant="body2"
-                                                                   sx={styles.th}>
+                                                     <MDTypography
+                                                         fontWeight="bold"
+                                                         variant="body2"
+                                                         sx={styles.th}>
                                                          공지사항 제목
                                                      </MDTypography>
                                                  </th>
                                                  <th>
-                                                     <MDTypography fontWeight="bold"
-                                                                   variant="body2"
-                                                                   sx={styles.th}>
+                                                     <MDTypography
+                                                         fontWeight="bold"
+                                                         variant="body2"
+                                                         sx={styles.th}>
                                                          작성자
                                                      </MDTypography>
                                                  </th>
                                                  <th>
-                                                     <MDTypography fontWeight="bold"
-                                                                   variant="body2"
-                                                                   sx={styles.th}>
+                                                     <MDTypography
+                                                         fontWeight="bold"
+                                                         variant="body2"
+                                                         sx={styles.th}>
                                                          작성일
                                                      </MDTypography>
                                                  </th>
@@ -344,19 +380,23 @@ function Notice() {
                                                  <tr key={notice.noticeNo}>
                                                      <td>
                                                          <MDTypography
-                                                             onClick={() => handleDetail(notice)}
-                                                             sx={{ ...styles.clickable, ...styles.td }}
+                                                             onClick={() => handleDetail(
+                                                                 notice)}
+                                                             sx={{...styles.clickable, ...styles.td}}
                                                              variant="body2">
                                                              {notice.noticeTitle}
                                                          </MDTypography>
                                                      </td>
                                                      <td>
-                                                         <MDTypography sx={styles.td}
-                                                                       variant="body2">{notice.noticeWriter}</MDTypography>
+                                                         <MDTypography
+                                                             sx={styles.td}
+                                                             variant="body2">{notice.noticeWriter}</MDTypography>
                                                      </td>
                                                      <td>
-                                                         <MDTypography sx={styles.td}
-                                                                       variant="body2">{formatCreateTime(notice.createTime)}</MDTypography>
+                                                         <MDTypography
+                                                             sx={styles.td}
+                                                             variant="body2">{formatCreateTime(
+                                                             notice.createTime)}</MDTypography>
                                                      </td>
                                                  </tr>
                                              ))}
@@ -365,19 +405,19 @@ function Notice() {
                                      ) : (
                                          <MDTypography
                                              variant="body2"
-                                             sx={{ marginLeft: '8px' }}
+                                             sx={{marginLeft: '8px'}}
                                          >공지사항이 없습니다.</MDTypography>
                                      )
-                                 )}
-                                 {notices.length > 0 && (
-                                     <MDBox sx={styles.pagination}>
-                                         {renderPagination()}
-                                     </MDBox>
                                  )}
                              </div>
                          </MDBox>
                      </Card>
-
+                 </MDBox>
+                 {notices.length > 0 && (
+                     <MDBox sx={styles.pagination}>
+                         {renderPagination()}
+                     </MDBox>
+                 )}
              </MDBox>
          </DashboardLayout>
      );
