@@ -120,13 +120,12 @@ function MemberManage() {
         th: {
             fontWeight: 'bold',
             fontSize: '1.2rem',
-            paddingBottom: '10px',
+            paddingBottom: '3px',
         },
         td: {
             fontFamily: 'GowunBatang-Regular',
             fontWeight: 'bold',
             fontSize: '1rem',
-            paddingBottom: '7px',
             marginTop: 3,
         },
         clickable: {
@@ -196,7 +195,7 @@ function MemberManage() {
             borderBottom: '1px solid #ddd',
             padding: '10px',
             marginBottom: '10px',
-            cursor: 'pointer'
+            cursor: 'pointer',
         },
         memberDetails: {
             fontSize: '0.9rem',
@@ -311,10 +310,10 @@ function MemberManage() {
                 </Grid>
             </Grid>
 
-            <MDBox pt={1} pb={2}>
+            <MDBox pt={1} pb={20}>
                 <MDBox pt={isSmallScreen? 1:1} pb={isSmallScreen? 0:1} px={isSmallScreen? 1:3} sx={{ position: 'relative' }}>
                     <Card>
-                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
+                        <MDBox pt={2} pb={5} px={3} sx={{ overflowX: 'auto' }}>
                             {/* 검색 폼 추가 */}
                             <form onSubmit={handleSearchSubmit} style={{
                                 ...styles.searchForm,
@@ -324,7 +323,7 @@ function MemberManage() {
                                         <select
                                             id="searchType"
                                             name="searchType"
-                                            style={{...styles.searchSelect, marginTop:'15px'}}
+                                            style={{...styles.searchSelect, marginTop:isSmallScreen? '0px':'15px'}}
                                             value={searchType}
                                             onChange={handleSearchTypeChange}
                                         >
@@ -409,7 +408,7 @@ function MemberManage() {
                                                         fontSize: isSmallScreen ? '0.8rem' : '1rem',
                                                     }}
                                                     variant="body2">
-                                                  ID: {member.memberId}
+                                                    ID: {member.memberId}
                                                 </MDTypography>
                                                 <MDTypography
                                                     sx={{
@@ -423,14 +422,14 @@ function MemberManage() {
                                                         fontSize: isSmallScreen ? '0.8rem' : '1rem',
                                                     }}
                                                     variant="body2">
-                                                   닉네임: {member.nicknameWithRandomTag}
+                                                    닉네임: {member.nicknameWithRandomTag}
                                                 </MDTypography>
                                                 <MDTypography
                                                     sx={{
                                                         fontSize: isSmallScreen ? '0.8rem' : '1rem',
                                                     }}
                                                     variant="body2">
-                                                   제재여부: {member.warning ? "제재중" : "정상"}
+                                                    제재여부: {member.warning ? "제재중" : "정상"}
                                                 </MDTypography>
                                                 <MDTypography
                                                     sx={{

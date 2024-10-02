@@ -34,6 +34,7 @@ import {
 } from "../../../api/adminApi";
 import {getInquiryListSearch, deleteInquiry} from "../../../api/inquiryApi";
 import MDButton from "../../../components/MD/MDButton";
+import Grid from "@mui/material/Grid";
 
 function InquiryManage() {
     const [inquiries, setInquiries] = useState([]);
@@ -45,6 +46,7 @@ function InquiryManage() {
     const [searchQuery, setSearchQuery] = useState(''); // 검색 쿼리 상태
     const [searchType, setSearchType] = useState('id'); // 검색 타입 (ID 또는 닉네임)
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetInquiries = (page) => {
         const params = {page, size: 10, sort: 'createTime,desc'};
@@ -77,7 +79,7 @@ function InquiryManage() {
     const handleDetailMember = async (memberNo) => {
         try {
             const memberData = await getMemberOne(memberNo);
-            navigate('/member-detail-admin', {state : memberData.memberNo});
+            navigate('/member-detail-admin', {state: memberData.memberNo});
         } catch (error) {
             console.error('회원 정보를 불러오는 데 실패했습니다.', error);
         }
@@ -161,18 +163,38 @@ function InquiryManage() {
     };
 
     const styles = {
-        table: {width: '100%', borderCollapse: 'collapse'},
-        th: {fontWeight: 'bold', fontSize: '1.5rem', paddingBottom: '10px'},
-        td: {fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px', marginTop: 3},
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginLeft: '10px', // 왼쪽 여백 추가
+        },
+        th: {
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            paddingBottom: '3px',
+        },
+        td: {
+            fontFamily: 'GowunBatang-Regular',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            marginTop: 3,
+        },
         clickable: {cursor: 'pointer'},
-        card: {padding: '16px'},
+        //card: {padding: '16px'},
         button: {
-            margin: '0 5px',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
+            fontFamily: 'JalnanGothic',
             backgroundColor: '#f0f0f0',
-            cursor: 'pointer'
+            fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '0px 15px',
+            lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+            cursor: 'pointer',
+            borderRadius: '4px',
+            border: 'none',
         },
         active: {backgroundColor: 'blue', color: 'white'},
         pagination: {
@@ -209,31 +231,61 @@ function InquiryManage() {
             marginTop: '10px'
         },
         searchForm: {
-            marginBottom: '20px',
+            marginBottom: isSmallScreen ? '10px' :'30px',
+        },
+        searchSelect: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.8rem' : '0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '70px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
+            mb: isSmallScreen ? 20 : 2
         },
         searchInput: {
-            width: '33%',
+            width: isSmallScreen ? '100%':'100%',
             padding: '4px',
             borderRadius: '2px',
             marginRight: '5px',
-            marginTop: '3px'
+            marginTop: '3px',
+            lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
         },
         mobileList: {
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
-          },
-          mobileInquiryItem: {
-            padding: '1rem',
+        },
+        mobileInquiryItem: {
             borderBottom: '1px solid #ddd',
-          },
-          mobileLabel: {
+            padding: '10px',
+            marginBottom: '10px',
+            cursor: 'pointer'
+        },
+        mobileLabel: {
             fontWeight: 'bold',
             marginBottom: '0.5rem',
-          },
-          mobileValue: {
-            marginBottom: '1rem',
-          },
+        },
+        mobileValue: {
+            fontFamily: 'GowunBatang-Regular',
+            fontSize: isSmallScreen ? '0.8rem' : '1rem',
+        },
+        inquiryState: {
+            fontSize: isSmallScreen ? '0.8rem' : '1rem',
+            mt: 1
+        },
+        deleteButton: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.6rem':'0.8rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+            marginTop: isSmallScreen ? '0px':'16px'
+        },
     };
 
     const renderPagination = () => {
@@ -292,195 +344,266 @@ function InquiryManage() {
 
     return (
         <DashboardLayout>
-            <MDTypography fontWeight="bold"
-                          sx={{ml: 4, mt: 2, fontSize: '2rem'}}
-                          variant="body2">
-                문의사항 관리
-            </MDTypography>
-            <MDButton
-                variant="gradient"
-                color="error"
-                sx={{
-                    fontFamily: 'JalnanGothic',
-                    fontSize: '1.1rem',
-                    padding: '4px 8px',
-                    marginLeft: '30px',
-                    marginTop: '10px'
-                }}
-                onClick={() => setShowModal(true)}>전체 삭제
-            </MDButton>
-            <MDBox pt={1} pb={2}>
-                <MDBox pt={1} pb={2} px={3}>
+            <Grid container>
+                <Grid item xs={8.5} sm={12} md={9} lg={10.5}>
+                    <MDTypography fontWeight="bold"
+                                  sx={{
+                                      ml: isSmallScreen ? 2 : 4,
+                                      mt: isSmallScreen ? 0 : 3,
+                                      fontSize: isSmallScreen ? '1.2rem'
+                                          : '2rem'
+                                  }}
+                                  variant="body2">
+                        문의사항 관리
+                    </MDTypography>
+                </Grid>
+                <Grid item xs={3.5} sm={12} md={3} lg={1.5}>
+                    <MDButton
+                        variant="gradient"
+                        color="error"
+                        sx={{
+                            fontSize: isSmallScreen ? '0.8rem' : '1.3rem',
+                            fontFamily: 'JalnanGothic',
+                            padding: isSmallScreen ? '2px 4px' : '10px 20px',
+                            width: isSmallScreen ? '85%' : '85%',
+                            mt: isSmallScreen ? -1 : 1.5,
+                            lineHeight: isSmallScreen ? 2 : 1.8,  // 줄 간격을 줄여 높이를 감소시킴
+                            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+                        }}
+                        onClick={() => setShowModal(true)}>전체 삭제
+                    </MDButton>
+                </Grid>
+            </Grid>
+
+            <MDBox pt={1} pb={20}>
+                <MDBox pt={isSmallScreen ? 1 : 1} pb={isSmallScreen ? 0 : 1}
+                       px={isSmallScreen ? 1 : 3}>
                     <Card>
-                    {/* 검색 폼 추가 */}
-                    <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-                        <select
-                            id="searchType"
-                            name="searchType"
-                            style={styles.searchSelect}
-                            value={searchType}
-                            onChange={handleSearchTypeChange}
-                        >
-                            <option value="id">아이디</option>
-                            <option value="title">제목</option>
-                        </select>
-                        <MDInput
-                            type="text"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            placeholder="검색어를 입력하세요"
-                            style={styles.searchInput}
-                        />
-                        <MDButton
-                            type="submit"
-                            variant="gradient"
-                            sx={{
-                                fontFamily: 'JalnanGothic',
-                                fontSize: '1.2rem',
-                                padding: '4px 8px',   // Adjust padding (top-bottom left-right)
-                                mt:'8px'
-                            }}
-                            color="info">검색
-                        </MDButton>
-                    </form>
-                        <MDBox pt={2} pb={3} px={3}>
+                        {/* 검색 폼 추가 */}
+                        <MDBox pt={2} pb={5} px={3} sx={{overflowX: 'auto'}}>
+                            <form onSubmit={handleSearchSubmit}
+                                  style={styles.searchForm}>
+                                <Grid container>
+                                    <Grid item xs={12} lg={0.7}>
+                                        <select
+                                            id="searchType"
+                                            name="searchType"
+                                            style={{...styles.searchSelect, marginTop:isSmallScreen? '0px':'15px'}}
+                                            value={searchType}
+                                            onChange={handleSearchTypeChange}
+                                        >
+                                            <option value="id">아이디</option>
+                                            <option value="title">제목</option>
+                                        </select>
+                                    </Grid>
+                                    <Grid item xs={9} lg={2}>
+                                        <MDInput
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={handleSearchChange}
+                                            placeholder="검색어를 입력하세요"
+                                            style={styles.searchInput}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3} lg={1}>
+                                        <MDButton
+                                            type="submit"
+                                            variant="gradient"
+                                            sx={{
+                                                fontFamily: 'JalnanGothic',
+                                                fontSize: isSmallScreen
+                                                    ? '0.8rem' : '0.9rem',
+                                                minWidth: 'auto',
+                                                width: isSmallScreen ? '50px'
+                                                    : 'auto', // 가로 너비를 줄임
+                                                padding: isSmallScreen
+                                                    ? '1px 2px'
+                                                    : '4px 8px',
+                                                lineHeight: isSmallScreen ? 2.2
+                                                    : 2,  // 줄 간격을 줄여 높이를 감소시킴
+                                                minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+                                                mt: isSmallScreen ? 1.5:1.3
+                                            }}
+                                            color="info">검색
+                                        </MDButton>
+                                    </Grid>
+                                </Grid>
+                            </form>
+
                             <div className="inquiryList-contents">
                                 {inquiries.length > 0 ? (
-                                  isMobile ? (
-                                    <div style={styles.mobileList}>
-                                      {inquiries.map((inquiry) => (
-                                        <div key={inquiry.inquiryNo} style={styles.mobileInquiryItem}>
-                                          <MDTypography
-                                            onClick={() => handleDetail(inquiry)}
-                                            sx={{ ...styles.clickable, ...styles.mobileValue }}
-                                            variant="body2"
-                                          >
-                                            {inquiry.inquiryTitle}
-                                          </MDTypography>
-                                          <MDTypography
-                                            onClick={() => handleDetailMember(inquiry.memberNo)}
-                                            sx={{ ...styles.clickable, ...styles.mobileValue }}
-                                            variant="body2"
-                                          >
-                                            {inquiry.inquiryWriter}
-                                          </MDTypography>
-                                          <MDTypography sx={styles.mobileValue} variant="body2">
-                                            {formatCreateTime(inquiry.createTime)}
-                                          </MDTypography>
-                                          <MDTypography sx={styles.mobileValue} variant="body2">
-                                            {inquiry.inquiryState}
-                                          </MDTypography>
-                                          <MDButton
-                                            variant="gradient"
-                                            color="light"
-                                            sx={{
-                                              fontFamily: 'JalnanGothic',
-                                              padding: '4px 8px',
-                                              marginTop: '6px',
-                                              fontSize: '1rem',
-                                            }}
-                                            onClick={() => handleDeleteInquiry(inquiry.inquiryNo)}
-                                          >
-                                            삭제
-                                          </MDButton>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <table style={styles.table}>
-                                      <thead>
-                                        <tr>
-                                          <th>
-                                            <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                              문의 제목
-                                            </MDTypography>
-                                          </th>
-                                          <th>
-                                            <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                              작성자
-                                            </MDTypography>
-                                          </th>
-                                          <th>
-                                            <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                              작성일
-                                            </MDTypography>
-                                          </th>
-                                          <th>
-                                            <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                              답변 상태
-                                            </MDTypography>
-                                          </th>
-                                          <th>
-                                            <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                              삭제
-                                            </MDTypography>
-                                          </th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {inquiries.map((inquiry) => (
-                                          <tr key={inquiry.inquiryNo}>
-                                            <td>
-                                              <MDTypography
-                                                onClick={() => handleDetail(inquiry)}
-                                                sx={{ ...styles.clickable, ...styles.td }}
-                                                variant="body2"
-                                              >
-                                                {inquiry.inquiryTitle}
-                                              </MDTypography>
-                                            </td>
-                                            <td>
-                                              <MDTypography
-                                                onClick={() => handleDetailMember(inquiry.memberNo)}
-                                                sx={{ ...styles.clickable, ...styles.td }}
-                                                variant="body2"
-                                              >
-                                                {inquiry.inquiryWriter}
-                                              </MDTypography>
-                                            </td>
-                                            <td>
-                                              <MDTypography sx={styles.td} variant="body2">
-                                                {formatCreateTime(inquiry.createTime)}
-                                              </MDTypography>
-                                            </td>
-                                            <td>
-                                              <MDTypography sx={styles.td} variant="body2">
-                                                {inquiry.inquiryState}
-                                              </MDTypography>
-                                            </td>
-                                            <td>
-                                              <MDButton
-                                                variant="gradient"
-                                                color="light"
-                                                sx={{
-                                                  fontFamily: 'JalnanGothic',
-                                                  padding: '4px 8px',
-                                                  marginTop: '-6px',
-                                                  marginRight: '3px',
-                                                  fontSize: '1rem',
-                                                }}
-                                                onClick={() => handleDeleteInquiry(inquiry.inquiryNo)}
-                                              >
-                                                삭제
-                                              </MDButton>
-                                            </td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  )
+                                    isMobile ? (
+                                        inquiries.map((inquiry) => (
+                                            <div key={inquiry.inquiryNo}
+                                                 style={styles.mobileInquiryItem}>
+                                                <MDTypography
+                                                    onClick={() => handleDetail(
+                                                        inquiry)}
+                                                    sx={styles.mobileValue}
+                                                    variant="body2"
+                                                >
+                                                    {inquiry.inquiryTitle}
+                                                </MDTypography>
+                                                <MDTypography
+                                                    onClick={() => handleDetailMember(
+                                                        inquiry.memberNo)}
+                                                    sx={styles.mobileValue}
+                                                    variant="body2"
+                                                >
+                                                    {inquiry.inquiryWriter}
+                                                </MDTypography>
+                                                <MDTypography
+                                                    sx={styles.mobileValue}
+                                                    variant="body2">
+                                                    {formatCreateTime(
+                                                        inquiry.createTime)}
+                                                </MDTypography>
+                                                <Grid container>
+                                                    <Grid item xs={9.2} sm={12}
+                                                          md={9} lg={10}>
+                                                        <MDTypography
+                                                            sx={styles.inquiryState}
+                                                            variant="body2">
+                                                            {inquiry.inquiryState}
+                                                        </MDTypography>
+                                                    </Grid>
+                                                    <Grid item xs={2.8} sm={12}
+                                                          md={3} lg={2}>
+                                                        <MDButton
+                                                            variant="gradient"
+                                                            color="error"
+                                                            sx={styles.deleteButton}
+                                                            onClick={() => handleDeleteInquiry(
+                                                                inquiry.inquiryNo)}
+                                                        >
+                                                            삭제
+                                                        </MDButton>
+                                                    </Grid>
+                                                </Grid>
+                                            </div>
+                                        ))
+
+                                    ) : (
+                                        <table style={styles.table}>
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        문의 제목
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        작성자
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        작성일
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        답변 상태
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        삭제
+                                                    </MDTypography>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {inquiries.map((inquiry) => (
+                                                <tr key={inquiry.inquiryNo}>
+                                                    <td>
+                                                        <MDTypography
+                                                            onClick={() => handleDetail(
+                                                                inquiry)}
+                                                            sx={{...styles.clickable, ...styles.td}}
+                                                            variant="body2"
+                                                        >
+                                                            {inquiry.inquiryTitle}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography
+                                                            onClick={() => handleDetailMember(
+                                                                inquiry.memberNo)}
+                                                            sx={{...styles.clickable, ...styles.td}}
+                                                            variant="body2"
+                                                        >
+                                                            {inquiry.inquiryWriter}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography
+                                                            sx={styles.td}
+                                                            variant="body2">
+                                                            {formatCreateTime(
+                                                                inquiry.createTime)}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDTypography
+                                                            sx={styles.td}
+                                                            variant="body2">
+                                                            {inquiry.inquiryState}
+                                                        </MDTypography>
+                                                    </td>
+                                                    <td>
+                                                        <MDButton
+                                                            variant="gradient"
+                                                            color="error"
+                                                            sx={styles.deleteButton}
+                                                            onClick={() => handleDeleteInquiry(
+                                                                inquiry.inquiryNo)}
+                                                        >
+                                                            삭제
+                                                        </MDButton>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    )
                                 ) : (
-                                  <MDTypography variant="body2">문의사항이 없습니다.</MDTypography>
+                                    <MDTypography
+                                        sx={{
+                                            fontSize: isSmallScreen ? '0.8rem'
+                                                : '1rem',
+                                            mt: 2
+                                        }}
+                                        variant="body2">문의사항이
+                                        없습니다.</MDTypography>
                                 )}
-                                {inquiries.length > 0 && (
-                                    <MDBox sx={styles.pagination}>
-                                        {renderPagination()}
-                                    </MDBox>
-                                )}
+
                             </div>
                         </MDBox>
                     </Card>
                 </MDBox>
+
+                {inquiries.length > 0 && (
+                    <MDBox sx={styles.pagination}>
+                        {renderPagination()}
+                    </MDBox>
+                )}
             </MDBox>
 
             {/* 비밀번호 모달 */}
