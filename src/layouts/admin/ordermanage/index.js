@@ -19,12 +19,31 @@ import {useMediaQuery} from '@mui/material';
 import Card from '@mui/material/Card';
 import MDBox from '../../../components/MD/MDBox';
 import MDTypography from '../../../components/MD/MDTypography';
-import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout';
-import { Modal, Button, Select, MenuItem, FormControl, InputLabel, Input } from '@mui/material';
+import DashboardLayout
+    from '../../../examples/LayoutContainers/DashboardLayout';
+import {
+    Modal,
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Input
+} from '@mui/material';
 
 // Data
-import { getCompleteOrderListAdmin, getOrderListSearch, getMemberOneById, getOrderStatusListAdmin, putOrderStatus, postCheckAdminPw } from "../../../api/adminApi";
-import { cancelOrderKakao } from "../../../api/orderApi";
+import {
+    getCompleteOrderListAdmin,
+    getOrderListSearch,
+    getMemberOneById,
+    getOrderStatusListAdmin,
+    putOrderStatus,
+    postCheckAdminPw
+} from "../../../api/adminApi";
+import {cancelOrderKakao} from "../../../api/orderApi";
+import Grid from "@mui/material/Grid";
+import MDButton from "../../../components/MD/MDButton";
+import MDInput from "../../../components/MD/MDInput";
 
 function OrderManage() {
     const [orders, setOrders] = useState([]);
@@ -46,9 +65,10 @@ function OrderManage() {
     const [cancelReason, setCancelReason] = useState(''); // 주문 취소 사유
     const [isCancelSuccessful, setIsCancelSuccessful] = useState(false); // 주문 취소 성공 여부
     const navigate = useNavigate();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetCompleteOrders = (page = 0, orderstatus) => {
-        const params = { page, size: pageSize, sort: 'createTime,desc' };
+        const params = {page, size: pageSize, sort: 'createTime,desc'};
         let apiCall;
 
         if (searchQuery) {
@@ -60,14 +80,14 @@ function OrderManage() {
         }
 
         apiCall
-            .then(data => {
-                console.log('data : ', data);
-                setOrders(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(error => {
-                console.error("주문 목록을 불러오는 데 실패했습니다.", error);
-            });
+        .then(data => {
+            console.log('data : ', data);
+            setOrders(data.content);
+            setTotalPages(data.totalPages);
+        })
+        .catch(error => {
+            console.error("주문 목록을 불러오는 데 실패했습니다.", error);
+        });
     };
 
     useEffect(() => {
@@ -75,13 +95,13 @@ function OrderManage() {
     }, [searchQuery, searchType, currentPage, orderstatus]);
 
     const handleDetail = (order) => {
-        navigate('/order-detail', { state: order });
+        navigate('/order-detail', {state: order});
     };
 
     const handleMemberDetail = async (memberId) => {
         try {
             const memberData = await getMemberOneById(memberId);
-            navigate('/member-detail-admin', { state: memberData.memberNo });
+            navigate('/member-detail-admin', {state: memberData.memberNo});
         } catch (error) {
             console.error("회원 정보를 불러오는 데 실패했습니다.", error);
             alert("회원 정보를 불러오는 데 실패했습니다.");
@@ -89,17 +109,17 @@ function OrderManage() {
     };
 
     const handleSearchChange = (e) => {
-      setSearchQuery(e.target.value);
+        setSearchQuery(e.target.value);
     };
 
     const handleSearchSubmit = (e) => {
-      e.preventDefault();
-      setCurrentPage(0);
-      handleGetCompleteOrders(0);
+        e.preventDefault();
+        setCurrentPage(0);
+        handleGetCompleteOrders(0);
     };
 
     const handleSearchTypeChange = (e) => {
-      setSearchType(e.target.value);
+        setSearchType(e.target.value);
     };
 
     const handleStatusFilter = (orderstatus) => {
@@ -112,11 +132,11 @@ function OrderManage() {
         setSelectedOrderNo(orderNo);
         setSelectedOrderStatus(currentStatus);
         setStatusOptions([
-            { value: 'READYITEM', label: '상품 준비중' },
-            { value: 'READYSHIP', label: '배송 준비중' },
-            { value: 'SHIPPED', label: '배송중' },
-            { value: 'FINISH', label: '배송 완료' },
-            { value: 'RETURN', label: '반품 신청' },
+            {value: 'READYITEM', label: '상품 준비중'},
+            {value: 'READYSHIP', label: '배송 준비중'},
+            {value: 'SHIPPED', label: '배송중'},
+            {value: 'FINISH', label: '배송 완료'},
+            {value: 'RETURN', label: '반품 신청'},
         ]);
         setOpenModal(true);
     };
@@ -191,7 +211,8 @@ function OrderManage() {
         }
 
         try {
-            await cancelOrderKakao(selectedOrderForCancel, 'CANCEL', cancelReason); // 주문 취소 API 호출
+            await cancelOrderKakao(selectedOrderForCancel, 'CANCEL',
+                cancelReason); // 주문 취소 API 호출
             setIsCancelSuccessful(true);
             setOpenReasonModal(false); // 모달 닫기
             handleGetCompleteOrders(currentPage, orderstatus); // 주문 목록 새로고침
@@ -225,16 +246,27 @@ function OrderManage() {
 
     // 수정된 집계 함수
     const aggregateOrderItems = (orderItems) => {
-        if (orderItems.length === 0) return { names: "", totalPrice: 0, totalCount: 0 };
+        if (orderItems.length === 0) {
+            return {
+                names: "",
+                totalPrice: 0,
+                totalCount: 0
+            };
+        }
 
-        const sortedItems = [...orderItems].sort((a, b) => a.itemName.localeCompare(b.itemName));
+        const sortedItems = [...orderItems].sort(
+            (a, b) => a.itemName.localeCompare(b.itemName));
         const firstItem = sortedItems[0];
-        const totalPrice = sortedItems.reduce((sum, item) => sum + (item.orderPrice * item.count), 0);
-        const totalCount = sortedItems.reduce((sum, item) => sum + item.count, 0); // 총 수량 집계
+        const totalPrice = sortedItems.reduce(
+            (sum, item) => sum + (item.orderPrice * item.count), 0);
+        const totalCount = sortedItems.reduce((sum, item) => sum + item.count,
+            0); // 총 수량 집계
         const nameList = sortedItems.map(item => item.itemName);
-        const displayName = nameList.length > 1 ? `${firstItem.itemName} 외 ${nameList.length - 1}개` : firstItem.itemName;
+        const displayName = nameList.length > 1
+            ? `${firstItem.itemName} 외 ${nameList.length - 1}개`
+            : firstItem.itemName;
 
-        return { names: displayName, totalPrice, totalCount };
+        return {names: displayName, totalPrice, totalCount};
     };
 
     const getOrderStatusText = (status) => {
@@ -267,31 +299,162 @@ function OrderManage() {
     const isMobile = useMediaQuery('(max-width:600px)');
 
     const styles = {
-          table: { width: '100%', borderCollapse: 'collapse' },
-          th: { fontWeight: 'bold', fontSize: '1.5rem', paddingBottom: '10px' },
-          td: { fontWeight: 'bold', fontSize: '1.2rem', paddingBottom: '7px', marginTop: 3 },
-          clickable: { cursor: 'pointer' },
-          card: { padding: '16px' },
-          button: { margin: '0 5px', padding: '8px 16px', border: 'none', borderRadius: '4px', backgroundColor: '#f0f0f0', cursor: 'pointer' },
-          active: { backgroundColor: 'blue', color: 'white' },
-          pagination: { display: 'flex', justifyContent: 'center', marginTop: '20px' },
-          select: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc', marginBottom: '20px' },
-          searchForm: { marginBottom: '20px' },
-          searchInput: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc', marginRight: '10px' },
-          searchButton: { padding: '8px 16px', border: 'none', borderRadius: '4px', backgroundColor: '#f0f0f0', cursor: 'pointer' },
-          statusButtonsContainer: { display: 'flex', flexWrap: 'wrap', gap: isMobile ? '4px' : '8px', marginBottom: '20px' },
-          statusButton: { flex: isMobile ? '1 1 48%' : '1 1 120px', padding: isMobile ? '6px' : '8px', fontSize: isMobile ? '0.9rem' : '1rem', border: 'none', borderRadius: '4px', backgroundColor: '#c0c0c0', cursor: 'pointer', textAlign: 'center', fontWeight: 'bold' },
-          blueButton: { backgroundColor: 'blue', color: 'white' },
-          redButton: { backgroundColor: 'red', color: 'white' },
-          modal: { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: '0', left: '0', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000 },
-          modalContent: { backgroundColor: 'white', padding: '20px', borderRadius: '8px', textAlign: 'center', width: '300px', boxShadow: '0px 0px 10px rgba(0,0,0,0.2)' },
-          modalTitle: { fontWeight: 'bold', fontSize: '1.5rem', marginBottom: '12px' },
-          selectModal: { width: '100%', padding: '8px', marginBottom: '16px', borderRadius: '4px', border: '1px solid #ccc' },
-          buttonContainer: { display: 'flex', justifyContent: 'space-between' },
-          modalButton: { padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
-          changeButton: { backgroundColor: '#007bff', color: 'white' },
-          cancelButton: { backgroundColor: '#6c757d', color: 'white' },
-          buttonDisabled: { backgroundColor: '#6c757d', color: '#fff', cursor: 'not-allowed', opacity: 0.65 },
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginLeft: '10px', // 왼쪽 여백 추가
+        },
+        th: {
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            paddingBottom: '3px',
+        },
+        td: {
+            fontFamily: 'GowunBatang-Regular',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            marginTop: 3,
+        },
+        clickable: {cursor: 'pointer'},
+        card: {padding: '16px'},
+        button: {
+            fontFamily: 'JalnanGothic',
+            backgroundColor: '#f0f0f0',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '30px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '0px 15px',
+            lineHeight:  isSmallScreen ? 2.5:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+            cursor: 'pointer',
+            borderRadius: '4px',
+            border: 'none',
+        },
+        additionButton: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.6rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '50px' : 'auto',
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
+            lineHeight:  isSmallScreen ? 2.5:2,
+            minHeight: 'auto',
+            marginTop: isSmallScreen ? '0px':'16px'
+        },
+        active: {backgroundColor: 'blue', color: 'white'},
+        pagination: {
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '20px'
+        },
+        select: {
+            padding: '8px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            marginBottom: '20px'
+        },
+        searchForm: {
+            marginBottom: isSmallScreen ? '10px' :'10px',
+        },
+        searchSelect: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.8rem':'0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '105px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen
+                ? '1px 2px'
+                : '4px 8px',
+        },
+        searchInput: {
+            width: isSmallScreen ? '100%':'100%',
+            padding: '4px',
+            borderRadius: '2px',
+            marginRight: '5px',
+            marginTop: '3px',
+            lineHeight:  isSmallScreen ? 3:2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto' // 기본적으로 적용되는 높이를 없앰
+        },
+        searchButton: {
+            fontFamily: 'JalnanGothic',
+            fontSize: isSmallScreen ? '0.8rem' : '0.9rem',
+            minWidth: 'auto',
+            width: isSmallScreen ? '50px' : 'auto', // 가로 너비를 줄임
+            padding: isSmallScreen ? '1px 2px' : '4px 8px',
+            lineHeight: isSmallScreen ? 2.5 : 2,  // 줄 간격을 줄여 높이를 감소시킴
+            minHeight: 'auto', // 기본적으로 적용되는 높이를 없앰
+        },
+        statusButtonsContainer: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: isMobile ? '4px' : '8px',
+            marginBottom: isSmallScreen ? '10px':'20px'
+        },
+        statusButton: {
+            fontFamily: 'JalnanGothic',
+            flex: isMobile ? '1 1 30%' : '1 1 120px',
+            padding: isMobile ? '2px' : '8px',
+            fontSize: isMobile ? '0.7rem' : '1rem',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            textAlign: 'center',
+            fontWeight: 'bold'
+        },
+        modal: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1000
+        },
+        modalContent: {
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            width: '300px',
+            boxShadow: '0px 0px 10px rgba(0,0,0,0.2)'
+        },
+        modalTitle: {
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            marginBottom: '12px'
+        },
+        selectModal: {
+            width: '100%',
+            padding: '8px',
+            marginBottom: '16px',
+            borderRadius: '4px',
+            border: '1px solid #ccc'
+        },
+        buttonContainer: {display: 'flex', justifyContent: 'space-between'},
+        modalButton: {
+            padding: '8px 16px',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+        },
+        changeButton: {backgroundColor: '#007bff', color: 'white'},
+        cancelButton: {backgroundColor: '#6c757d', color: 'white'},
+        buttonDisabled: {
+            backgroundColor: '#6c757d',
+            color: '#fff',
+            cursor: 'not-allowed',
+            opacity: 0.65
+        },
+        noOrdersMessage: {
+            fontSize: isSmallScreen ? '0.8rem' : '1rem',
+            textAlign: 'center'
+        }
     };
 
     const handlePageClick = (page) => {
@@ -306,33 +469,43 @@ function OrderManage() {
         const endPage = Math.min(startPage + groupSize - 1, totalPages - 1);
 
         pagination.push(
-            <button key="first-group" style={styles.button} onClick={() => handlePageClick(0)}>
+            <button key="first-group" style={styles.button}
+                    onClick={() => handlePageClick(0)}>
                 처음
             </button>
         );
 
         pagination.push(
-            <button key="prev" style={styles.button} disabled={currentPage === 0} onClick={() => handlePageClick(Math.max(currentPage - 1, 0))}>
+            <button key="prev" style={styles.button}
+                    disabled={currentPage === 0} onClick={() => handlePageClick(
+                Math.max(currentPage - 1, 0))}>
                 이전
             </button>
         );
 
         for (let i = startPage; i <= endPage; i++) {
             pagination.push(
-                <button key={i} style={{ ...styles.button, ...(i === currentPage ? styles.active : {}) }} onClick={() => handlePageClick(i)}>
+                <button key={i} style={{
+                    ...styles.button, ...(i === currentPage ? styles.active
+                        : {})
+                }} onClick={() => handlePageClick(i)}>
                     {i + 1}
                 </button>
             );
         }
 
         pagination.push(
-            <button key="next" style={styles.button} disabled={currentPage >= totalPages - 1} onClick={() => handlePageClick(Math.min(currentPage + 1, totalPages - 1))}>
+            <button key="next" style={styles.button}
+                    disabled={currentPage >= totalPages - 1}
+                    onClick={() => handlePageClick(
+                        Math.min(currentPage + 1, totalPages - 1))}>
                 다음
             </button>
         );
 
         pagination.push(
-            <button key="last-group" style={styles.button} onClick={() => handlePageClick(totalPages - 1)}>
+            <button key="last-group" style={styles.button}
+                    onClick={() => handlePageClick(totalPages - 1)}>
                 끝
             </button>
         );
@@ -342,101 +515,247 @@ function OrderManage() {
 
     return (
         <DashboardLayout>
-            <MDBox pt={3} pb={3}>
-                <MDTypography fontWeight="bold" sx={{ fontSize: '2.5rem' }} variant="body2">
-                    주문 관리
-                </MDTypography>
-                <MDBox pt={3} pb={3}>
-                    <Card style={styles.card}>
-                        <MDBox pt={2} pb={3} px={3} sx={{ overflowX: 'auto' }}>
+            <MDTypography
+                fontWeight="bold"
+                sx={{
+                    ml: isSmallScreen ? 2 : 4,
+                    mt: isSmallScreen ? 0 : 3,
+                    fontSize: isSmallScreen ? '1.2rem' : '2rem'
+                }}
+                variant="body2">
+                주문 관리
+            </MDTypography>
+
+            <MDBox pt={1} pb={20}>
+                <MDBox pt={isSmallScreen? 1:1} pb={isSmallScreen? 0:1} px={isSmallScreen? 1:3}>
+                    <Card>
+                        <MDBox pt={2} pb={isSmallScreen? 2:3} px={3} sx={{overflowX: 'auto'}}>
                             {/* 상태 필터 버튼들 추가 */}
                             <div style={styles.statusButtonsContainer}>
-                                <button style={{ ...styles.statusButton, ...styles.blueButton }} onClick={() => handleStatusFilter(null)}>전체 보기<br />(취소 제외)</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('COMPLETE')}>결제 완료</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('READYITEM')}>상품 준비중</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('READYSHIP')}>배송 준비중</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('SHIPPED')}>배송중</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('FINISH')}>배송 완료</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('RETURN')}>반품 신청</button>
-                                <button style={styles.statusButton} onClick={() => handleStatusFilter('RETURNCOMPLETE')}>반품 완료</button>
-                                <button style={{ ...styles.statusButton, ...styles.redButton }} onClick={() => handleStatusFilter('CANCEL')}>취소 목록</button>
+                                <MDButton
+                                    variant="gradient"
+                                    color="info"
+                                    style={styles.statusButton}
+                                    onClick={() => handleStatusFilter(null)}>전체
+                                    보기<br/>(취소 제외)
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'COMPLETE')}>결제 완료
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'READYITEM')}>상품 준비중
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'READYSHIP')}>배송 준비중
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'SHIPPED')}>배송중
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'FINISH')}>배송 완료
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'RETURN')}>반품 신청
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="light"
+                                    style={styles.statusButton}
+                                        onClick={() => handleStatusFilter(
+                                            'RETURNCOMPLETE')}>반품 완료
+                                </MDButton>
+                                <MDButton
+                                    variant="gradient"
+                                    color="error"
+                                    style={styles.statusButton}
+                                    onClick={() => handleStatusFilter(
+                                        'CANCEL')}>취소 목록
+                                </MDButton>
                             </div>
                             {/* 검색 폼 추가 */}
-                            <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-                                <select
-                                    id="searchType"
-                                    name="searchType"
-                                    style={styles.select}
-                                    value={searchType}
-                                    onChange={handleSearchTypeChange}
-                                >
-                                    <option value="randomOrderNo">랜덤주문번호</option>
-                                    <option value="memberId">아이디</option>
-                                </select>
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    placeholder="검색어를 입력하세요"
-                                    style={styles.searchInput}
-                                />
-                                <button type="submit" style={styles.searchButton}>
-                                    검색
-                                </button>
+                            <form onSubmit={handleSearchSubmit}
+                                  style={styles.searchForm}>
+                                <Grid container>
+                                    <Grid item xs={12} lg={1}>
+                                        <select
+                                            id="searchType"
+                                            name="searchType"
+                                            style={{...styles.searchSelect, marginTop:isSmallScreen? '0px':'15px'}}
+                                            value={searchType}
+                                            onChange={handleSearchTypeChange}
+                                        >
+                                            <option value="randomOrderNo">랜덤주문번호
+                                            </option>
+                                            <option value="memberId">아이디
+                                            </option>
+                                        </select>
+                                    </Grid>
+                                    <Grid item xs={9} lg={1.8}>
+                                        <MDInput
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={handleSearchChange}
+                                            placeholder="검색어를 입력하세요"
+                                            style={styles.searchInput}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3} lg={1}>
+                                        <MDButton
+                                            type="submit"
+                                            variant="gradient"
+                                            color="info"
+                                            style={{...styles.searchButton, marginTop:isSmallScreen? '10px':'10px'}}>
+                                            검색
+                                        </MDButton>
+                                    </Grid>
+                                </Grid>
                             </form>
+
                             <div className="orderList-contents">
                                 {orders.length > 0 ? (
                                     isMobile ? (
                                         // 모바일 리스트 형식
                                         orders.map((order) => {
-                                            const { names, totalPrice, totalCount } = aggregateOrderItems(order.orderItemList);
-                                            const isOrderCancelled = order.orderStatus === 'CANCEL'; // 주문 상태가 CANCEL인지 확인
+                                            const {
+                                                names,
+                                                totalPrice,
+                                                totalCount
+                                            } = aggregateOrderItems(
+                                                order.orderItemList);
+                                            const isOrderCancelled = order.orderStatus
+                                                === 'CANCEL'; // 주문 상태가 CANCEL인지 확인
 
                                             return (
-                                                <div key={order.orderNo} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
-                                                    <MDTypography onClick={() => handleDetail(order)} sx={{ ...styles.clickable }} variant="body2">
-                                                        <strong>랜덤주문번호:</strong> {order.randomOrderNo}
+                                                <div key={order.orderNo}
+                                                     style={{
+                                                         borderBottom: '1px solid #ddd',
+                                                         padding: '8px'
+                                                     }}>
+                                                    <MDTypography
+                                                        onClick={() => handleDetail(
+                                                            order)}
+                                                        sx={{...styles.clickable, fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                        랜덤주문번호 : {order.randomOrderNo}
                                                     </MDTypography>
-                                                    <MDTypography onClick={() => handleMemberDetail(order.memberId)} sx={{ ...styles.clickable }} variant="body2">
-                                                        <strong>아이디:</strong> {order.memberId}
+                                                    <MDTypography
+                                                        onClick={() => handleMemberDetail(
+                                                            order.memberId)}
+                                                        sx={{...styles.clickable, fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                        아이디 : {order.memberId}
                                                     </MDTypography>
-                                                    <MDTypography variant="body2">
-                                                        <strong>상품명:</strong> {names}
+                                                    <MDTypography
+                                                        sx={{fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                        상품명 : {names}
                                                     </MDTypography>
-                                                    <MDTypography variant="body2">
-                                                        <strong>상품수량:</strong> {totalCount}
+                                                    <MDTypography
+                                                        sx={{fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                        상품수량 : {totalCount}
                                                     </MDTypography>
-                                                    <MDTypography variant="body2">
-                                                        <strong>총 가격:</strong> {totalPrice} 원
+                                                    <MDTypography
+                                                        sx={{fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                       총 가격 : {totalPrice} 원
                                                     </MDTypography>
-                                                    <MDTypography variant="body2">
-                                                        <strong>결제상태:</strong> {getOrderStatusText(order.orderStatus)}
+                                                    <MDTypography
+                                                        sx={{fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                        결제상태 : {getOrderStatusText(
+                                                        order.orderStatus)}
                                                     </MDTypography>
-                                                    <MDTypography variant="body2">
-                                                        <strong>주문일:</strong> {order.orderDate}
+                                                    <MDTypography
+                                                        sx={{fontSize: '0.8rem'}}
+                                                        variant="body2">
+                                                       주문일 : {order.orderDate}
                                                     </MDTypography>
-                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                                        <Button
-                                                            style={{ ...styles.button, ...(order.orderStatus === 'PURCHASECONFIRM' ? styles.buttonDisabled : {}) }}
-                                                            onClick={() => handleOpenModal(order.orderNo, order.orderStatus)}
-                                                            disabled={order.orderStatus === 'PURCHASECONFIRM'}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        gap: '8px',
+                                                        marginTop: '8px'
+                                                    }}>
+                                                        <MDButton
+                                                            variant="gradient"
+                                                            color="light"
+                                                            style={{
+                                                                ...styles.additionButton, ...(order.orderStatus
+                                                                === 'PURCHASECONFIRM'
+                                                                    ? styles.buttonDisabled
+                                                                    : {})
+                                                            }}
+                                                            onClick={() => handleOpenModal(
+                                                                order.orderNo,
+                                                                order.orderStatus)}
+                                                            disabled={order.orderStatus
+                                                                === 'PURCHASECONFIRM'}
                                                         >
                                                             변경
-                                                        </Button>
-                                                        <Button
-                                                            style={{ ...styles.button, ...(order.orderStatus === 'PURCHASECONFIRM' || order.orderStatus === 'RETURNCOMPLETE' || isOrderCancelled ? styles.buttonDisabled : {}) }}
-                                                            onClick={() => handleOpenCancelModal(order.orderNo, order.orderStatus)}
-                                                            disabled={order.orderStatus === 'PURCHASECONFIRM' || order.orderStatus === 'RETURNCOMPLETE' || isOrderCancelled}
+                                                        </MDButton>
+                                                        <MDButton
+                                                            variant="gradient"
+                                                            color="error"
+                                                            style={{
+                                                                ...styles.additionButton, ...(order.orderStatus
+                                                                === 'PURCHASECONFIRM'
+                                                                || order.orderStatus
+                                                                === 'RETURNCOMPLETE'
+                                                                || isOrderCancelled
+                                                                    ? styles.buttonDisabled
+                                                                    : {})
+                                                            }}
+                                                            onClick={() => handleOpenCancelModal(
+                                                                order.orderNo,
+                                                                order.orderStatus)}
+                                                            disabled={order.orderStatus
+                                                                === 'PURCHASECONFIRM'
+                                                                || order.orderStatus
+                                                                === 'RETURNCOMPLETE'
+                                                                || isOrderCancelled}
                                                         >
                                                             주문 취소
-                                                        </Button>
-                                                        <Button
-                                                            style={{ ...styles.button, ...(order.orderStatus !== 'RETURN' ? styles.buttonDisabled : {}) }}
-                                                            onClick={() => handleCompleteReturn(order)}
-                                                            disabled={order.orderStatus !== 'RETURN'}
+                                                        </MDButton>
+                                                        <MDButton
+                                                            variant="gradient"
+                                                            color="dark"
+                                                            style={{
+                                                                ...styles.additionButton, ...(order.orderStatus
+                                                                !== 'RETURN'
+                                                                    ? styles.buttonDisabled
+                                                                    : {})
+                                                            }}
+                                                            onClick={() => handleCompleteReturn(
+                                                                order)}
+                                                            disabled={order.orderStatus
+                                                                !== 'RETURN'}
                                                         >
                                                             반품 완료
-                                                        </Button>
+                                                        </MDButton>
                                                     </div>
                                                 </div>
                                             );
@@ -445,138 +764,229 @@ function OrderManage() {
                                         // 데스크탑 테이블 형식
                                         <table style={styles.table}>
                                             <thead>
-                                                <tr>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            랜덤주문번호
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            아이디
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            상품명
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            상품수량
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            총 가격
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            결제상태
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            주문일
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            주문상태 변경
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            주문 취소
-                                                        </MDTypography>
-                                                    </th>
-                                                    <th>
-                                                        <MDTypography fontWeight="bold" variant="body2" sx={styles.th}>
-                                                            반품 처리
-                                                        </MDTypography>
-                                                    </th>
-                                                </tr>
+                                            <tr>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        랜덤주문번호
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        아이디
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        상품명
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        상품수량
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        총 가격
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        결제상태
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        주문일
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        주문상태 변경
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        주문 취소
+                                                    </MDTypography>
+                                                </th>
+                                                <th>
+                                                    <MDTypography
+                                                        fontWeight="bold"
+                                                        variant="body2"
+                                                        sx={styles.th}>
+                                                        반품 처리
+                                                    </MDTypography>
+                                                </th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                {orders.map((order) => {
-                                                    const { names, totalPrice, totalCount } = aggregateOrderItems(order.orderItemList);
-                                                    const isOrderCancelled = order.orderStatus === 'CANCEL'; // 주문 상태가 CANCEL인지 확인
+                                            {orders.map((order) => {
+                                                const {
+                                                    names,
+                                                    totalPrice,
+                                                    totalCount
+                                                } = aggregateOrderItems(
+                                                    order.orderItemList);
+                                                const isOrderCancelled = order.orderStatus
+                                                    === 'CANCEL'; // 주문 상태가 CANCEL인지 확인
 
-                                                    return (
-                                                        <tr key={order.orderNo}>
-                                                            <td>
-                                                                <MDTypography onClick={() => handleDetail(order)} sx={{ ...styles.clickable, ...styles.td }} variant="body2">
-                                                                    {order.randomOrderNo}
-                                                                </MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography onClick={() => handleMemberDetail(order.memberId)} sx={{ ...styles.clickable, ...styles.td }} variant="body2">
-                                                                    {order.memberId}
-                                                                </MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography sx={styles.td} variant="body2">{names}</MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography sx={styles.td} variant="body2">{totalCount}</MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography sx={styles.td} variant="body2">{totalPrice} 원</MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography sx={styles.td} variant="body2">{getOrderStatusText(order.orderStatus)}</MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <MDTypography sx={styles.td} variant="body2">{order.orderDate}</MDTypography>
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    style={{ ...styles.button, ...(order.orderStatus === 'PURCHASECONFIRM' ? styles.buttonDisabled : {}) }}
-                                                                    onClick={() => handleOpenModal(order.orderNo, order.orderStatus)}
-                                                                    disabled={order.orderStatus === 'PURCHASECONFIRM'}
-                                                                >
-                                                                    변경
-                                                                </button>
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    style={{ ...styles.button, ...(order.orderStatus === 'PURCHASECONFIRM' || order.orderStatus === 'RETURNCOMPLETE' || isOrderCancelled ? styles.buttonDisabled : {}) }}
-                                                                    onClick={() => handleOpenCancelModal(order.orderNo, order.orderStatus)}
-                                                                    disabled={order.orderStatus === 'PURCHASECONFIRM' || order.orderStatus === 'RETURNCOMPLETE' || isOrderCancelled}
-                                                                >
-                                                                    주문 취소
-                                                                </button>
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    style={{ ...styles.button, ...(order.orderStatus !== 'RETURN' ? styles.buttonDisabled : {}) }}
-                                                                    onClick={() => handleCompleteReturn(order)}
-                                                                    disabled={order.orderStatus !== 'RETURN'}
-                                                                >
-                                                                    반품 완료
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
+                                                return (
+                                                    <tr key={order.orderNo}>
+                                                        <td>
+                                                            <MDTypography
+                                                                onClick={() => handleDetail(
+                                                                    order)}
+                                                                sx={{...styles.clickable, ...styles.td}}
+                                                                variant="body2">
+                                                                {order.randomOrderNo}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                onClick={() => handleMemberDetail(
+                                                                    order.memberId)}
+                                                                sx={{...styles.clickable, ...styles.td}}
+                                                                variant="body2">
+                                                                {order.memberId}
+                                                            </MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                sx={styles.td}
+                                                                variant="body2">{names}</MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                sx={styles.td}
+                                                                variant="body2">{totalCount}</MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                sx={styles.td}
+                                                                variant="body2">{totalPrice} 원</MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                sx={styles.td}
+                                                                variant="body2">{getOrderStatusText(
+                                                                order.orderStatus)}</MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDTypography
+                                                                sx={styles.td}
+                                                                variant="body2">{order.orderDate}</MDTypography>
+                                                        </td>
+                                                        <td>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="light"
+                                                                style={{
+                                                                    ...styles.additionButton, ...(order.orderStatus
+                                                                    === 'PURCHASECONFIRM'
+                                                                        ? styles.buttonDisabled
+                                                                        : {})
+                                                                }}
+                                                                onClick={() => handleOpenModal(
+                                                                    order.orderNo,
+                                                                    order.orderStatus)}
+                                                                disabled={order.orderStatus
+                                                                    === 'PURCHASECONFIRM'}
+                                                            >
+                                                                변경
+                                                            </MDButton>
+                                                        </td>
+                                                        <td>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="error"
+                                                                style={{
+                                                                    ...styles.additionButton, ...(order.orderStatus
+                                                                    === 'PURCHASECONFIRM'
+                                                                    || order.orderStatus
+                                                                    === 'RETURNCOMPLETE'
+                                                                    || isOrderCancelled
+                                                                        ? styles.buttonDisabled
+                                                                        : {})
+                                                                }}
+                                                                onClick={() => handleOpenCancelModal(
+                                                                    order.orderNo,
+                                                                    order.orderStatus)}
+                                                                disabled={order.orderStatus
+                                                                    === 'PURCHASECONFIRM'
+                                                                    || order.orderStatus
+                                                                    === 'RETURNCOMPLETE'
+                                                                    || isOrderCancelled}
+                                                            >
+                                                                주문 취소
+                                                            </MDButton>
+                                                        </td>
+                                                        <td>
+                                                            <MDButton
+                                                                variant="gradient"
+                                                                color="dark"
+                                                                style={{
+                                                                    ...styles.additionButton, ...(order.orderStatus
+                                                                    !== 'RETURN'
+                                                                        ? styles.buttonDisabled
+                                                                        : {})
+                                                                }}
+                                                                onClick={() => handleCompleteReturn(
+                                                                    order)}
+                                                                disabled={order.orderStatus
+                                                                    !== 'RETURN'}
+                                                            >
+                                                                반품 완료
+                                                            </MDButton>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                             </tbody>
                                         </table>
                                     )
                                 ) : (
-                                    <MDTypography sx={styles.noOrdersMessage}>
+                                    <MDTypography
+                                        sx={styles.noOrdersMessage}>
                                         주문이 없습니다.
                                     </MDTypography>
-                                )}
-                                {orders.length > 0 && (
-                                    <MDBox sx={styles.pagination}>
-                                        {renderPagination()}
-                                    </MDBox>
                                 )}
                             </div>
                         </MDBox>
                     </Card>
                 </MDBox>
+                {orders.length > 0 && (
+                    <MDBox sx={styles.pagination}>
+                        {renderPagination()}
+                    </MDBox>
+                )}
             </MDBox>
 
             {/* 주문 상태 변경 모달 */}
@@ -590,22 +1000,26 @@ function OrderManage() {
                             <InputLabel>주문 상태</InputLabel>
                             <Select
                                 value={selectedOrderStatus}
-                                onChange={(e) => setSelectedOrderStatus(e.target.value)}
+                                onChange={(e) => setSelectedOrderStatus(
+                                    e.target.value)}
                                 label="주문 상태"
                                 style={styles.select}
                             >
                                 {statusOptions.map((status) => (
-                                    <MenuItem key={status.value} value={status.value}>
+                                    <MenuItem key={status.value}
+                                              value={status.value}>
                                         {status.label}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                         <div style={styles.buttonContainer}>
-                            <button onClick={handleChangeStatus} style={{ ...styles.modalButton, ...styles.changeButton }}>
+                            <button onClick={handleChangeStatus}
+                                    style={{...styles.modalButton, ...styles.changeButton}}>
                                 변경
                             </button>
-                            <button onClick={handleCloseModal} style={{ ...styles.modalButton, ...styles.cancelButton }}>
+                            <button onClick={handleCloseModal}
+                                    style={{...styles.modalButton, ...styles.cancelButton}}>
                                 취소
                             </button>
                         </div>
@@ -625,14 +1039,23 @@ function OrderManage() {
                             value={cancelReason}
                             onChange={(e) => setCancelReason(e.target.value)}
                             placeholder="취소 사유를 입력하세요"
-                            style={{ width: '100%', marginBottom: '16px', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                            style={{
+                                width: '100%',
+                                marginBottom: '16px',
+                                padding: '8px',
+                                borderRadius: '4px',
+                                border: '1px solid #ccc'
+                            }}
                         />
-                        {errorMessage && <MDTypography color="error">{errorMessage}</MDTypography>}
+                        {errorMessage && <MDTypography
+                            color="error">{errorMessage}</MDTypography>}
                         <div style={styles.buttonContainer}>
-                            <Button onClick={handleCancelOrderReason} style={{ ...styles.modalButton, ...styles.changeButton }}>
+                            <Button onClick={handleCancelOrderReason}
+                                    style={{...styles.modalButton, ...styles.changeButton}}>
                                 주문 취소
                             </Button>
-                            <Button onClick={handleCloseReasonModal} style={{ ...styles.modalButton, ...styles.cancelButton }}>
+                            <Button onClick={handleCloseReasonModal}
+                                    style={{...styles.modalButton, ...styles.cancelButton}}>
                                 닫기
                             </Button>
                         </div>
@@ -654,12 +1077,15 @@ function OrderManage() {
                             placeholder="관리자 비밀번호 입력"
                             style={styles.modalInput}
                         />
-                        {errorMessage && <MDTypography color="error">{errorMessage}</MDTypography>}
+                        {errorMessage && <MDTypography
+                            color="error">{errorMessage}</MDTypography>}
                         <div style={styles.buttonContainer}>
-                            <Button onClick={handleCancelOrder} style={{ ...styles.modalButton, ...styles.changeButton }}>
+                            <Button onClick={handleCancelOrder}
+                                    style={{...styles.modalButton, ...styles.changeButton}}>
                                 주문 취소
                             </Button>
-                            <Button onClick={handleOrderCancelModal} style={{ ...styles.modalButton, ...styles.cancelButton }}>
+                            <Button onClick={handleOrderCancelModal}
+                                    style={{...styles.modalButton, ...styles.cancelButton}}>
                                 닫기
                             </Button>
                         </div>
