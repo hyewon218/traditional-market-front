@@ -77,8 +77,8 @@ const DeliveryPostModal = ({callbackFn}) => {
     };
 
     const postCodeStyle = {
-        width: '360px',
-        height: '480px',
+        width: isSmallScreen ? '290px' :'360px',
+        height: isSmallScreen ? '420px' :'480px',
     };
 
     const completeHandler = (data) => {
