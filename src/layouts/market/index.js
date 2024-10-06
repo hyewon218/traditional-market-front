@@ -58,7 +58,7 @@ function Market() {
             refreshCart();
             fetchNotifications();
         }
-    }, []);
+    }, [isAuthorization]);
 
     useEffect(() => {
         if (isSearchActive) {

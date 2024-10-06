@@ -21,7 +21,7 @@ import DashboardLayout from '../../../examples/LayoutContainers/DashboardLayout'
 import useCustomLogin from "../../../hooks/useCustomLogin";
 
 // Data
-import { loginPost, logoutPost } from "../../../api/memberApi";
+import {loginPost, logoutPost} from "../../../api/memberApi";
 import {useMediaQuery} from "@mui/material";
 
 const initState = {
@@ -72,7 +72,7 @@ function SignIn() {
             .catch((error) => {
                 // 예외 처리
                 console.error("로그인 오류:", error);
-                alert(error.response.data);
+//                alert(error.response.data);
             });
     }
 

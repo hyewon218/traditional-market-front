@@ -62,9 +62,9 @@ const MapComponent = ({marketAddr, marketName}) => {
                 const fontFamily = 'JalnanGothic';
                 const infoWindow = new window.naver.maps.InfoWindow({
                     content: [
-                        `<div style="padding: ${isSmallScreen ? '5px' : '10px'}; 
-                                min-width: ${isSmallScreen ? '50px' : '180px'}; 
-                                line-height: ${isSmallScreen ? '1.0' : '1.1'}; 
+                        `<div style="padding: ${isSmallScreen ? '5px' : '10px'};
+                                min-width: ${isSmallScreen ? '50px' : '180px'};
+                                line-height: ${isSmallScreen ? '1.0' : '1.1'};
                                 font-family:${fontFamily};">`,
                         `<h3 style="font-size:${isSmallScreen ? '0.6em' : '1.1em'};">${marketName}</h3>`,
                         `<h4 style="font-size:${isSmallScreen ? '0.5em' : '0.9em'};">지번 주소</h4>`,
@@ -86,7 +86,7 @@ const MapComponent = ({marketAddr, marketName}) => {
                     });
 
                 // 자동으로 정보창 열기
-                //infoWindow.open(map, marker);
+                infoWindow.open(map, marker);
 
                 /* 여기서부터 날씨 API */
                 // OpenWeather API로 날씨 정보 가져오기
