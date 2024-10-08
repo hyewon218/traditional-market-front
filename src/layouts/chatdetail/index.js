@@ -16,7 +16,6 @@
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import useCustomLogin from "../../hooks/useCustomLogin";
-import {getCookie} from "../../util/cookieUtil";
 import * as StompJs from "@stomp/stompjs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useLocation} from "react-router-dom";
@@ -52,9 +51,10 @@ function ChatDetail() {
 
     useEffect(() => {
         // 최초 렌더링 시 , 웹소켓에 연결
-        // 우리는 사용자가 방에 입장하자마자 연결 시켜주어야 하기 때문에
+        // 사용자가 방에 들어가자마자 연결해야 하므로 connect()를 호출
         connect();
 
+        // 컴포넌트가 언마운트될 때, 연결을 해제하는 함수를 반환
         return () => disConnect();
     }, []);
 
@@ -112,7 +112,7 @@ function ChatDetail() {
                 //brokerURL: "ws://3.36.96.0:8080/stomp/chat",
                 brokerURL: "wss://tmarket.store/stomp/chat",
                 connectHeaders: {
-                    Authorization: getCookie('Authorization')
+                    Authorization: `${isAuthorization}`
                 },
                 debug: function (str) {
                     console.log(str);

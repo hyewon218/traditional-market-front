@@ -78,14 +78,10 @@
 //export default useCustomLogin
 
 
-
-
-
 // 서버에서 액세스토큰 호출 함수를 통해 isAuthorization 정의
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { loginPostAsync, logoutPostAsync, setAuthorization, clearAuthorization } from "../slices/loginSlice";
-import { getCookie } from "../util/cookieUtil";
 import { jwtDecode } from "jwt-decode";
 import { getAccessToken } from "../api/tokenApi";
 import { useEffect } from "react";

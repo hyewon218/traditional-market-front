@@ -16,7 +16,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {API_SERVER_HOST, getOne} from "../../api/marketApi";
-import {getCookie} from "../../util/cookieUtil";
 import {EventSourcePolyfill} from "event-source-polyfill";
 
 // @mui material components
@@ -195,11 +194,12 @@ function Alarm() {
         const connect = () => {
             eventSource = new EventSourcePolyfill(`${host}/subscribe`, {
                 headers: {
-                    Authorization: `${getCookie('Authorization')}`
+                    // Retrieve the token from Redux state
+                    Authorization: `${isAuthorization}`
                 }
             });
 
-            eventSource.addEventListener("open", function (event) {
+            eventSource.addEventListener("open", function () {
                 console.log("Connection opened");
             });
 
@@ -297,24 +297,27 @@ function Alarm() {
                         알람이 없습니다
                     </MDTypography>
                 )}
+
+                <MDBox sx={{ marginTop: 2 }}>
+                {alarms.length > 0 && totalPage > 1 && (
+                    <MDPagination size={"small"}>
+                        <MDPagination item>
+                            <KeyboardArrowLeftIcon/>
+                        </MDPagination>
+                        {[...Array(totalPage).keys()].map((i) => (
+                            <MDPagination item key={i}
+                                          onClick={() => changePage(i)}>
+                                {i + 1}
+                            </MDPagination>
+                        ))}
+                        <MDPagination item>
+                            <KeyboardArrowRightIcon/>
+                        </MDPagination>
+                    </MDPagination>
+                )}
+                </MDBox>
             </MDBox>
 
-            {alarms.length > 0 && totalPage > 1 && (
-                <MDPagination>
-                    <MDPagination item>
-                        <KeyboardArrowLeftIcon/>
-                    </MDPagination>
-                    {[...Array(totalPage).keys()].map((i) => (
-                        <MDPagination item key={i}
-                                      onClick={() => changePage(i)}>
-                            {i + 1}
-                        </MDPagination>
-                    ))}
-                    <MDPagination item>
-                        <KeyboardArrowRightIcon/>
-                    </MDPagination>
-                </MDPagination>
-            )}
         </DashboardLayout>
     );
 }
