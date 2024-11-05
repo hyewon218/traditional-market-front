@@ -53,6 +53,7 @@ function ChatDetail() {
         // 최초 렌더링 시 , 웹소켓에 연결
         // 사용자가 방에 들어가자마자 연결해야 하므로 connect()를 호출
         connect();
+        //connectWebsocket();
 
         // 컴포넌트가 언마운트될 때, 연결을 해제하는 함수를 반환
         return () => disConnect();
@@ -104,6 +105,98 @@ function ChatDetail() {
         return moveToLoginReturn()
     }
 
+    // WebSocket 구현
+/*    const connectWebsocket = () => {
+        // WebSocket connection
+        try {
+            // Create a new WebSocket connection
+            const socket = new WebSocket("ws://localhost:8080/chat");
+
+            // When the connection is successfully established
+            socket.onopen = function () {
+                console.log("WebSocket connection opened");
+
+                // You can send an initial message to join a chat room or authenticate
+                socket.send(JSON.stringify({
+                    // 낮은 수준의 프로토콜이므로 메시지 페이로드에 메타데이터(예: "type")를 포함하여 메시지 유형을 명시적으로 처리해야 한다.
+                    type: 'AUTH',
+                    token: `${isAuthorization}`, // Send the token for authentication
+                    roomId: charRoom.no // Indicate the chat room you want to join
+                }));
+            };
+
+            // 서버에서 들어오는 메시지를 처리
+            socket.onmessage = function (event) {
+                const messageData = JSON.parse(event.data);
+                //console.log("event.data!?!?!?"+messageData);
+
+                if (messageData.type === 'CHAT') {
+                    // Handle incoming chat messages
+                    webSocketCallback(messageData);  // Process the chat message with your callback
+                } else {
+                    console.log('Other message type received:', messageData);
+                }
+            };
+
+            // On WebSocket error
+            socket.onerror = function (error) {
+                console.error('WebSocket error:', error);
+            };
+
+            // 연결이 닫히면
+            socket.onclose = function (event) {
+                console.log('WebSocket connection closed:', event);
+
+                // WebSocket 연결이 종료된 경우 5초 지연 후 재연결을 시도
+                setTimeout(() => connectWebsocket(), 5000);
+            };
+
+            // Send a heartbeat message every 4 seconds (if needed)
+            const heartbeatInterval = setInterval(() => {
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ type: 'HEARTBEAT' }));
+                }
+                // WebSocket 연결이 닫힐 때 하트비트 메시지를 중지
+                // 연결이 끊어진 후 불필요한 하트비트 메시지가 전송되는 것을 방지
+            }, 5000);
+
+            // Store the WebSocket client for future use
+            changeClient(socket);
+
+        } catch (err) {
+            console.error('Error while connecting to WebSocket:', err);
+        }
+    };
+
+    const sendWebsocketChat = () => {
+        if (chat === "") {
+            return;
+        }
+
+        const formattedDate = new Date().toLocaleTimeString(); // UTC 시간으로 포맷
+        // Create a new chat message object
+        const newMessage = {
+            type: 'CHAT', // Indicate the type of message
+            sender: userId,  // The ID of the user sending the message
+            message: chat,   // The chat message content
+            roomId: charRoom.no,  // The chat room number (this replaces the STOMP destination)
+            createdAt: formattedDate  // Timestamp of the message
+        };
+        // Send (publish) the message using WebSocket
+        client.send(JSON.stringify(newMessage)); // Send the message as a string
+
+        // Clear the input after sending
+        setChat("");
+    };
+
+    const webSocketCallback = function (message) {
+        if (message) {
+            // Process the message (e.g., update chat list)
+            setChatList((chats) => [...chats, message]);
+        }
+    };*/
+
+    // Stomp 구현
     const connect = () => {
         // WebSocket connection
         try {
@@ -159,6 +252,7 @@ function ChatDetail() {
             message: chat,
             createdAt: formattedDate
         };
+        // stomp
         client.publish({ // destination 과 body 를 publish 를 사용해 서버단에 보냄
             destination: "/pub/chat/message/" + charRoom.no,
             body: JSON.stringify(newMessage),
@@ -185,6 +279,7 @@ function ChatDetail() {
     const handleKeyDown = (e) => {
         if (e.keyCode === 13) {
             sendChat();
+           //sendWebsocketChat();
         }
     }
 
@@ -262,7 +357,7 @@ function ChatDetail() {
 
     const msgBox = chatList.map((chat, index) => {
         /*TODO : 관리자 ID 수정*/
-        const adminIds = ['esc0218', 'esc0220', 'songwc3']; // 관리자 ID 배열
+        const adminIds = ['esc0218', 'esc0220', 'songwc3', 'won11111']; // 관리자 ID 배열
         const isSenderAdmin = adminIds.includes(chat.sender); // 메시지 보낸 사람이 관리자라면 true
         const senderName = isSenderAdmin ? '관리자' : chat.sender; // 일반 사용자 입장에서 관리자는 '관리자'로 표시
 
