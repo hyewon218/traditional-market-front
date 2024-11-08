@@ -16,7 +16,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {API_SERVER_HOST, getOne} from "../../api/marketApi";
-import {EventSourcePolyfill} from "event-source-polyfill";
 
 // @mui material components
 import Grid from '@mui/material/Grid';
@@ -45,6 +44,7 @@ import {getShopOne} from "../../api/shopApi";
 import {getItemOne} from "../../api/itemApi";
 import {getInquiryOne} from "../../api/inquiryApi";
 import {useMediaQuery} from "@mui/material";
+import {EventSourcePolyfill} from "event-source-polyfill";
 
 const notificationTypeMessages = {
     NEW_LIKE_ON_MARKET: "시장에 좋아요가 눌렸어요!",
@@ -65,18 +65,20 @@ function Alarm() {
     const [alarms, setAlarms] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [alarmEvent, setAlarmEvent] = useState(undefined);
-
     let eventSource = undefined;
-
+    const [data, setData] = useState(null);
     const {moveToLoginReturn, isAuthorization} = useCustomLogin() // 로그인이 필요한 페이지
     const host = `${API_SERVER_HOST}/api/notifications`
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery('(max-width:600px)');
+    const [token, setToken] = useState(null);
+    const [notifications, setNotifications] = useState([]);
+    let longPollTimeout;
 
     const changePage = (pageNum) => {
-        console.log('change pages');
-        console.log(pageNum);
-        console.log(page);
+        //console.log('change pages');
+        //console.log(pageNum);
+        //console.log(page);
         setPage(pageNum);
         handleGetAlarm(pageNum);
     };
@@ -84,8 +86,8 @@ function Alarm() {
     const handleGetAlarm = (pageNum = 0) => {
         const pageParam = {page: pageNum, size: 10};
         getNotificationList(pageParam).then(data => {
-            console.log('알람 목록 조회!!!');
-            console.log(data);
+            //console.log('알람 목록 조회!!!');
+            //console.log(data);
             setAlarms(data.content);
             setTotalPage(data.totalPages);
         }).catch(error => {
@@ -95,8 +97,8 @@ function Alarm() {
 
     const handleGetIsRead = (notificationNo) => {
         getIsRead(notificationNo).then(data => {
-            console.log('알람 읽음 상태 조회!!!');
-            console.log(data);
+            //console.log('알람 읽음 상태 조회!!!');
+            //console.log(data);
         }).catch(error => {
             console.error("알람 읽음 상태 조회에 실패했습니다.", error);
         });
@@ -104,7 +106,7 @@ function Alarm() {
 
     const handlePutRead = (notificationNo) => {
         putIsRead(notificationNo).then(data => {
-            console.log('알람 읽음 상태로 변경!!!');
+            //console.log('알람 읽음 상태로 변경!!!');
             handleGetIsRead(notificationNo);
         }).catch(error => {
             console.error("알람 읽음 상태로 변경에 실패했습니다.", error);
@@ -188,6 +190,7 @@ function Alarm() {
         }
     };
 
+     /*sse*/
     useEffect(() => {
         handleGetAlarm(page);
 
@@ -205,7 +208,21 @@ function Alarm() {
 
             // 서버로부터 "alarm" 이벤트가 수신될 때 발생
             eventSource.addEventListener("alarm", function (event) {
-                console.log(event.data);
+/*                console.log(event.data);
+                // Record the current time
+                const currentTime = new Date();
+
+                // Function to pad single-digit numbers with leading zeros
+                const pad = (num) => (num < 10 ? '0' + num : num);
+                // Extract hours, minutes, seconds, and milliseconds
+                const hours = pad(currentTime.getHours());
+                const minutes = pad(currentTime.getMinutes());
+                const seconds = pad(currentTime.getSeconds());
+                const milliseconds = currentTime.getMilliseconds();
+
+                // Print in the desired format
+                console.log(`Current time: ${hours}:${minutes}:${seconds}.${milliseconds}`);*/
+
                 handleGetAlarm(); // 알람을 업데이트
             });
 
@@ -229,6 +246,87 @@ function Alarm() {
             }
         };
     }, [page]);
+
+    /*폴링*/
+/*    useEffect(() => {
+        handleGetAlarm(page);
+
+        const interval = setInterval(() => {
+            fetch('http://localhost:8080/api/notifications/poll', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Authorization': isAuthorization,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                handleGetAlarm();
+            })
+            .catch(error => {
+                console.error("Error fetching notifications", error);
+            });
+        }, 3000); // 3초 간격으로 폴링(서버에 요청)
+
+        return () => clearInterval(interval); // cleanup 함수로 interval 을 정리
+    }, [isAuthorization]);*/
+
+    /*롱폴링*/
+/*    useEffect(() => {
+        handleGetAlarm(); // Initial alarm fetch logic (optional)
+    }, []);
+
+    useEffect(() => {
+            longPoll();
+        return () => {
+            if (pollingTimeoutId) {
+                clearTimeout(pollingTimeoutId); // Clear the polling timeout
+            }
+            setAlarms([]); // Clear notifications on unmount
+        };
+    }, []);
+
+    let pollingTimeoutId = null;
+
+    const longPoll = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/notifications/longpoll', {
+                headers: {
+                    Authorization: `${isAuthorization}`,
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+                //timeout: 30000
+            });
+            // Record the current time
+            const currentTime = new Date();
+
+            // Function to pad single-digit numbers with leading zeros
+            const pad = (num) => (num < 10 ? '0' + num : num);
+            // Extract hours, minutes, seconds, and milliseconds
+            const hours = pad(currentTime.getHours());
+            const minutes = pad(currentTime.getMinutes());
+            const seconds = pad(currentTime.getSeconds());
+            const milliseconds = currentTime.getMilliseconds();
+
+            // Print in the desired format
+            console.log(`Current time: ${hours}:${minutes}:${seconds}.${milliseconds}`);
+
+
+            const newNotifications = response.data;
+            if (newNotifications.length > 0) { // 새로운 알람이 있으면
+                //console.log("?!?!??!?"+newNotifications);
+                handleGetAlarm();
+            }
+            // 성공적인 응답을 받으면 5초 지연 후 다음 폴링 요청이 발생하도록 설정
+            pollingTimeoutId = setTimeout(longPoll, 3000);
+        } catch (error) {
+            console.error("Error during long polling:", error);
+            // 1초 지연 후에 다시 호출되도록 예약
+            pollingTimeoutId = setTimeout(longPoll, 1000); // Retry on error
+        }
+    }*/
+
 
     if (!isAuthorization) {
         return moveToLoginReturn()
