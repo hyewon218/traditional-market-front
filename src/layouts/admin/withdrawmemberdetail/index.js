@@ -155,9 +155,9 @@ function WithdrawMemberDetail() {
                   <Typography variant="body1" paragraph>
                     <strong>탈퇴회원 이메일</strong> : {withdrawMember.withdrawMemberEmail}
                   </Typography>
-                  <Typography variant="body1" paragraph>
+                  {/* <Typography variant="body1" paragraph>
                       <strong>탈퇴회원 IP 주소</strong> : {withdrawMember.withdrawIpAddr}
-                    </Typography>
+                    </Typography> */}
                 <Typography variant="body1" paragraph>
                     <strong>탈퇴일</strong> :
                     {formatCreateTime(withdrawMember.withdrawDate) + " (DB 삭제일 : " + calculateDeleteDate(withdrawMember.withdrawDate) + ")"}

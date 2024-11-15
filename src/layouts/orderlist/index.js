@@ -58,7 +58,7 @@ function OrderList() {
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const handleGetOrders = (page, orderstatus) => {
-        const params = {page, size: 5, sort: 'createTime,desc'};
+        const params = {page, size: 5};
         console.log('params : ', params);
 
         let apiCall;

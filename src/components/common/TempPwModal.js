@@ -58,11 +58,21 @@ function TempPwModal({ open, handleClose, children }) {
         }
     };
 
+    // 모달이 닫힐 때 모든 상태 초기화
+    const handleModalClose = () => {
+        setMemberId('');
+        setMemberEmail('');
+        setVerificationError('');
+        setVerificationSuccess('');
+        setIsSending(false);
+        handleClose();
+    };
+
     return (
         <>
             <Modal
                 open={open}
-                onClose={handleClose}
+                onClose={handleModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
