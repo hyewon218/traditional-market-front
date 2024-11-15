@@ -518,6 +518,7 @@ import NoticeDetail from './layouts/noticedetail';
 import ModifyNotice from './layouts/admin/modifynotice';
 import MyInfoDetail from './layouts/myinfodetail';
 import CheckPw from './layouts/checkpw';
+import CheckEmail from './layouts/checkemail';
 import MyInquiries from './layouts/myinquiries';
 import DeliveryManage from './layouts/deliverymanage';
 import OrderList from './layouts/orderlist';
@@ -655,6 +656,7 @@ export default function App() {
                     <Route path="/top-five-item" element={<TopFiveItem />} />
                     <Route path="/myinfo-detail" element={<MyInfoDetail />} />
                     <Route path="/check-pw" element={<CheckPw />} />
+                    <Route path="/check-email" element={<CheckEmail />} />
                     <Route path="/myinquiries" element={<MyInquiries />} />
                     <Route path="/deliverymanage" element={<DeliveryManage />} />
                     <Route path="/order-list" element={<OrderList />} />
@@ -794,6 +796,7 @@ export default function App() {
                 <Route path="/top-five-item" element={<TopFiveItem />} />
                 <Route path="/myinfo-detail" element={<MyInfoDetail />} />
                 <Route path="/check-pw" element={<CheckPw />} />
+                <Route path="/check-email" element={<CheckEmail />} />
                 <Route path="/myinquiries" element={<MyInquiries />} />
                 <Route path="/deliverymanage" element={<DeliveryManage />} />
                 <Route path="/order-list" element={<OrderList />} />
