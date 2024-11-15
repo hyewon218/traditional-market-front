@@ -144,3 +144,25 @@ export const postReport = async (formData) => {
     return res.data
 }
 
+// isPasswordVerified 쿠키 생성, OAuth2 소셜 로그인 사용자가 본인의 상세정보 조회 시 필요
+//export const postMakeCookie = async () => {
+//    try {
+//        const res = await axios.post(`${prefixApi}/make-cookie`);
+//        return res.data;
+//    } catch (error) {
+//        console.error("Error in postMakeCookie:", error);
+//        throw error;
+//    }
+//};
+
+export const postMakeCookie = async () => {
+    const res = await axios.post(`${prefixApi}/make-cookie`);
+    return res.data;
+};
+
+// 서버에서 isPasswordVerified 있는지 확인
+export const getVerifiedCookie = async () => {
+    const res = await axios.get(`${prefixApi}/has-cookie`);
+    return res.data;
+};
+
