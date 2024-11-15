@@ -366,9 +366,20 @@ export const deleteWithdrawMember = async (wno) => {
 }
 
 // 판매자가 소유한 상점 목록 조회
+//export const getShopListBySellerNoAdmin = async (sellerNo, pageParam) => {
+//    const {page, size} = pageParam
+//    const res = await axios.get(`${prefixApi}/shops/admin/${sellerNo}`,{
+//        params:
+//            {page: page, size: size}
+//    })
+//    return res.data
+//}
+
+// url 수정
+// 판매자가 소유한 상점 목록 조회
 export const getShopListBySellerNoAdmin = async (sellerNo, pageParam) => {
     const {page, size} = pageParam
-    const res = await axios.get(`${prefixApi}/shops/admin/${sellerNo}`,{
+    const res = await axios.get(`${prefixApi}/admin/shops/${sellerNo}`,{
         params:
             {page: page, size: size}
     })
