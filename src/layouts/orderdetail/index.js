@@ -26,7 +26,7 @@ import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import {deleteOrder} from "../../api/orderApi";
 import {getItemOne} from "../../api/itemApi";
 import {getShopOne} from "../../api/shopApi";
-import {getOne} from "../../api/marketApi";
+import {getMarketName} from "../../api/marketApi";
 import MDTypography from "../../components/MD/MDTypography";
 import MDBox from "../../components/MD/MDBox";
 import MDButton from "../../components/MD/MDButton";
@@ -66,6 +66,7 @@ function OrderDetail() {
         return {itemList, totalPrice};
     };
 
+    // 함수 호출 시간 측정 포함
     useEffect(() => {
         const fetchItemDetails = async () => {
             if (Array.isArray(order.orderItemList)) {
@@ -78,25 +79,23 @@ function OrderDetail() {
                         try {
                             const itemData = await getItemOne(item.itemNo);
                             const shopData = await getShopOne(itemData.shopNo);
-                            const marketData = await getOne(shopData.marketNo);
+
+                            // getMarketName 함수 실행 시간 측정 시작
+                            console.time(`getMarketName-${shopData.marketNo}`);
+                            const marketName = await getMarketName(shopData.marketNo);
+                            // getMarketName 함수 실행 시간 측정 종료
+                            console.timeEnd(`getMarketName-${shopData.marketNo}`);
 
                             return {
                                 ...item,
                                 shopData: shopData,
-                                marketData: marketData,
+                                marketName: marketName,
                             };
                         } catch (error) {
-                            console.error('Failed to fetch item details:',
-                                error);
-                            return {
-                                ...item,
-                                shopName: 'Unknown',
-                                marketName: 'Unknown'
-                            }; // 기본값 설정
+                            console.error('상품 정보를 불러오는데 실패했습니다 :', error);
                         }
                     })
                 );
-
                 setItemDetails(detailedItems);
             }
         };
@@ -230,11 +229,8 @@ function OrderDetail() {
                                                     <MDTypography
                                                         sx={{ fontSize: isSmallScreen ? '0.7rem':'1rem' }}
                                                         variant="body1"
-                                                        onClick={() => handleDetailMarket(
-                                                            item.marketData)}
-                                                        style={{cursor: 'pointer'}}
                                                         paragraph
-                                                    >소속 시장 : {item.marketData.marketName}
+                                                    >소속 시장 : {item.marketName}
                                                     </MDTypography>
                                                     <MDTypography
                                                         sx={{ fontSize: isSmallScreen ? '0.7rem':'1rem' }}

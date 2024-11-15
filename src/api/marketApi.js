@@ -90,3 +90,8 @@ export const getMarketLikeCount = async (mno) => { // 좋아요 갯수 조회
     const res = await axios.get(`${prefix}/${mno}/likes-count`)
     return res.data
 }
+
+export const getMarketName = async (mno) => { // 시장 이름 가져오기, 결제된 주문 상세정보에서 사용
+    const res = await axios.get(`${prefix}/name/${mno}`)
+    return res.data
+}
