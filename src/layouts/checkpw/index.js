@@ -46,35 +46,54 @@ function CheckPw() {
   };
 
   // 일반 회원일 경우(OAuth2.0 X)
+//  const handleSubmit = async (event) => {
+//    event.preventDefault();
+//    console.log('providerType : ', member.providerType);
+//
+//    try {
+//      const formData = new FormData();
+//      formData.append('password', password);
+//      const verifyResponse = await postCheckPw(formData);
+//      console.log('verifyResponse : ', verifyResponse);
+//
+//      if (verifyResponse) {
+//        // isPassword 쿠키만 출력
+//        const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
+//          const [name, value] = cookie.split('=');
+//          acc[name] = value;
+//          return acc;
+//        }, {});
+//        if (cookies['isPasswordVerified']) {
+//          console.log('생성된 isPasswordVerified 쿠키:', cookies['isPasswordVerified']);
+//        } else {
+//          console.log('isPasswordVerified 쿠키가 존재하지 않습니다.');
+//        }
+//        navigate(`/myinfo-detail`, { state: member });
+//      }
+//    } catch (error) {
+//      console.log(error);
+//      setError(error.response.data);
+//    }
+//  };
+
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    console.log('providerType : ', member.providerType);
+      event.preventDefault();
+      console.log('providerType : ', member.providerType);
 
-    try {
-      const formData = new FormData();
-      formData.append('password', password);
-      const verifyResponse = await postCheckPw(formData);
-      console.log('verifyResponse : ', verifyResponse);
+      try {
+        const formData = new FormData();
+        formData.append('password', password);
+        const verifyResponse = await postCheckPw(formData);
+        console.log('verifyResponse : ', verifyResponse);
 
-      if (verifyResponse) {
-        // isPassword 쿠키만 출력
-        const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
-          const [name, value] = cookie.split('=');
-          acc[name] = value;
-          return acc;
-        }, {});
-        if (cookies['isPasswordVerified']) {
-          console.log('생성된 isPasswordVerified 쿠키:', cookies['isPasswordVerified']);
-        } else {
-          console.log('isPasswordVerified 쿠키가 존재하지 않습니다.');
+        if (verifyResponse) {
+          navigate(`/myinfo-detail`, { state: member });
         }
-        navigate(`/myinfo-detail`, { state: member });
+      } catch (error) {
+        console.log(error);
+        setError(error.response.data);
       }
-    } catch (error) {
-      console.log(error);
-      setError(error.response.data);
-    }
-  };
+    };
 
   // OAuth2.0 회원일 경우
   const handleProviderLogin = async () => {

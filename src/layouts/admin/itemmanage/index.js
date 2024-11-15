@@ -45,101 +45,323 @@ function ItemManage () {
 
   const navigate = useNavigate();
 
-  // 시장 이름을 캐싱할 객체
-  const marketNamesCache = {};
+//  // 시장 이름을 캐싱할 객체
+//  const marketNamesCache = {};
+//
+//  // 상점 이름을 캐싱할 객체
+//  const shopNamesCache = {};
+//
+//  // 비동기 함수로 시장 이름을 조회
+//  const fetchMarketName = async (marketNo) => {
+//    if (marketNamesCache[marketNo]) {
+//      return marketNamesCache[marketNo];
+//    }
+//
+//    try {
+//      const data = await getOne(marketNo);
+//      console.log("fetchMarketName data : ", data);
+//      marketNamesCache[marketNo] = data.marketName;
+//      return data;
+//    } catch (error) {
+//      console.error("시장 정보 불러오기 오류:", error);
+//      marketNamesCache[marketNo] = '정보 없음';
+//      return '정보 없음';
+//    }
+//  };
+//
+//  // 비동기 함수로 상점 이름을 조회
+//  const fetchShopName = async (shopNo) => {
+//    if (shopNamesCache[shopNo]) {
+//      return shopNamesCache[shopNo];
+//    }
+//
+//    try {
+//      const data = await getShopOne(shopNo);
+//      console.log("fetchShopName data : ", data);
+//      shopNamesCache[shopNo] = data.shopName;
+//      return data;
+//    } catch (error) {
+//      console.error("상점 정보 불러오기 오류:", error);
+//      shopNamesCache[shopNo] = '정보 없음';
+//      return '정보 없음';
+//    }
+//  };
+//
+//  // 상품 목록 조회
+//  const loadItems = async () => {
+//      try {
+//          const pageParam = {
+//              page: currentPage,
+//              size: 10
+//          };
+//
+//          let data;
+//
+//          if (searchQuery) {
+//              data = await getItemListSearch(pageParam, searchQuery);
+//          }  else if (selectedMarketNo === 'all') {
+//              data = await getAllItems(pageParam, selectedCategory, sort);
+//          } else if (selectedShopNo === 'all') {
+//              data = await getItemsByMarket(pageParam, selectedMarketNo, selectedCategory, sort);
+//          } else if (selectedMarketNo) {
+//              data = await getItemsByMultiple(pageParam, selectedMarketNo, selectedShopNo, selectedCategory, sort);
+//          }
+//
+//          console.log("Fetched items data:", data);
+//
+//          // 각 상품의 소속 상점, 소속 시장 이름을 로드
+//          const itemsWithShopAndMarketNames  = await Promise.all(data.content.map(async (item) => {
+//              const shopData = await fetchShopName(item.shopNo);
+//              const shopName = shopData.shopName;
+//              const marketNo = shopData.marketNo; // 상점 데이터에서 marketNo를 추출
+//              const marketData = await fetchMarketName(marketNo);
+//              const marketName = marketData.marketName;
+//
+//          // shopData에 marketName과 marketData를 추가
+//            const updatedShopData = {
+//              ...shopData,
+//              marketName,  // marketName 추가
+//              marketData,  // marketData 추가
+//            };
+//
+//            return {
+//              ...item,
+//              shopName,
+//              marketName,
+//              shopData: updatedShopData,  // 수정된 shopData를 사용
+//              marketData,
+//            };
+//          }));
+//
+//          setItems(itemsWithShopAndMarketNames);
+//          console.log('itemsWithShopAndMarketNames : ', itemsWithShopAndMarketNames);
+//          setTotalPages(data.totalPages);
+//
+//      } catch (err) {
+//          console.error("상품 목록 불러오기 오류: ", err);
+//      }
+//  };
 
-  // 상점 이름을 캐싱할 객체
+  // 중복 시장 번호 제거를 이용한 조회 속도 개선 (기존 Promise.all()을 사용한 동시 API 호출은 유지)
+  // 시장 이름을 캐싱할 객체
+//  const marketNamesCache = {};
+//
+//  // 상점 이름을 캐싱할 객체
+//  const shopNamesCache = {};
+//
+//  // 동시 상점 및 시장 정보 로딩 함수
+//  const fetchShopAndMarketNamesConcurrently = async (items) => {
+//    // 캐시되지 않은 상점 번호와 시장 번호 필터링
+//    const uncachedShopNos = [
+//      ...new Set(
+//        items
+//          .filter(item => !shopNamesCache[item.shopNo])
+//          .map(item => item.shopNo)
+//      )
+//    ];
+//
+//    // 상점 정보 동시 API 호출 준비
+//    const shopInfoPromises = uncachedShopNos.map(shopNo =>
+//      getShopOne(shopNo)
+//        .then(data => ({
+//          shopNo,
+//          shopName: data.shopName,
+//          marketNo: data.marketNo
+//        }))
+//        .catch(() => ({
+//          shopNo,
+//          shopName: '정보 없음',
+//          marketNo: null
+//        }))
+//    );
+//
+//    // 상점 정보 병렬 로드
+//    const fetchedShopInfos = await Promise.all(shopInfoPromises);
+//
+//    // 상점 캐시 업데이트
+//    fetchedShopInfos.forEach(shop => {
+//      shopNamesCache[shop.shopNo] = shop.shopName;
+//    });
+//
+//    // 캐시되지 않은 시장 번호 필터링
+//    const uncachedMarketNos = [
+//      ...new Set(
+//        fetchedShopInfos
+//          .filter(shop => shop.marketNo && !marketNamesCache[shop.marketNo])
+//          .map(shop => shop.marketNo)
+//      )
+//    ];
+//
+//    // 시장 정보 동시 API 호출 준비
+//    const marketInfoPromises = uncachedMarketNos.map(marketNo =>
+//      getOne(marketNo)
+//        .then(data => ({
+//          marketNo,
+//          marketName: data.marketName
+//        }))
+//        .catch(() => ({
+//          marketNo,
+//          marketName: '정보 없음'
+//        }))
+//    );
+//
+//    // 시장 정보 병렬 로드
+//    const fetchedMarketInfos = await Promise.all(marketInfoPromises);
+//
+//    // 시장 캐시 업데이트
+//    fetchedMarketInfos.forEach(market => {
+//      marketNamesCache[market.marketNo] = market.marketName;
+//    });
+//
+//    // 상품 목록에 상점 및 시장 이름 매핑
+//    return items.map(item => {
+//      const shopInfo = fetchedShopInfos.find(shop => shop.shopNo === item.shopNo) || {};
+//      const marketInfo = fetchedMarketInfos.find(market => market.marketNo === shopInfo.marketNo) || {};
+//
+//      return {
+//        ...item,
+//        shopName: shopNamesCache[item.shopNo] || '정보 없음',
+//        marketName: marketNamesCache[shopInfo.marketNo] || '정보 없음',
+//        shopData: {
+//          ...shopInfo,
+//          marketName: marketNamesCache[shopInfo.marketNo] || '정보 없음'
+//        },
+//        marketData: marketInfo
+//      };
+//    });
+//  };
+//
+//  // 상품 목록 조회
+//  const loadItems = async () => {
+//    try {
+//      const pageParam = {
+//        page: currentPage,
+//        size: 10
+//      };
+//
+//      let data;
+//      if (searchQuery) {
+//        data = await getItemListSearch(pageParam, searchQuery);
+//      } else if (selectedMarketNo === 'all') {
+//        data = await getAllItems(pageParam, selectedCategory, sort);
+//      } else if (selectedShopNo === 'all') {
+//        data = await getItemsByMarket(pageParam, selectedMarketNo, selectedCategory, sort);
+//      } else if (selectedMarketNo) {
+//        data = await getItemsByMultiple(pageParam, selectedMarketNo, selectedShopNo, selectedCategory, sort);
+//      }
+//
+//      // 동시 상점 및 시장 정보 로딩
+//      const itemsWithShopAndMarketNames = await fetchShopAndMarketNamesConcurrently(data.content);
+//
+//      setItems(itemsWithShopAndMarketNames);
+//      setTotalPages(data.totalPages);
+//    } catch (err) {
+//      console.error("상품 목록 불러오기 오류: ", err);
+//    }
+//  };
+
+  // 캐시 객체들
+  const marketNamesCache = {};
   const shopNamesCache = {};
 
-  // 비동기 함수로 시장 이름을 조회
-  const fetchMarketName = async (marketNo) => {
-    if (marketNamesCache[marketNo]) {
-      return marketNamesCache[marketNo];
-    }
+  // 동시 상점 및 시장 정보 로딩 함수
+  const fetchShopAndMarketNamesConcurrently = async (items) => {
+    // 캐시되지 않은 상점 번호 필터링
+    const uncachedShopNos = [
+      ...new Set(
+        items
+          .filter(item => !shopNamesCache[item.shopNo])
+          .map(item => item.shopNo)
+      )
+    ];
 
-    try {
-      const data = await getOne(marketNo);
-      console.log("fetchMarketName data : ", data);
-      marketNamesCache[marketNo] = data.marketName;
-      return data;
-    } catch (error) {
-      console.error("시장 정보 불러오기 오류:", error);
-      marketNamesCache[marketNo] = '정보 없음';
-      return '정보 없음';
-    }
-  };
+    // 상점 정보 동시 API 호출
+    const shopInfoPromises = uncachedShopNos.map(shopNo =>
+      getShopOne(shopNo)
+        .then(data => {
+          shopNamesCache[shopNo] = data;
+          return { shopNo, data };
+        })
+        .catch(() => {
+          shopNamesCache[shopNo] = { shopName: '정보 없음', marketNo: null };
+          return { shopNo, data: { shopName: '정보 없음', marketNo: null } };
+        })
+    );
 
-  // 비동기 함수로 상점 이름을 조회
-  const fetchShopName = async (shopNo) => {
-    if (shopNamesCache[shopNo]) {
-      return shopNamesCache[shopNo];
-    }
+    // 상점 정보 병렬 로드
+    await Promise.all(shopInfoPromises);
 
-    try {
-      const data = await getShopOne(shopNo);
-      console.log("fetchShopName data : ", data);
-      shopNamesCache[shopNo] = data.shopName;
-      return data;
-    } catch (error) {
-      console.error("상점 정보 불러오기 오류:", error);
-      shopNamesCache[shopNo] = '정보 없음';
-      return '정보 없음';
-    }
+    // 캐시되지 않은 시장 번호 필터링
+    const uncachedMarketNos = [
+      ...new Set(
+        Object.values(shopNamesCache)
+          .filter(shop => shop.marketNo && !marketNamesCache[shop.marketNo])
+          .map(shop => shop.marketNo)
+      )
+    ];
+
+    // 시장 정보 동시 API 호출
+    const marketInfoPromises = uncachedMarketNos.map(marketNo =>
+      getOne(marketNo)
+        .then(data => {
+          marketNamesCache[marketNo] = data;
+          return { marketNo, data };
+        })
+        .catch(() => {
+          marketNamesCache[marketNo] = { marketName: '정보 없음' };
+          return { marketNo, data: { marketName: '정보 없음' } };
+        })
+    );
+
+    // 시장 정보 병렬 로드
+    await Promise.all(marketInfoPromises);
+
+    // 상품 목록에 상점 및 시장 정보 매핑
+    return items.map(item => {
+      const shopData = shopNamesCache[item.shopNo];
+      const marketData = marketNamesCache[shopData.marketNo] || { marketName: '정보 없음' };
+
+      return {
+        ...item,
+        shopName: shopData.shopName,
+        marketName: marketData.marketName,
+        shopData: {
+          ...shopData,
+          marketName: marketData.marketName,
+          marketData
+        },
+        marketData
+      };
+    });
   };
 
   // 상품 목록 조회
   const loadItems = async () => {
-      try {
-          const pageParam = {
-              page: currentPage,
-              size: 10
-          };
+    try {
+      const pageParam = {
+        page: currentPage,
+        size: 10
+      };
 
-          let data;
-
-          if (searchQuery) {
-              data = await getItemListSearch(pageParam, searchQuery);
-          }  else if (selectedMarketNo === 'all') {
-              data = await getAllItems(pageParam, selectedCategory, sort);
-          } else if (selectedShopNo === 'all') {
-              data = await getItemsByMarket(pageParam, selectedMarketNo, selectedCategory, sort);
-          } else if (selectedMarketNo) {
-              data = await getItemsByMultiple(pageParam, selectedMarketNo, selectedShopNo, selectedCategory, sort);
-          }
-
-          console.log("Fetched items data:", data);
-
-          // 각 상품의 소속 상점, 소속 시장 이름을 로드
-          const itemsWithShopAndMarketNames  = await Promise.all(data.content.map(async (item) => {
-              const shopData = await fetchShopName(item.shopNo);
-              const shopName = shopData.shopName;
-              const marketNo = shopData.marketNo; // 상점 데이터에서 marketNo를 추출
-              const marketData = await fetchMarketName(marketNo);
-              const marketName = marketData.marketName;
-
-          // shopData에 marketName과 marketData를 추가
-            const updatedShopData = {
-              ...shopData,
-              marketName,  // marketName 추가
-              marketData,  // marketData 추가
-            };
-
-            return {
-              ...item,
-              shopName,
-              marketName,
-              shopData: updatedShopData,  // 수정된 shopData를 사용
-              marketData,
-            };
-          }));
-
-          setItems(itemsWithShopAndMarketNames);
-          console.log('itemsWithShopAndMarketNames : ', itemsWithShopAndMarketNames);
-          setTotalPages(data.totalPages);
-
-      } catch (err) {
-          console.error("상품 목록 불러오기 오류: ", err);
+      let data;
+      if (searchQuery) {
+        data = await getItemListSearch(pageParam, searchQuery);
+      } else if (selectedMarketNo === 'all') {
+        data = await getAllItems(pageParam, selectedCategory, sort);
+      } else if (selectedShopNo === 'all') {
+        data = await getItemsByMarket(pageParam, selectedMarketNo, selectedCategory, sort);
+      } else if (selectedMarketNo) {
+        data = await getItemsByMultiple(pageParam, selectedMarketNo, selectedShopNo, selectedCategory, sort);
       }
+
+      // 동시 상점 및 시장 정보 로딩
+      const itemsWithShopAndMarketNames = await fetchShopAndMarketNamesConcurrently(data.content);
+
+      setItems(itemsWithShopAndMarketNames);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      console.error("상품 목록 불러오기 오류: ", err);
+    }
   };
 
   useEffect(() => {

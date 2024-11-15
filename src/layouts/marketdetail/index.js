@@ -1519,21 +1519,49 @@ function MarketDetail() {
     };
 
     // 길찾기 시 주소를 좌표로 변환
+//    const getCoordinates = async (address) => {
+//        if (!window.naver || !window.naver.maps) {
+//            console.error('네이버 지도 API가 로드되지 않았습니다.');
+//            return null;
+//        }
+//
+//        try {
+//            return new Promise((resolve, reject) => {
+//                window.naver.maps.Service.geocode({ address }, (status, response) => {
+//                    if (status === window.naver.maps.Service.Status.OK) {
+//                        const { x, y } = response.result.items[0].point; // x는 경도, y는 위도
+//                        console.log('x : ', x);
+//                        console.log('y : ', y);
+//                        resolve({ lat: y, lng: x });
+//                    } else {
+//                        alert('올바른 주소를 입력해 주세요.');
+////                        reject(new Error('좌표를 가져오는 데 실패했습니다.'));
+//                    }
+//                });
+//            });
+//        } catch (error) {
+//            console.error("좌표 변환 중 오류 발생:", error);
+//            throw error;
+//        }
+//    };
+
+    // 출발지 잘못 입력 시 예외 처리 추가
     const getCoordinates = async (address) => {
         if (!window.naver || !window.naver.maps) {
-            console.error('Naver Maps API is not loaded');
+            console.error('Naver Maps API is not 로드되지 않았습니다.');
             return null;
         }
 
         try {
             return new Promise((resolve, reject) => {
                 window.naver.maps.Service.geocode({ address }, (status, response) => {
-                    if (status === window.naver.maps.Service.Status.OK) {
+                    if (status === window.naver.maps.Service.Status.OK && response.result.items.length > 0) {
                         const { x, y } = response.result.items[0].point; // x는 경도, y는 위도
                         console.log('x : ', x);
                         console.log('y : ', y);
                         resolve({ lat: y, lng: x });
                     } else {
+                        alert('올바른 주소를 입력해 주세요.');
                         reject(new Error('좌표를 가져오는 데 실패했습니다.'));
                     }
                 });
@@ -2270,10 +2298,12 @@ function MarketDetail() {
 
             {showStartLocationModal && (
                 <Dialog open={showStartLocationModal} onClose={() => setShowStartLocationModal(false)} onKeyDown={handleKeyDown}>
-                    <DialogTitle>출발지 입력</DialogTitle>
                     <DialogContent>
+                        <MDTypography variant="body2" style={{color: 'red', fontSize: '1rem', marginBottom: '10px'}}>
+                            ※ 오타 없이 주소를 입력해주세요. 역명, 학교명 등은 사용할 수 없습니다.
+                        </MDTypography>
                         <MDBox component="form" role="form">
-                            <MDTypography variant="body2">출발지:</MDTypography>
+                            <MDTypography variant="body2">출발지 :</MDTypography>
                             <input
                                 type="text"
                                 value={startLocation}
@@ -2314,7 +2344,8 @@ function MarketDetail() {
             {/* 모바일 길찾기 */}
             {showDirectionsModal && (
                 <Dialog open={showDirectionsModal} onClose={closeDirectionsModal}>
-                    <DialogTitle>길찾기</DialogTitle>
+                    {/* <DialogTitle>길찾기</DialogTitle> */}
+                    <MDTypography variant="h6" style={{ padding: '16px 24px' }}>길찾기</MDTypography>
                     <DialogContent>
                         <Button onClick={() => handleDirections('walk')}>
                             도보

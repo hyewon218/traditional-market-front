@@ -15,8 +15,8 @@
 
 // 내 정보 페이지 버튼 4개(내정보, 구매목록, 문의내역, 배송지관리)
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 // @mui material components
 import Grid from '@mui/material/Grid';
@@ -28,7 +28,7 @@ import MDButton from "../../components/MD/MDButton";
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 
 // Data
-import { getMember } from "../../api/memberApi";
+import {getMember, getVerifiedCookie} from "../../api/memberApi";
 
 const initState = {
     memberNo: 0,
@@ -61,22 +61,43 @@ function MyInfo() {
     };
 
   // 내 정보 보기
-  const handleViewMyInfo = (member) => {
-    const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
-      const [name, value] = cookie.split('=');
-      acc[name] = value;
-      return acc;
-    }, {});
+//  const handleViewMyInfo = (member) => {
+//    const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
+//      const [name, value] = cookie.split('=');
+//      acc[name] = value;
+//      return acc;
+//    }, {});
+//
+//    if (cookies['isPasswordVerified']) {
+//      console.log('isPasswordVerified 쿠키 : ', cookies['isPasswordVerified']);
+//      console.log('member : ', member);
+//      // 쿠키가 존재하고, 랜덤 태그가 일치하면 회원 정보 페이지로 이동
+//      navigate(`/myinfo-detail`, {state: member});
+//    } else {
+//      // 쿠키가 없거나 일치하지 않으면 비밀번호 확인 페이지로 이동
+//      console.log('isPasswordVerified 쿠키가 존재하지 않습니다.');
+//      navigate(`/check-pw`, {state: member});
+//    }
+//  };
 
-    if (cookies['isPasswordVerified']) {
-      console.log('isPasswordVerified 쿠키 : ', cookies['isPasswordVerified']);
+  // 내 정보 보기
+  const handleViewMyInfo = async (member) => {
+    const response = await getVerifiedCookie();
+    console.log('isPasswordVerified 쿠키 보유 여부 : ', response);
+
+    if (response) {
       console.log('member : ', member);
       // 쿠키가 존재하고, 랜덤 태그가 일치하면 회원 정보 페이지로 이동
-      navigate(`/myinfo-detail`, {state: member});
+      navigate(`/myinfo-detail`, { state: member });
     } else {
-      // 쿠키가 없거나 일치하지 않으면 비밀번호 확인 페이지로 이동
-      console.log('isPasswordVerified 쿠키가 존재하지 않습니다.');
-      navigate(`/check-pw`, {state: member});
+      // 쿠키가 없거나 일치하지 않으면 인증 방법에 따라 리디렉션
+      if (member.providerType === "LOCAL") {
+        console.log('isPasswordVerified 쿠키가 존재하지 않습니다. 비밀번호 확인 페이지로 이동합니다.');
+        navigate(`/check-pw`, { state: member });
+      } else {
+        console.log('isPasswordVerified 쿠키가 존재하지 않습니다. 이메일 확인 페이지로 이동합니다.');
+        navigate(`/check-email`, { state: member });
+      }
     }
   };
 
