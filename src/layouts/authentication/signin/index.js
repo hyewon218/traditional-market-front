@@ -72,7 +72,7 @@ function SignIn() {
             .catch((error) => {
                 // 예외 처리
                 console.error("로그인 오류:", error);
-//                alert(error.response.data);
+                alert(error.response.data);
             });
     }
 

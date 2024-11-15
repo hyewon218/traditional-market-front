@@ -84,6 +84,7 @@ function Chat() {
             console.log(data);
         }).catch(error => {
             console.error("채팅방 생성에 실패했습니다.", error);
+            alert(error.response.data);
         });
     };
 
