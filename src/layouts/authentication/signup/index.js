@@ -604,6 +604,7 @@ function SignUp() {
     const [hasLowercase, setHasLowercase] = useState(false); // 비밀번호에 영문소문자 포함하는지 확인
     const [hasNumber, setHasNumber] = useState(false); // 비밀번호에 숫자 포함하는지 확인
     const [hasSpecialChar, setHasSpecialChar] = useState(false); // 비밀번호에 특수문자 포함하는지 확인
+    const [timer, setTimer] = useState(0); // 타이머 초기값을 0으로 설정
 
     const navigate = useNavigate();
 
@@ -845,6 +846,7 @@ function SignUp() {
 //      alert('인증번호가 이메일로 전송되었습니다.');
             setVerificationSuccess('인증번호가 이메일로 전송되었습니다.');
             setVerificationError('');
+            setTimer(180); // 3분 타이머 시작
 
         } catch (error) {
 //      alert('인증번호 전송에 실패했습니다.');
@@ -855,6 +857,19 @@ function SignUp() {
             setEmailCodeSending(false); // 전송 중 상태 해제
         }
     };
+
+    // 타이머 효과 추가
+    useEffect(() => {
+      let interval = null;
+      if (timer > 0) {
+        interval = setInterval(() => {
+          setTimer(timer => timer - 1);
+        }, 1000);
+      } else {
+        clearInterval(interval);
+      }
+      return () => clearInterval(interval);
+    }, [timer]);
 
     return (
         <DashboardLayout>
@@ -1031,6 +1046,11 @@ function SignUp() {
                                                             : (verificationError ? 'error' : 'inherit'),
                                                     }}
                                                 />
+                                                {timer > 0 && (
+                                                    <MDTypography variant="body2" color="text">
+                                                      {`${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`}
+                                                    </MDTypography>
+                                                  )}
                                                 {emailCodeSending && (
                                                     <MDTypography
                                                         variant="body2"

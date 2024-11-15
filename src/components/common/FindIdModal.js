@@ -33,6 +33,7 @@ function FindIdModal({ open, handleClose, children }) {
     const [openIdModal, setOpenIdModal] = useState(false); // 아이디 찾기 모달 열기 상태
     const [foundId, setFoundId] = useState(''); // 찾은 아이디 저장 상태
     const [copyMessage, setCopyMessage] = useState(''); // 복사 확인 메시지 상태
+    const [timer, setTimer] = useState(0); // 타이머 초기값을 0으로 설정
 
     // 화면 너비가 600px 이하인 경우 감지
     const isSmallScreen = useMediaQuery('(max-width:600px)');
@@ -72,6 +73,28 @@ function FindIdModal({ open, handleClose, children }) {
     }, [findIdCode, memberEmail]);
 
     // 인증번호 전송
+//    const handleSendEmailCode = async () => {
+//        setIsSending(true);
+//        setVerificationError('');
+//        setVerificationSuccess('인증번호 전송중...');
+//
+//        try {
+//            const formData = new FormData();
+//            formData.append('memberEmail', memberEmail);
+//
+//            const emailCode = await postSendFindIdCode(formData);
+//            console.log('인증번호 : ', emailCode);
+//            setVerificationSuccess('인증번호가 이메일로 전송되었습니다.');
+//            setVerificationError('');
+//
+//        } catch (error) {
+//            setVerificationError(error.response.data);
+//            setVerificationSuccess('');
+//        } finally {
+//            setIsSending(false);
+//        }
+//    };
+
     const handleSendEmailCode = async () => {
         setIsSending(true);
         setVerificationError('');
@@ -85,7 +108,7 @@ function FindIdModal({ open, handleClose, children }) {
             console.log('인증번호 : ', emailCode);
             setVerificationSuccess('인증번호가 이메일로 전송되었습니다.');
             setVerificationError('');
-
+            setTimer(180); // 인증번호 전송 성공 시 타이머 시작 (3분)
         } catch (error) {
             setVerificationError(error.response.data);
             setVerificationSuccess('');
@@ -93,6 +116,31 @@ function FindIdModal({ open, handleClose, children }) {
             setIsSending(false);
         }
     };
+
+    // 타이머 효과
+    useEffect(() => {
+        let interval = null;
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer(timer => timer - 1);
+            }, 1000);
+        } else {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [timer]);
+
+    // 모달창이 닫힐 때 타이머 초기화
+    useEffect(() => {
+        if (!open) {
+            setTimer(0);
+            setMemberEmail('');
+            setFindIdCode('');
+            setIsVerified(false);
+            setVerificationError('');
+            setVerificationSuccess('');
+        }
+    }, [open]);
 
     // 아이디 찾기 버튼 누를 시
     const handleFindId = async () => {
@@ -146,6 +194,11 @@ function FindIdModal({ open, handleClose, children }) {
                             value={findIdCode}
                             onChange={(e) => setFindIdCode(e.target.value)}
                         />
+                        {timer > 0 && (
+                            <MDTypography variant="body2" color="text" ml={2}>
+                                {`${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`}
+                            </MDTypography>
+                        )}
                         <MDBox mt={1}>
                             {verificationError && (
                                 <MDTypography variant="caption" color="error" mt={1}>
@@ -190,7 +243,7 @@ function FindIdModal({ open, handleClose, children }) {
                                 {foundId ? `찾은 아이디 : ${foundId}` : '아이디를 찾을 수 없습니다.'}
                             </MDTypography>
                             <CopyToClipboard text={foundId} onCopy={() => setCopyMessage('복사했습니다')}>
-                                <MDButton variant="outlined" color="info">
+                                <MDButton variant="outlined" color="info" sx={{ width: '100px' }}>
                                     복사
                                 </MDButton>
                             </CopyToClipboard>
